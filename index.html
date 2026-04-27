@@ -267,10 +267,21 @@
 
 <script>
 // --- CONFIG FIREBASE ---
-const firebaseConfig = JSON.parse(__firebase_config);
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
+const __firebase_config = '{"apiKey":"AIzaSyDKi9ExC0q1FtMF-vYaqklmntYldgWIfDc","authDomain":"pokemorpion.firebaseapp.com","projectId":"pokemorpion","storageBucket":"pokemorpion.firebasestorage.app","messagingSenderId":"702634428380","appId":"1:702634428380:web:3cf2e1ca03d5d2cdc43119"}';
+
+let firebaseConfig = null;
+try {
+    firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+} catch (e) {
+    console.error("Erreur de parsing __firebase_config:", e);
+}
+
+if (firebaseConfig && firebaseConfig.apiKey) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+const db = (firebaseConfig && firebase.apps.length) ? firebase.firestore() : null;
+const auth = (firebaseConfig && firebase.apps.length) ? firebase.auth() : null;
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'pokegrid-v5';
 
 // --- DATA SPÉCIALES ---
@@ -298,19 +309,42 @@ let userId = null;
 // --- INITIALISATION ---
 async function initApp() {
     try {
-        await auth.signInAnonymously();
-        userId = auth.currentUser.uid;
+        // Charger les données en priorité
         await loadPokemonData();
+        
+        // Tenter Firebase si configuré
+        if (auth) {
+            try {
+                // Timeout de 4 secondes pour l'auth anonyme
+                const authPromise = auth.signInAnonymously();
+                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout Firebase")), 4000));
+                await Promise.race([authPromise, timeoutPromise]);
+                userId = auth.currentUser.uid;
+                console.log("Connecté à Firebase:", userId);
+            } catch (authError) {
+                console.warn("Firebase indisponible ou trop lent, mode Solo uniquement.", authError);
+            }
+        } else {
+            console.log("Firebase non configuré, mode Solo uniquement.");
+        }
+
+        // On cache le loader quoi qu'il arrive (si les données de base sont là)
         document.getElementById('loading-screen').style.display = 'none';
     } catch (e) {
-        console.error("Erreur d'initialisation:", e);
-        document.getElementById('loading-screen').innerHTML = '<p style="color:red">Erreur de connexion Firebase.</p>';
+        console.error("Erreur d'initialisation fatale:", e);
+        document.getElementById('loading-screen').innerHTML = `
+            <div style="text-align:center; padding: 20px;">
+                <p style="color:#ff4d4d; font-family:'Share Tech Mono'; margin-bottom: 15px;">ERREUR DE SYNCHRONISATION</p>
+                <p style="font-size: 12px; color: var(--text-secondary); mb-20">Vérifiez votre connexion internet.</p>
+                <button class="btn btn-primary" onclick="location.reload()" style="margin-top:20px">RÉESSAYER</button>
+            </div>
+        `;
     }
 }
 
 async function loadPokemonData() {
     const offlineBackup = [
-        [1,"Bulbizarre",1,["Plante","Poison"]],[4,"Salamèche",1,["Feu"]],[6,"Dracaufeu",1,["Feu","Vol"]],[7,"Carapuce",1,["Eau"]],[25,"Pikachu",1,["Électrik"]],[94,"Ectoplasma",1,["Spectre","Poison"]],[150,"Mewtwo",1,["Psy"]],[248,"Tyranocif",2,["Roche","Ténèbres"]],[384,"Rayquaza",3,["Dragon","Vol"]],[445,"Carchacrok",4,["Dragon","Sol"]],[658,"Amphinobi",6,["Eau","Ténèbres"]],[906,"Poussacha",9,["Plante"]],[1007,"Koraidon",9,["Combat","Dragon"]]
+        [1,"Bulbizarre",1,["Plante","Poison"]],[4,"Salamèche",1,["Feu"]],[6,"Dracaufeu",1,["Feu","Vol"]],[7,"Carapuce",1,["Eau"]],[9,"Tortank",1,["Eau"]],[25,"Pikachu",1,["Électrik"]],[38,"Feunard",1,["Feu"]],[68,"Mackogneur",1,["Combat"]],[94,"Ectoplasma",1,["Spectre","Poison"]],[131,"Lokhlass",1,["Eau","Glace"]],[143,"Ronflex",1,["Normal"]],[149,"Dracolosse",1,["Dragon","Vol"]],[150,"Mewtwo",1,["Psy"]],[151,"Mew",1,["Psy"]],[157,"Typhlosion",2,["Feu"]],[197,"Noctali",2,["Ténèbres"]],[212,"Cizayox",2,["Insecte","Acier"]],[248,"Tyranocif",2,["Roche","Ténèbres"]],[257,"Braségali",3,["Feu","Combat"]],[282,"Gardevoir",3,["Psy","Fée"]],[306,"Galeking",3,["Acier","Roche"]],[384,"Rayquaza",3,["Dragon","Vol"]],[445,"Carchacrok",4,["Dragon","Sol"]],[448,"Lucario",4,["Combat","Acier"]],[475,"Gallame",4,["Psy","Combat"]],[658,"Amphinobi",6,["Eau","Ténèbres"]],[700,"Nymphali",6,["Fée"]],[800,"Necrozma",7,["Psy"]],[815,"Pyrobut",8,["Feu"]],[887,"Lanssorien",8,["Dragon","Spectre"]],[906,"Poussacha",9,["Plante"]],[911,"Soublier",9,["Feu","Spectre"]],[1007,"Koraidon",9,["Combat","Dragon"]]
     ];
 
     let data = null;
@@ -362,10 +396,11 @@ async function createRoom() {
     
     generateGridHeaders();
 
+    if (!db) return alert("Firebase non configuré pour le multijoueur !");
     const roomRef = db.doc(`/artifacts/${appId}/public/data/rooms/${code}`);
     await roomRef.set({
         code, headers: currentGame.headers,
-        p1: { uid: userId, grid: Array(9).fill(null), validated: false },
+        p1: { uid: userId || 'anonymous', grid: Array(9).fill(null), validated: false },
         p2: null, phase: 1, 
         roomScores: { p1: 0, p2: 0 },
         lastUpdated: Date.now()
@@ -379,6 +414,7 @@ async function joinRoom() {
     const code = document.getElementById('join-input').value.toUpperCase();
     if (!code) return;
 
+    if (!db) return alert("Firebase non configuré !");
     const roomRef = db.doc(`/artifacts/${appId}/public/data/rooms/${code}`);
     const snap = await roomRef.get();
     if (!snap.exists()) return alert("Salle introuvable !");
@@ -388,7 +424,7 @@ async function joinRoom() {
     currentGame.role = 'p2';
 
     await roomRef.update({
-        p2: { uid: userId, grid: Array(9).fill(null), validated: false }
+        p2: { uid: userId || 'anonymous', grid: Array(9).fill(null), validated: false }
     });
 
     listenToRoom(code);
@@ -396,6 +432,7 @@ async function joinRoom() {
 }
 
 function listenToRoom(code) {
+    if (!db) return;
     db.doc(`/artifacts/${appId}/public/data/rooms/${code}`).onSnapshot((doc) => {
         const data = doc.data();
         if (!data) return;
@@ -434,19 +471,42 @@ function generateGridHeaders() {
     ];
 
     let ok = false;
-    while(!ok) {
-        const shuf = pool.sort(() => Math.random() - 0.5);
+    let attempts = 0;
+    while(!ok && attempts < 1000) {
+        attempts++;
+        const shuf = [...pool].sort(() => Math.random() - 0.5);
         const rows = shuf.slice(0, 3);
         const cols = shuf.slice(3, 6);
         
         let validIntersections = 0;
         for(let r of rows) for(let c of cols) {
-            if (allPokemon.some(p => checkCriteria(p, r) && checkCriteria(p, c))) validIntersections++;
+            if (allPokemon.some(p => checkCriteria(p, r) && checkCriteria(p, c))) {
+                validIntersections++;
+            } else {
+                break; // Optimisation : on arrête si une case est vide
+            }
         }
         if (validIntersections === 9) {
             currentGame.headers = { rows, cols };
             ok = true;
         }
+    }
+
+    if (!ok) {
+        console.warn("Génération de grille complexe échouée, passage en mode simplifié.");
+        // Fallback ultra-simple (Générations 1, 2, 3 et types de base)
+        currentGame.headers = {
+            rows: [
+                { type: 'gen', value: 1, label: 'Gen 1', sub: 'GÉNÉRATION' },
+                { type: 'gen', value: 2, label: 'Gen 2', sub: 'GÉNÉRATION' },
+                { type: 'gen', value: 3, label: 'Gen 3', sub: 'GÉNÉRATION' }
+            ],
+            cols: [
+                { type: 'type', value: 'Feu', label: 'Feu', sub: 'TYPE' },
+                { type: 'type', value: 'Eau', label: 'Eau', sub: 'TYPE' },
+                { type: 'type', value: 'Plante', label: 'Plante', sub: 'TYPE' }
+            ]
+        };
     }
 }
 
@@ -574,6 +634,7 @@ async function handleValidate() {
     myData.validated = true;
 
     if (currentGame.mode === 'multi') {
+        if (!db) return alert("Firebase non disponible");
         await db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({ [role]: myData });
     } else {
         currentGame.p2.validated = true;
@@ -584,6 +645,7 @@ async function handleValidate() {
 
 async function startPhase2() {
     if (currentGame.mode === 'multi') {
+        if (!db) return;
         await db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({
             'p1.validated': false,
             'p2.validated': false,
@@ -614,7 +676,7 @@ function calculateFinal() {
     const oppScore = currentGame.role === 'p1' ? s2 : s1;
 
     // Mise à jour du score général (uniquement par P1 pour éviter les doublons)
-    if (currentGame.mode === 'multi' && currentGame.role === 'p1') {
+    if (currentGame.mode === 'multi' && currentGame.role === 'p1' && db) {
         const scores = currentGame.roomScores;
         if (s1 > s2) scores.p1++;
         else if (s2 > s1) scores.p2++;
@@ -670,6 +732,7 @@ async function selectPokemon(p) {
     const myData = role === 'p1' ? currentGame.p1 : currentGame.p2;
     myData.grid[currentCell] = p.id;
     if (currentGame.mode === 'multi') {
+        if (!db) return;
         await db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({ [`${role}.grid`]: myData.grid });
     } else {
         renderGrids();
