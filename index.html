@@ -776,10 +776,13 @@
                                 ? signInWithCustomToken(auth, __initial_auth_token)
                                 : signInAnonymously(auth);
 
-                            const timeoutAuth = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout Firebase")), 3000));
-                            await Promise.race([authPromise, timeoutAuth]);
-                            userId = auth.currentUser?.uid;
-                        } catch (authError) { console.warn("Firebase Auth bypass"); }
+                            const timeoutAuth = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout Firebase")), 4000));
+                            const result = await Promise.race([authPromise, timeoutAuth]);
+                            userId = result.user?.uid || auth.currentUser?.uid;
+                        } catch (authError) {
+                            console.warn("Firebase Auth erreur (bypassed):", authError);
+                            userId = 'guest_' + Math.random().toString(36).substring(2, 9);
+                        }
                     }
 
                     if (db && userId) {
@@ -830,7 +833,7 @@
 
         // --- MULTIJOUEUR ---
         window.createRoom = async function () {
-            if (!db || !userId) return alert("Firebase non disponible. Mode multijoueur désactivé.");
+            if (!db) return alert("Erreur: Base de données Firebase non initialisée.");
 
             const code = Math.random().toString(36).substring(2, 8).toUpperCase();
             currentGame.mode = 'multi';
@@ -862,15 +865,16 @@
                 listenToRoom(code);
                 showGameUI();
             } catch (e) {
-                alert("Erreur lors de la création de la salle.");
-                console.error(e);
+                msg.classList.add('hidden');
+                console.error("Firebase Error:", e);
+                alert("Erreur Firebase : " + e.message + "\n\nAstuce: Sur Github Pages, vérifiez que 'symoncara.github.io' est autorisé dans Firebase Auth, et que vos règles Firestore autorisent l'écriture.");
             }
         }
 
         window.joinRoom = async function () {
             const code = document.getElementById('join-input').value.toUpperCase();
             if (!code) return;
-            if (!db || !userId) return alert("Firebase non disponible. Mode multijoueur désactivé.");
+            if (!db) return alert("Erreur: Base de données Firebase non initialisée.");
 
             const roomRef = doc(db, 'artifacts', appId, 'public', 'data', `room_${code}`);
             try {
@@ -891,8 +895,8 @@
                 listenToRoom(code);
                 showGameUI();
             } catch (e) {
-                alert("Erreur de connexion à la salle.");
-                console.error(e);
+                console.error("Firebase Error:", e);
+                alert("Erreur de connexion : " + e.message + "\n\nVérifiez vos règles de sécurité Firestore.");
             }
         }
 
