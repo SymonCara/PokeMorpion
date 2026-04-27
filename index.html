@@ -321,6 +321,9 @@ let currentGame = {
     roomCode: null,
     role: 'p1',
     phase: 1,
+    p1: { grid: Array(9).fill(null), validated: false },
+    p2: { grid: Array(9).fill(null), validated: false },
+    headers: { rows: [], cols: [] },
     roomScores: { p1: 0, p2: 0 },
     finished: false
 };
