@@ -178,6 +178,19 @@
   #loading-screen { position: fixed; inset:0; background: var(--bg-deep); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .loader-ring { width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--accent2); animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* New Styles */
+  .home-btn { font-size: 24px; cursor: pointer; color: var(--text-secondary); transition: color 0.3s; padding: 10px; }
+  .home-btn:hover { color: var(--accent2); }
+  .reset-btn { background: #34495e; color: white; width: 100%; margin-top: 10px; }
+  .result-details { width: 100%; max-width: 600px; margin-top: 20px; overflow-y: auto; max-height: 250px; }
+  .detail-row { display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border); }
+  .detail-info { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .detail-info img { width: 30px; height: 30px; }
+  .detail-solution { color: var(--accent2); font-weight: 600; font-size: 12px; }
+  .dispute-btn { background: var(--border); color: var(--text-secondary); border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; transition: all 0.2s; }
+  .dispute-btn:hover { background: var(--accent); color: white; }
+  .room-code-display { font-size: 32px; font-weight: 800; color: var(--accent2); letter-spacing: 4px; margin-bottom: 10px; text-shadow: 0 0 15px rgba(76, 201, 240, 0.3); }
 </style>
 </head>
 <body>
@@ -201,6 +214,7 @@
        <div class="divider-v"></div>
        <div class="stat-badge"><span class="val" id="stat-round">1/2</span><span class="lbl">PHASE</span></div>
     </div>
+    <div class="home-btn" onclick="location.reload()">🏠</div>
   </header>
 
   <!-- MENU D'ACCUEIL -->
@@ -233,6 +247,7 @@
             </div>
             <div id="grid-me" class="grid-wrapper"></div>
             <button id="btn-validate" class="btn btn-validate" onclick="handleValidate()" disabled>✅ VALIDER MA GRILLE</button>
+            <button id="btn-reset" class="btn reset-btn" onclick="resetGrid()">🔄 RÉINITIALISER</button>
         </div>
 
         <div class="grid-section" id="opponent-section" style="display:none">
@@ -262,7 +277,8 @@
 <div id="result-screen">
   <div class="result-title" id="result-title">BIEN JOUÉ !</div>
   <div class="result-score" id="result-score">Note : <span>0/9</span></div>
-  <button class="btn btn-primary" onclick="location.reload()">RETOURNER AU MENU</button>
+  <div id="result-details" class="result-details"></div>
+  <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 10px;">RETOURNER AU MENU</button>
 </div>
 
 <script>
@@ -297,20 +313,26 @@ let currentGame = {
     roomCode: null,
     role: 'p1',
     phase: 1,
-    p1: { grid: Array(9).fill(null), validated: false },
-    p2: { grid: Array(9).fill(null), validated: false },
-    headers: { rows: [], cols: [] },
     roomScores: { p1: 0, p2: 0 },
     finished: false
 };
 let currentCell = null;
 let userId = null;
+let disputesMemory = []; // [ {pokeId, criteriaType, criteriaValue} ]
 
 // --- INITIALISATION ---
 async function initApp() {
     try {
         // Charger les données en priorité
         await loadPokemonData();
+        
+        // Charger la mémoire des contestations
+        if (db) {
+            try {
+                const snap = await db.doc(`/artifacts/${appId}/public/data/memory/disputes`).get();
+                if (snap.exists()) disputesMemory = snap.data().list || [];
+            } catch(e) { console.warn("Mémoire indisponible"); }
+        }
         
         // Tenter Firebase si configuré
         if (auth) {
@@ -398,6 +420,12 @@ async function createRoom() {
 
     if (!db) return alert("Firebase non configuré pour le multijoueur !");
     const roomRef = db.doc(`/artifacts/${appId}/public/data/rooms/${code}`);
+    
+    // Affichage plus gros du code pour l'hôte
+    const msg = document.getElementById('game-message');
+    msg.classList.remove('hidden');
+    msg.innerHTML = `<div class="room-code-display">${code}</div>Attente de votre adversaire...`;
+
     await roomRef.set({
         code, headers: currentGame.headers,
         p1: { uid: userId || 'anonymous', grid: Array(9).fill(null), validated: false },
@@ -512,6 +540,11 @@ function generateGridHeaders() {
 
 function checkCriteria(p, c) {
     if (!p) return false;
+
+    // Check Memory first (Disputes)
+    const isApproved = disputesMemory.some(d => d.pokeId === p.id && d.criteriaType === c.type && d.criteriaValue === c.value);
+    if (isApproved) return true;
+
     if (c.type === 'type') return p.types.includes(c.value);
     if (c.type === 'gen') return p.generation === c.value;
     if (c.type === 'legend') return p.isLegendary;
@@ -598,7 +631,11 @@ function updateUI() {
     const msg = document.getElementById('game-message');
 
     document.getElementById('stat-round').innerText = currentGame.phase + "/2";
-    btn.disabled = myData.grid.filter(Boolean).length === 0 || myData.validated;
+    
+    // Bouton de reset uniquement en Solo et non validé
+    document.getElementById('btn-reset').classList.toggle('hidden', currentGame.mode === 'multi' || myData.validated);
+
+    btn.disabled = myData.validated; // On peut valider même vide si on veut (score 0)
 
     if (myData.validated) {
         if (oppData && oppData.validated) {
@@ -626,6 +663,13 @@ function updateUI() {
         btn.classList.remove('hidden');
         btn.onclick = () => handleValidate();
     }
+}
+
+function resetGrid() {
+    if (currentGame.mode === 'multi') return;
+    currentGame.p1.grid = Array(9).fill(null);
+    renderGrids();
+    updateUI();
 }
 
 async function handleValidate() {
@@ -692,7 +736,67 @@ function calculateFinal() {
 
     document.getElementById('result-title').innerText = title;
     document.getElementById('result-score').innerHTML = `Note de la grille : <span>${myScore}/9</span>`;
+    
+    // Affichage des corrections et contestations
+    const details = document.getElementById('result-details');
+    details.innerHTML = '';
+    
+    const myData = currentGame.role === 'p1' ? currentGame.p1 : currentGame.p2;
+    myData.grid.forEach((pId, i) => {
+        const r = Math.floor(i/3);
+        const c = i%3;
+        const rowH = currentGame.headers.rows[r];
+        const colH = currentGame.headers.cols[c];
+        const p = pId ? allPokemon.find(x => x.id === pId) : null;
+        const ok = p && checkCriteria(p, rowH) && checkCriteria(p, colH);
+
+        if (!ok) {
+            const row = document.createElement('div');
+            row.className = 'detail-row';
+            
+            // Trouver une solution alternative
+            const solution = allPokemon.find(x => checkCriteria(x, rowH) && checkCriteria(x, colH));
+            
+            row.innerHTML = `
+                <div class="detail-info">
+                    ${p ? `<img src="${p.sprite}"> ❌ ${p.name}` : '❌ Case vide'}
+                    ${p ? `<button class="dispute-btn" onclick="handleDispute(${p.id}, ${r}, ${c})">Contester</button>` : ''}
+                </div>
+                <div class="detail-solution">
+                    Solution : ${solution ? solution.name : '???'}
+                </div>
+            `;
+            details.appendChild(row);
+        }
+    });
+
     document.getElementById('result-screen').classList.add('active');
+}
+
+async function handleDispute(pokeId, rowIdx, colIdx) {
+    if (!confirm("Voulez-vous vraiment contester ? Cela ajoutera ce Pokémon comme valide pour ces critères à l'avenir.")) return;
+    
+    const rowH = currentGame.headers.rows[rowIdx];
+    const colH = currentGame.headers.cols[colIdx];
+
+    const newExceptions = [
+        { pokeId, criteriaType: rowH.type, criteriaValue: rowH.value },
+        { pokeId, criteriaType: colH.type, criteriaValue: colH.value }
+    ];
+
+    disputesMemory.push(...newExceptions);
+    
+    if (db) {
+        try {
+            await db.doc(`/artifacts/${appId}/public/data/memory/disputes`).set({ list: disputesMemory });
+            alert("Contestation enregistrée ! Elle sera effective dès la prochaine partie.");
+        } catch(e) { 
+            console.error(e);
+            alert("Erreur lors de la sauvegarde.");
+        }
+    } else {
+        alert("Exception ajoutée localement pour cette session !");
+    }
 }
 
 // --- MODAL ---
