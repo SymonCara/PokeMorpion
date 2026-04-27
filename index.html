@@ -330,46 +330,38 @@ let disputesMemory = []; // [ {pokeId, criteriaType, criteriaValue} ]
 
 // --- INITIALISATION ---
 async function initApp() {
-    try {
-        // Charger les données en priorité
-        await loadPokemonData();
-        
-        // Charger la mémoire des contestations
-        if (db) {
-            try {
-                const snap = await db.collection("memory").doc("disputes").get();
-                if (snap.exists()) disputesMemory = snap.data().list || [];
-            } catch(e) { console.warn("Mémoire indisponible"); }
-        }
-        
-        // Tenter Firebase si configuré
-        if (auth) {
-            try {
-                // Timeout de 4 secondes pour l'auth anonyme
-                const authPromise = auth.signInAnonymously();
-                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout Firebase")), 4000));
-                await Promise.race([authPromise, timeoutPromise]);
-                userId = auth.currentUser.uid;
-                console.log("Connecté à Firebase:", userId);
-            } catch (authError) {
-                console.warn("Firebase indisponible ou trop lent, mode Solo uniquement.", authError);
+    const mainInit = async () => {
+        try {
+            // Charger les données (timeout interne géré par le race plus bas)
+            await loadPokemonData();
+            
+            // Tenter Firebase si configuré
+            if (auth) {
+                try {
+                    const authPromise = auth.signInAnonymously();
+                    const timeoutAuth = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout Firebase")), 3000));
+                    await Promise.race([authPromise, timeoutAuth]);
+                    userId = auth.currentUser.uid;
+                } catch (authError) { console.warn("Firebase bypass"); }
             }
-        } else {
-            console.log("Firebase non configuré, mode Solo uniquement.");
-        }
+            
+            // Charger la mémoire
+            if (db) {
+                try {
+                    const snap = await db.collection("memory").doc("disputes").get();
+                    if (snap.exists()) disputesMemory = snap.data().list || [];
+                } catch(e) {}
+            }
+        } catch (e) { console.error("Init error:", e); }
+    };
 
-        // On cache le loader quoi qu'il arrive (si les données de base sont là)
-        document.getElementById('loading-screen').style.display = 'none';
-    } catch (e) {
-        console.error("Erreur d'initialisation fatale:", e);
-        document.getElementById('loading-screen').innerHTML = `
-            <div style="text-align:center; padding: 20px;">
-                <p style="color:#ff4d4d; font-family:'Share Tech Mono'; margin-bottom: 15px;">ERREUR DE SYNCHRONISATION</p>
-                <p style="font-size: 12px; color: var(--text-secondary); mb-20">Vérifiez votre connexion internet.</p>
-                <button class="btn btn-primary" onclick="location.reload()" style="margin-top:20px">RÉESSAYER</button>
-            </div>
-        `;
-    }
+    // Timeout global de 6 secondes pour le chargement
+    const timeoutGlobal = new Promise(resolve => setTimeout(resolve, 6000));
+
+    await Promise.race([mainInit(), timeoutGlobal]);
+    
+    // On force la disparition du loader quoi qu'il arrive
+    document.getElementById('loading-screen').style.display = 'none';
 }
 
 async function loadPokemonData() {
