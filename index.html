@@ -933,7 +933,8 @@ async function fetchWithTimeout(url, timeout = 10000) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
   try {
-    const response = await fetch(url, { cache: 'no-store', signal: controller.signal });
+    // Retrait de "cache: 'no-store'" pour éviter les blocages de sécurité (CORS) sur GitHub
+    const response = await fetch(url, { signal: controller.signal });
     clearTimeout(id);
     return response;
   } catch (error) {
@@ -945,20 +946,21 @@ async function fetchWithTimeout(url, timeout = 10000) {
 // ===== DATA LOADING =====
 async function loadPokemon() {
   try {
-    updateLoadingText('Connexion au Pokédex (Max 10 secondes)...');
+    updateLoadingText('Connexion au Pokédex complet...');
     let data = null;
     let isTyradex = false;
 
-    // Tentatives rapides sur plusieurs API
+    // Mise à jour des adresses API les plus stables
     const sources = [
-      { url: 'https://tyradex.vercel.app/api/v1/pokemon', type: 'tyradex' },
+      { url: 'https://tyradex.tech/api/v1/pokemon', type: 'tyradex' },
       { url: 'https://pokebuildapi.fr/api/v1/pokemon', type: 'pokebuild' },
-      { url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://tyradex.tech/api/v1/pokemon'), type: 'tyradex' }
+      { url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://tyradex.tech/api/v1/pokemon'), type: 'tyradex' },
+      { url: 'https://corsproxy.io/?' + encodeURIComponent('https://pokebuildapi.fr/api/v1/pokemon'), type: 'pokebuild' }
     ];
 
     for (const source of sources) {
       try {
-        const res = await fetchWithTimeout(source.url, 10000);
+        const res = await fetchWithTimeout(source.url, 8000);
         if (res.ok) {
           data = await res.json();
           isTyradex = (source.type === 'tyradex');
