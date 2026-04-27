@@ -927,14 +927,29 @@ let currentCell = null;
 // ===== DATA LOADING (MÉTHODE INFAILLIBLE ANTI-PARE-FEU) =====
 async function loadPokemon() {
   try {
-    updateLoadingText('Connexion au réseau mondial (CDN)...');
+    updateLoadingText('Connexion à la base de données...');
 
-    // JsDelivr est un réseau de distribution professionnel autorisé par 99% des réseaux stricts.
-    const url = 'https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json';
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('CDN inaccessible');
+    // 1. Tente le fichier local (Si tu as uploadé pokedex.json sur ton GitHub)
+    // 2. Tente le CDN mondial si le fichier local n'existe pas
+    const urlsToTry = [
+      './pokedex.json',
+      'https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json'
+    ];
 
-    const data = await res.json();
+    let data = null;
+    for (const url of urlsToTry) {
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          data = await res.json();
+          break; // Ça a marché, on arrête de chercher !
+        }
+      } catch (e) {
+        console.warn(`Fetch ignoré pour ${url}`);
+      }
+    }
+
+    if (!data) throw new Error('Aucune source accessible');
 
     const TYPE_EN_FR = {
       'Fire':'Feu','Water':'Eau','Grass':'Plante','Electric':'Électrik',
@@ -1310,7 +1325,8 @@ function showResults(query) {
     });
   }
 
-  const toShow = filtered.slice(0, 30);
+  // On enlève la limite de 30 pour afficher tout le Pokédex !
+  const toShow = filtered;
 
   if (toShow.length === 0) {
     container.innerHTML = '<div class="no-results">Aucun Pokémon trouvé</div>';
@@ -1375,6 +1391,9 @@ async function init() {
     document.getElementById('loading').innerHTML = '<div class="error-msg">❌ Erreur critique.<br>Impossible de charger le jeu.</div>';
     return;
   }
+
+  // S'assurer que le Pokédex est bien trié dans l'ordre (du n°1 au n°1000+)
+  allPokemon.sort((a, b) => a.id - b.id);
 
   document.getElementById('game-container').style.display = 'flex';
   newGame();
