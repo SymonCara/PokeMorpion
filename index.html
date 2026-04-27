@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PokéGrid — Multijoueur</title>
+<title>PokéGrid — Multijoueur & Solo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
 <!-- Firebase SDKs -->
@@ -38,7 +38,6 @@
     font-family: 'Exo 2', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
-    position: relative;
   }
 
   body::before {
@@ -94,7 +93,6 @@
     flex-direction: column;
     gap: 20px;
     text-align: center;
-    box-shadow: 0 0 40px rgba(0,0,0,0.5);
   }
 
   .menu-btn {
@@ -125,73 +123,82 @@
   }
 
   /* ===== GAME STYLES ===== */
-  #game-container { width: 100%; max-width: 1000px; display: none; flex-direction: column; gap: 20px; }
-  .game-layout { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+  #game-container { width: 100%; max-width: 1100px; display: none; flex-direction: column; gap: 20px; }
+  .game-layout { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; }
 
-  .grid-section { flex: 1; min-width: 350px; max-width: 450px; }
-  .player-label { font-family: 'Rajdhani', sans-serif; font-weight: 700; color: var(--accent2); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+  .grid-section { flex: 1; min-width: 350px; max-width: 500px; }
+  .player-label { font-family: 'Rajdhani', sans-serif; font-weight: 700; color: var(--accent2); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+
+  .score-badge { background: var(--border); padding: 2px 10px; border-radius: 4px; color: white; font-size: 12px; }
 
   .grid-wrapper {
-    display: grid; grid-template-columns: 80px repeat(3, 1fr); grid-template-rows: 60px repeat(3, 100px);
+    display: grid; grid-template-columns: 90px repeat(3, 1fr); grid-template-rows: 70px repeat(3, 110px);
     gap: 4px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; padding: 6px;
   }
 
-  .header-cell { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px; text-align: center; font-size: 11px; }
+  .header-cell { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px; text-align: center; }
   .header-label { font-family: 'Rajdhani', sans-serif; font-weight: 700; color: var(--text-primary); text-transform: uppercase; font-size: 11px; }
   .header-sub { font-family: 'Share Tech Mono', monospace; font-size: 8px; color: var(--accent2); }
 
   .game-cell { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; position: relative; }
   .game-cell.locked { cursor: default; }
-  .game-cell.correct { border-color: var(--success); background: rgba(46, 204, 113, 0.05); }
-  .game-cell.error { border-color: var(--accent); background: rgba(230, 57, 70, 0.1); }
+  .game-cell.correct { border-color: var(--success); background: rgba(46, 204, 113, 0.05); border-width: 2px; }
+  .game-cell.error { border-color: var(--accent); background: rgba(230, 57, 70, 0.1); border-width: 2px; }
   .game-cell.pending { border-color: var(--accent2); }
 
   .pokemon-entry { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 2px; }
-  .pokemon-entry img { width: 50px; height: 50px; object-fit: contain; }
-  .pokemon-entry .poke-name { font-family: 'Rajdhani', sans-serif; font-size: 9px; font-weight: 600; text-align: center; }
+  .pokemon-entry img { width: 55px; height: 55px; object-fit: contain; }
+  .pokemon-entry .poke-name { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; text-align: center; line-height: 1; margin-top: 2px;}
+  .poke-id { font-family: 'Share Tech Mono', monospace; font-size: 8px; color: var(--text-dim); }
 
   .btn { font-family: 'Rajdhani', sans-serif; font-weight: 600; padding: 12px 24px; border-radius: 6px; border: none; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
   .btn-primary { background: var(--accent2); color: #000; }
-  .btn-validate { background: var(--success); color: white; width: 100%; }
+  .btn-validate { background: var(--success); color: white; width: 100%; margin-top: 10px; }
   .btn-validate:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  #modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+  #modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
   #modal-overlay.active { display: flex; }
-  .modal { background: var(--bg-panel); border: 1px solid var(--border-glow); padding: 20px; border-radius: 12px; width: 90%; max-width: 600px; max-height: 80vh; display: flex; flex-direction: column; }
-  .results-grid { overflow-y: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 15px; }
+  .modal { background: var(--bg-panel); border: 1px solid var(--border-glow); padding: 20px; border-radius: 12px; width: 90%; max-width: 600px; max-height: 85vh; display: flex; flex-direction: column; }
+  .results-grid { overflow-y: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 15px; flex: 1; }
   .result-card { background: var(--bg-card); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--border); cursor: pointer; }
-  .result-card:hover { border-color: var(--accent2); }
+  .result-card:hover { border-color: var(--accent2); background: var(--bg-hover); }
+  .result-card.already-used { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
   .result-card img { width: 50px; }
 
-  #loading { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 50px; }
-  
-  .versus-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      background: var(--bg-panel);
-      padding: 15px;
-      border-radius: 12px;
-      border: 1px solid var(--accent2);
-  }
+  .game-message { background: rgba(76, 201, 240, 0.1); border: 1px solid var(--accent2); color: var(--accent2); padding: 12px; border-radius: 8px; text-align: center; margin-bottom: 15px; font-weight: 600; }
+  .hidden { display: none !important; }
+
+  #result-screen { display: none; position: fixed; inset: 0; background: rgba(8, 12, 20, 0.95); z-index: 2000; align-items: center; justify-content: center; flex-direction: column; gap: 20px; }
+  #result-screen.active { display: flex; }
+  .result-title { font-family: 'Rajdhani', sans-serif; font-size: 54px; font-weight: 800; color: var(--accent2); }
+  .result-score { font-family: 'Share Tech Mono', monospace; font-size: 24px; color: white; }
+  .result-score span { color: var(--accent2); }
+
+  #loading-screen { position: fixed; inset:0; background: var(--bg-deep); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .loader-ring { width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--accent2); animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
+
+<div id="loading-screen">
+    <div class="loader-ring"></div>
+    <p style="margin-top: 20px; font-family: 'Share Tech Mono';">Synchronisation du Pokédex...</p>
+</div>
+
 <div id="app">
   <header>
-    <div class="logo">
+    <div class="logo" onclick="location.reload()" style="cursor:pointer">
       <div class="logo-ball"></div>
       <div class="logo-text">
         <h1>Poké<span>Grid</span></h1>
-        <p>Défi Multijoueur</p>
+        <p>Championnat Pokémon</p>
       </div>
     </div>
     <div id="room-info" class="header-stats" style="display:none">
-       <div class="stat-badge"><span class="val" id="display-room-code">----</span><span class="lbl">Code Salle</span></div>
+       <div class="stat-badge"><span class="val" id="display-room-code">----</span><span class="lbl">CODE SALLE</span></div>
        <div class="divider-v"></div>
-       <div class="stat-badge"><span class="val" id="stat-score">0 - 0</span><span class="lbl">Score</span></div>
+       <div class="stat-badge"><span class="val" id="stat-round">1/2</span><span class="lbl">PHASE</span></div>
     </div>
   </header>
 
@@ -199,40 +206,39 @@
   <div id="menu-container">
     <div class="menu-btn" onclick="startSolo()">
       <h3>Mode Solo</h3>
-      <p>Entraînez-vous seul sur une grille aléatoire.</p>
+      <p>9 cases, 2 phases. Tente le score parfait !</p>
     </div>
-    <div style="margin: 10px 0; color: var(--text-dim);">--- OU ---</div>
+    <div style="margin: 5px 0; color: var(--text-dim); font-size: 10px;">DÉFI MULTIJOUEUR</div>
     <div class="menu-btn" onclick="createRoom()">
       <h3>Créer une Salle</h3>
-      <p>Générez un code et défiez un ami.</p>
+      <p>Génère un code et attends un ami.</p>
     </div>
     <div class="menu-btn">
       <h3>Rejoindre</h3>
       <input type="text" id="join-input" class="input-code" placeholder="CODE" maxlength="6">
-      <button class="btn btn-primary" style="margin-top: 15px; width: 100%;" onclick="joinRoom()">REJOINDRE</button>
+      <button class="btn btn-primary" style="margin-top: 15px; width: 100%;" onclick="joinRoom()">REJOINDRE LA SALLE</button>
     </div>
-  </div>
-
-  <div id="loading">
-    <div class="loader-ring"></div>
-    <div class="loading-text">Chargement...</div>
   </div>
 
   <!-- ZONE DE JEU -->
   <div id="game-container">
-    <div id="waiting-msg" class="game-message hidden">En attente de l'adversaire...</div>
+    <div id="game-message" class="game-message hidden"></div>
     
     <div class="game-layout">
-        <!-- Grille Joueur -->
         <div class="grid-section">
-            <div class="player-label" id="my-label">Ma Grille</div>
+            <div class="player-label">
+                <span>Ma Grille</span>
+                <span id="my-room-score" class="score-badge">Manches: 0</span>
+            </div>
             <div id="grid-me" class="grid-wrapper"></div>
-            <button id="btn-validate" class="btn btn-validate" style="margin-top:10px" onclick="handleValidate()">✅ Valider Phase 1</button>
+            <button id="btn-validate" class="btn btn-validate" onclick="handleValidate()" disabled>✅ VALIDER MA GRILLE</button>
         </div>
 
-        <!-- Grille Adversaire (Visible après validation mutuelle) -->
         <div class="grid-section" id="opponent-section" style="display:none">
-            <div class="player-label">Adversaire</div>
+            <div class="player-label">
+                <span id="opponent-label">Adversaire</span>
+                <span id="opp-room-score" class="score-badge">Manches: 0</span>
+            </div>
             <div id="grid-opponent" class="grid-wrapper"></div>
         </div>
     </div>
@@ -243,11 +249,19 @@
 <div id="modal-overlay">
   <div class="modal">
     <div class="modal-header">
-      <button onclick="closeModal()" style="float:right; background:none; border:none; color:white; cursor:pointer;">✕</button>
-      <input type="text" id="search-input" class="input-code" style="font-size: 16px; letter-spacing: 1px;" placeholder="Chercher un Pokémon..." oninput="filterPokemon(this.value)">
+      <button onclick="closeModal()" style="float:right; background:none; border:none; color:white; cursor:pointer; font-size:24px;">✕</button>
+      <div id="modal-target-title" style="margin-bottom:10px; font-weight:bold; color:var(--accent2)"></div>
+      <input type="text" id="search-input" class="input-code" style="font-size: 16px; letter-spacing: 1px; text-align:left;" placeholder="Chercher un Pokémon..." oninput="filterPokemon(this.value)">
     </div>
     <div class="results-grid" id="results-grid"></div>
   </div>
+</div>
+
+<!-- ÉCRAN DE RÉSULTAT -->
+<div id="result-screen">
+  <div class="result-title" id="result-title">BIEN JOUÉ !</div>
+  <div class="result-score" id="result-score">Note : <span>0/9</span></div>
+  <button class="btn btn-primary" onclick="location.reload()">RETOURNER AU MENU</button>
 </div>
 
 <script>
@@ -256,69 +270,104 @@ const firebaseConfig = JSON.parse(__firebase_config);
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'pokegrid-multi';
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'pokegrid-v5';
 
-// --- DATA ---
+// --- DATA SPÉCIALES ---
+const LEGENDARIES_IDS = [144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,638,639,640,641,642,643,644,646,649,716,717,718,719,720,721,772,773,785,786,787,788,789,790,791,792,793,794,795,796,797,798,799,800,801,802,803,804,805,806,807,808,809,888,889,890,891,892,893,894,895,896,897,898,905,1001,1002,1003,1004,1007,1008,1014,1015,1016,1017,1024,1025];
+const STARTERS_IDS = [1,4,7,152,155,158,252,255,258,387,390,393,495,498,501,650,653,658,722,725,728,810,813,816,906,909,912];
+const MEGAS_IDS = [3,6,9,15,18,65,80,94,115,127,130,142,150,181,208,212,214,229,248,254,257,260,282,302,303,306,308,310,319,323,334,354,359,362,373,376,380,381,384,428,445,448,460,475,531,719];
+const GYM_POKES = [25,54,66,74,95,102,111,120,121,130,143,1,4,7,133,6,9,3,150,68,94,112,131,149,208,212,248,306,376,445,448];
+const BLACK_SHINIES = [6,38,94,197,248,282,359,384,445,448,461,612,635,658,823,887,1007,1008];
+
 let allPokemon = [];
 let currentGame = {
     mode: 'solo',
     roomCode: null,
-    isCreator: false,
-    role: 'p1', // p1 ou p2
+    role: 'p1',
     phase: 1,
-    p1Data: { grid: Array(9).fill(null), validated: false, score: 0 },
-    p2Data: { grid: Array(9).fill(null), validated: false, score: 0 },
-    headers: { rows: [], cols: [] }
+    p1: { grid: Array(9).fill(null), validated: false },
+    p2: { grid: Array(9).fill(null), validated: false },
+    headers: { rows: [], cols: [] },
+    roomScores: { p1: 0, p2: 0 }
 };
-
 let currentCell = null;
 let userId = null;
 
 // --- INITIALISATION ---
 async function initApp() {
-    await auth.signInAnonymously();
-    userId = auth.currentUser.uid;
-    const ok = await loadPokemonData();
-    if (ok) {
-        document.getElementById('loading').style.display = 'none';
+    try {
+        await auth.signInAnonymously();
+        userId = auth.currentUser.uid;
+        await loadPokemonData();
+        document.getElementById('loading-screen').style.display = 'none';
+    } catch (e) {
+        console.error(e);
+        document.getElementById('loading-screen').innerHTML = '<p style="color:red">Erreur de connexion. Vérifiez internet.</p>';
     }
 }
 
 async function loadPokemonData() {
+    const offlineBackup = [
+        [1,"Bulbizarre",1,["Plante","Poison"]],[4,"Salamèche",1,["Feu"]],[6,"Dracaufeu",1,["Feu","Vol"]],[7,"Carapuce",1,["Eau"]],[25,"Pikachu",1,["Électrik"]],[94,"Ectoplasma",1,["Spectre","Poison"]],[150,"Mewtwo",1,["Psy"]],[248,"Tyranocif",2,["Roche","Ténèbres"]],[384,"Rayquaza",3,["Dragon","Vol"]],[445,"Carchacrok",4,["Dragon","Sol"]],[658,"Amphinobi",6,["Eau","Ténèbres"]],[906,"Poussacha",9,["Plante"]],[1007,"Koraidon",9,["Combat","Dragon"]]
+    ];
+
+    let data = null;
+    const TYPE_MAP = {'Fire':'Feu','Water':'Eau','Grass':'Plante','Electric':'Électrik','Psychic':'Psy','Normal':'Normal','Fighting':'Combat','Poison':'Poison','Ground':'Sol','Flying':'Vol','Bug':'Insecte','Rock':'Roche','Ghost':'Spectre','Dragon':'Dragon','Dark':'Ténèbres','Steel':'Acier','Fairy':'Fée','Ice':'Glace'};
+
+    // Tentative de fetch sécurisée contre les erreurs d'URL parsing
     try {
-        const res = await fetch('./pokedex.json');
-        const data = await res.json();
-        const TYPE_MAP = {'Fire':'Feu','Water':'Eau','Grass':'Plante','Electric':'Électrik','Psychic':'Psy','Normal':'Normal','Fighting':'Combat','Poison':'Poison','Ground':'Sol','Flying':'Vol','Bug':'Insecte','Rock':'Roche','Ghost':'Spectre','Dragon':'Dragon','Dark':'Ténèbres','Steel':'Acier','Fairy':'Fée','Ice':'Glace'};
-        allPokemon = data.map(p => ({
-            id: p.id,
-            name: p.name.french,
-            types: (p.type || []).map(t => TYPE_MAP[t]).filter(Boolean),
-            generation: p.id <= 151 ? 1 : p.id <= 251 ? 2 : p.id <= 386 ? 3 : p.id <= 493 ? 4 : p.id <= 649 ? 5 : p.id <= 721 ? 6 : p.id <= 809 ? 7 : p.id <= 905 ? 8 : 9,
-            sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png`
-        }));
-        return true;
-    } catch (e) { return false; }
+        // En mode Canvas, l'URL relative peut échouer, on tente l'absolue CDN d'abord
+        const cdnUrl = 'https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json';
+        const res = await fetch(cdnUrl);
+        if (res.ok) data = await res.json();
+    } catch (e) {
+        console.warn("Échec CDN, tentative locale...");
+    }
+
+    if (!data) {
+        try {
+            // Tentative locale seulement si on n'est pas dans un environnement de sandbox strict
+            const res = await fetch('pokedex.json');
+            if (res.ok) data = await res.json();
+        } catch (e) {
+            console.warn("Échec local, utilisation du backup.");
+        }
+    }
+        
+    const rawData = data || offlineBackup.map(p => ({id:p[0], name:{french:p[1]}, type:p[3]}));
+
+    allPokemon = rawData.map(p => {
+        const id = p.id;
+        const types = (p.type || []).map(t => TYPE_MAP[t] || t).filter(Boolean);
+        return {
+            id, name: p.name.french, types,
+            generation: id <= 151 ? 1 : id <= 251 ? 2 : id <= 386 ? 3 : id <= 493 ? 4 : id <= 649 ? 5 : id <= 721 ? 6 : id <= 809 ? 7 : id <= 905 ? 8 : 9,
+            isLegendary: LEGENDARIES_IDS.includes(id),
+            isStarter: STARTERS_IDS.some(sid => id >= sid && id <= sid + 2),
+            isMega: MEGAS_IDS.includes(id),
+            isGym: GYM_POKES.includes(id),
+            isBlackShiny: BLACK_SHINIES.includes(id),
+            sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
+        };
+    }).sort((a,b) => a.id - b.id);
 }
 
-// --- LOGIQUE MULTIJOUEUR ---
+// --- MULTIJOUEUR ---
 async function createRoom() {
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
     currentGame.mode = 'multi';
     currentGame.roomCode = code;
-    currentGame.isCreator = true;
     currentGame.role = 'p1';
     
-    // Générer la grille
     generateGridHeaders();
 
     const roomRef = db.doc(`/artifacts/${appId}/public/data/rooms/${code}`);
     await roomRef.set({
-        code,
-        headers: currentGame.headers,
-        p1: { uid: userId, grid: Array(9).fill(null), validated: false, finalScore: 0 },
-        p2: null,
-        status: 'waiting',
-        currentPhase: 1
+        code, headers: currentGame.headers,
+        p1: { uid: userId, grid: Array(9).fill(null), validated: false },
+        p2: null, phase: 1, 
+        roomScores: { p1: 0, p2: 0 },
+        lastUpdated: Date.now()
     });
 
     listenToRoom(code);
@@ -331,20 +380,14 @@ async function joinRoom() {
 
     const roomRef = db.doc(`/artifacts/${appId}/public/data/rooms/${code}`);
     const snap = await roomRef.get();
-
-    if (!snap.exists()) {
-        alert("Salle introuvable !");
-        return;
-    }
+    if (!snap.exists()) return alert("Salle introuvable !");
 
     currentGame.mode = 'multi';
     currentGame.roomCode = code;
-    currentGame.isCreator = false;
     currentGame.role = 'p2';
 
     await roomRef.update({
-        p2: { uid: userId, grid: Array(9).fill(null), validated: false, finalScore: 0 },
-        status: 'playing'
+        p2: { uid: userId, grid: Array(9).fill(null), validated: false }
     });
 
     listenToRoom(code);
@@ -357,69 +400,92 @@ function listenToRoom(code) {
         if (!data) return;
 
         currentGame.headers = data.headers;
-        currentGame.p1Data = data.p1;
-        currentGame.p2Data = data.p2;
-        currentGame.status = data.status;
-        currentGame.phase = data.currentPhase;
+        currentGame.p1 = data.p1;
+        currentGame.p2 = data.p2;
+        currentGame.phase = data.phase;
+        currentGame.roomScores = data.roomScores || { p1: 0, p2: 0 };
 
         document.getElementById('display-room-code').innerText = code;
+        document.getElementById('my-room-score').innerText = `Manches: ${currentGame.role === 'p1' ? currentGame.roomScores.p1 : currentGame.roomScores.p2}`;
+        document.getElementById('opp-room-score').innerText = `Manches: ${currentGame.role === 'p1' ? currentGame.roomScores.p2 : currentGame.roomScores.p1}`;
+        
         renderGrids();
-        updateMultiStatus();
-    }, (err) => console.error(err));
+        updateUI();
+    });
 }
 
-// --- LOGIQUE DE JEU ---
+// --- LOGIQUE JEU ---
 function generateGridHeaders() {
-    const types = ['Feu', 'Eau', 'Plante', 'Électrik', 'Normal', 'Vol', 'Sol', 'Psy', 'Combat', 'Poison'];
-    const gens = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    
-    // Simplifié pour la démo
-    const shuffledTypes = types.sort(() => Math.random() - 0.5);
-    const shuffledGens = gens.sort(() => Math.random() - 0.5);
+    const types = ['Feu', 'Eau', 'Plante', 'Électrik', 'Dragon', 'Spectre', 'Combat', 'Fée', 'Acier', 'Normal', 'Vol', 'Sol', 'Poison', 'Psy', 'Roche', 'Glace', 'Insecte', 'Ténèbres'];
+    const specials = [
+        { type: 'legend', label: 'Légendaire', sub: 'STATUT' },
+        { type: 'mega', label: 'Méga-Évolution', sub: 'CAPACITÉ' },
+        { type: 'shiny_noir', label: 'Shiny Noir', sub: 'COULEUR' },
+        { type: 'starter', label: 'Starter', sub: 'DÉBUT' },
+        { type: 'dual', label: 'Double Type', sub: 'ATTRIBUT' },
+        { type: 'gym', label: 'Champion', sub: 'ARÈNE' }
+    ];
 
-    currentGame.headers = {
-        cols: [
-            { type: 'type', label: shuffledTypes[0], value: shuffledTypes[0], sub: 'TYPE' },
-            { type: 'type', label: shuffledTypes[1], value: shuffledTypes[1], sub: 'TYPE' },
-            { type: 'gen', label: 'Gen ' + shuffledGens[0], value: shuffledGens[0], sub: 'GÉNÉRATION' }
-        ],
-        rows: [
-            { type: 'type', label: shuffledTypes[2], value: shuffledTypes[2], sub: 'TYPE' },
-            { type: 'type', label: shuffledTypes[3], value: shuffledTypes[3], sub: 'TYPE' },
-            { type: 'gen', label: 'Gen ' + shuffledGens[1], value: shuffledGens[1], sub: 'GÉNÉRATION' }
-        ]
-    };
+    const pool = [
+        ...types.map(t => ({ type: 'type', value: t, label: t, sub: 'TYPE' })),
+        ...[1,2,3,4,5,6,7,8,9].map(g => ({ type: 'gen', value: g, label: 'Gen ' + g, sub: 'GÉNÉRATION' })),
+        ...specials
+    ];
+
+    let ok = false;
+    while(!ok) {
+        const shuf = pool.sort(() => Math.random() - 0.5);
+        const rows = shuf.slice(0, 3);
+        const cols = shuf.slice(3, 6);
+        
+        let validIntersections = 0;
+        for(let r of rows) for(let c of cols) {
+            if (allPokemon.some(p => checkCriteria(p, r) && checkCriteria(p, c))) validIntersections++;
+        }
+        if (validIntersections === 9) {
+            currentGame.headers = { rows, cols };
+            ok = true;
+        }
+    }
 }
 
-function showGameUI() {
-    document.getElementById('menu-container').style.display = 'none';
-    document.getElementById('game-container').style.display = 'flex';
-    document.getElementById('room-info').style.display = 'flex';
+function checkCriteria(p, c) {
+    if (!p) return false;
+    if (c.type === 'type') return p.types.includes(c.value);
+    if (c.type === 'gen') return p.generation === c.value;
+    if (c.type === 'legend') return p.isLegendary;
+    if (c.type === 'mega') return p.isMega;
+    if (c.type === 'shiny_noir') return p.isBlackShiny;
+    if (c.type === 'starter') return p.isStarter;
+    if (c.type === 'dual') return p.types.length === 2;
+    if (c.type === 'gym') return p.isGym;
+    return false;
 }
 
 function renderGrids() {
-    renderGrid('grid-me', currentGame.role === 'p1' ? currentGame.p1Data : currentGame.p2Data, true);
-    
-    // Afficher l'adversaire seulement si les deux ont validé la phase en cours
-    if (currentGame.p1Data && currentGame.p2Data && currentGame.p1Data.validated && currentGame.p2Data.validated) {
+    const myData = currentGame.role === 'p1' ? currentGame.p1 : currentGame.p2;
+    const oppData = currentGame.role === 'p1' ? currentGame.p2 : currentGame.p1;
+
+    renderOneGrid('grid-me', myData, true);
+
+    if (currentGame.mode === 'multi' && oppData && myData.validated && oppData.validated) {
         document.getElementById('opponent-section').style.display = 'block';
-        renderGrid('grid-opponent', currentGame.role === 'p1' ? currentGame.p2Data : currentGame.p1Data, false);
+        renderOneGrid('grid-opponent', oppData, false);
     } else {
         document.getElementById('opponent-section').style.display = 'none';
     }
 }
 
-function renderGrid(containerId, playerData, isInteractive) {
+function renderOneGrid(containerId, playerData, isInteractive) {
     const container = document.getElementById(containerId);
+    if(!container) return;
     container.innerHTML = '';
 
-    // Corner
     const corner = document.createElement('div');
     corner.className = 'header-cell';
     corner.innerHTML = '🏁';
     container.appendChild(corner);
 
-    // Cols
     currentGame.headers.cols.forEach(h => {
         const c = document.createElement('div');
         c.className = 'header-cell';
@@ -428,10 +494,10 @@ function renderGrid(containerId, playerData, isInteractive) {
     });
 
     for (let r = 0; r < 3; r++) {
-        const rowH = currentGame.headers.rows[r];
+        const rh = currentGame.headers.rows[r];
         const rhc = document.createElement('div');
         rhc.className = 'header-cell';
-        rhc.innerHTML = `<div class="header-label">${rowH.label}</div><div class="header-sub">${rowH.sub}</div>`;
+        rhc.innerHTML = `<div class="header-label">${rh.label}</div><div class="header-sub">${rh.sub}</div>`;
         container.appendChild(rhc);
 
         for (let c = 0; c < 3; c++) {
@@ -443,16 +509,13 @@ function renderGrid(containerId, playerData, isInteractive) {
             const p = pId ? allPokemon.find(x => x.id === pId) : null;
 
             if (p) {
-                // Vérifier si c'est correct (seulement si validé)
-                let statusClass = '';
                 if (playerData.validated) {
-                    const isValid = checkMatch(p, rowH, currentGame.headers.cols[c]);
-                    statusClass = isValid ? 'correct' : 'error';
+                    const ok = checkCriteria(p, rh) && checkCriteria(p, currentGame.headers.cols[c]);
+                    cell.classList.add(ok ? 'correct' : 'error');
                 } else {
-                    statusClass = 'pending';
+                    cell.classList.add('pending');
                 }
-                cell.classList.add(statusClass);
-                cell.innerHTML = `<div class="pokemon-entry"><img src="${p.sprite}"><div class="poke-name">${p.name}</div></div>`;
+                cell.innerHTML = `<div class="pokemon-entry"><img src="${p.sprite}"><div class="poke-name">${p.name}</div><div class="poke-id">N°${p.id}</div></div>`;
             } else {
                 cell.innerHTML = '<span class="cell-plus">+</span>';
             }
@@ -462,140 +525,168 @@ function renderGrid(containerId, playerData, isInteractive) {
             } else {
                 cell.classList.add('locked');
             }
-
             container.appendChild(cell);
         }
     }
 }
 
-function checkMatch(p, crit1, crit2) {
-    const match = (p, c) => c.type === 'type' ? p.types.includes(c.value) : p.generation === c.value;
-    return match(p, crit1) && match(p, crit2);
-}
-
-function updateMultiStatus() {
-    const myData = currentGame.role === 'p1' ? currentGame.p1Data : currentGame.p2Data;
-    const oppData = currentGame.role === 'p1' ? currentGame.p2Data : currentGame.p1Data;
+function updateUI() {
+    const myData = currentGame.role === 'p1' ? currentGame.p1 : currentGame.p2;
+    const oppData = currentGame.role === 'p1' ? currentGame.p2 : currentGame.p1;
     const btn = document.getElementById('btn-validate');
-    const wait = document.getElementById('waiting-msg');
+    const msg = document.getElementById('game-message');
+
+    document.getElementById('stat-round').innerText = currentGame.phase + "/2";
+    btn.disabled = myData.grid.filter(Boolean).length === 0 || myData.validated;
 
     if (myData.validated) {
-        btn.disabled = true;
-        btn.innerText = "Validation envoyée";
-        if (oppData && !oppData.validated) {
-            wait.classList.remove('hidden');
-            wait.innerText = "En attente de l'adversaire...";
-        } else {
-            wait.classList.add('hidden');
+        if (oppData && oppData.validated) {
+            msg.classList.remove('hidden');
+            msg.innerText = currentGame.phase === 1 ? "Phase 1 terminée ! Phase 2 : corrigez vos erreurs." : "Partie terminée !";
             if (currentGame.phase === 1) {
+                btn.innerText = "DÉBUTER PHASE 2";
                 btn.disabled = false;
-                btn.innerText = "Passer à la Phase 2";
                 btn.onclick = () => startPhase2();
             } else {
-                btn.style.display = 'none';
-                calculateWinner();
+                btn.classList.add('hidden');
+                calculateFinal();
             }
+        } else if (currentGame.mode === 'multi') {
+            msg.classList.remove('hidden');
+            msg.innerText = "Validation envoyée. Attente de votre adversaire...";
         }
     } else {
-        btn.disabled = myData.grid.filter(Boolean).length === 0;
-        btn.innerText = `Valider Phase ${currentGame.phase}`;
-        wait.classList.add('hidden');
-    }
-
-    // Score display
-    if (oppData) {
-        document.getElementById('stat-score').innerText = `${currentGame.p1Data.finalScore} - ${currentGame.p2Data.finalScore}`;
+        msg.classList.add('hidden');
+        btn.innerText = "✅ VALIDER MA GRILLE";
+        btn.classList.remove('hidden');
     }
 }
 
 async function handleValidate() {
     const role = currentGame.role;
-    const myData = role === 'p1' ? currentGame.p1Data : currentGame.p2Data;
+    const myData = role === 'p1' ? currentGame.p1 : currentGame.p2;
     myData.validated = true;
 
-    await db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({
-        [role]: myData
-    });
+    if (currentGame.mode === 'multi') {
+        await db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({ [role]: myData });
+    } else {
+        currentGame.p2.validated = true; // Simuler un adversaire déjà prêt pour le solo
+        renderGrids();
+        updateUI();
+    }
 }
 
 async function startPhase2() {
-    // Reset validation pour les deux
-    const roomRef = db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`);
-    await roomRef.update({
-        'p1.validated': false,
-        'p2.validated': false,
-        'currentPhase': 2
-    });
+    if (currentGame.mode === 'multi') {
+        await db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({
+            'p1.validated': false,
+            'p2.validated': false,
+            'phase': 2
+        });
+    } else {
+        currentGame.phase = 2;
+        currentGame.p1.validated = false;
+        currentGame.p2.validated = false;
+        renderGrids();
+        updateUI();
+    }
 }
 
-function calculateWinner() {
-    const calc = (data) => {
+function calculateFinal() {
+    const getScore = (data) => {
         let s = 0;
         data.grid.forEach((pId, i) => {
             const p = allPokemon.find(x => x.id === pId);
-            if (p && checkMatch(p, currentGame.headers.rows[Math.floor(i/3)], currentGame.headers.cols[i%3])) s++;
+            if (p && checkCriteria(p, currentGame.headers.rows[Math.floor(i/3)]) && checkCriteria(p, currentGame.headers.cols[i%3])) s++;
         });
         return s;
     };
-    
-    const s1 = calc(currentGame.p1Data);
-    const s2 = calc(currentGame.p2Data);
 
-    const title = s1 === s2 ? "ÉGALITÉ !" : (currentGame.role === 'p1' ? (s1 > s2 ? "GAGNÉ !" : "PERDU") : (s2 > s1 ? "GAGNÉ !" : "PERDU"));
-    
+    const myScore = getScore(currentGame.role === 'p1' ? currentGame.p1 : currentGame.p2);
+    const oppScore = currentGame.mode === 'multi' ? getScore(currentGame.role === 'p1' ? currentGame.p2 : currentGame.p1) : 0;
+
+    // Mise à jour du score général de la salle par le créateur
+    if (currentGame.mode === 'multi' && currentGame.role === 'p1') {
+        const scores = currentGame.roomScores;
+        const s1 = getScore(currentGame.p1);
+        const s2 = getScore(currentGame.p2);
+        if (s1 > s2) scores.p1++;
+        else if (s2 > s1) scores.p2++;
+        db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({ roomScores: scores });
+    }
+
+    let title = "TERMINÉ !";
+    if (currentGame.mode === 'multi') {
+        if (myScore > oppScore) title = "VICTOIRE !";
+        else if (oppScore > myScore) title = "DÉFAITE...";
+        else title = "ÉGALITÉ !";
+    }
+
     document.getElementById('result-title').innerText = title;
-    document.getElementById('result-score').innerHTML = `Score Final : <span>${currentGame.role === 'p1' ? s1 : s2}/9</span>`;
+    document.getElementById('result-score').innerHTML = `Note de la grille : <span>${myScore}/9</span>`;
     document.getElementById('result-screen').classList.add('active');
 }
 
-// --- UI HELPERS ---
+// --- MODAL ---
 function openModal(idx) {
     currentCell = idx;
+    const r = currentGame.headers.rows[Math.floor(idx/3)];
+    const c = currentGame.headers.cols[idx%3];
+    document.getElementById('modal-target-title').innerText = `${r.label} × ${c.label}`;
     document.getElementById('modal-overlay').classList.add('active');
     document.getElementById('search-input').value = '';
     showResults('');
+    setTimeout(() => document.getElementById('search-input').focus(), 100);
 }
 function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); }
 
+function filterPokemon(v) { showResults(v); }
 function showResults(query) {
     const container = document.getElementById('results-grid');
-    const q = query.toLowerCase();
-    const filtered = allPokemon.filter(p => p.name.toLowerCase().includes(q)).slice(0, 50);
+    const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const filtered = allPokemon.filter(p => p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q));
     
     container.innerHTML = '';
+    const myData = currentGame.role === 'p1' ? currentGame.p1 : currentGame.p2;
+    
     filtered.forEach(p => {
         const card = document.createElement('div');
         card.className = 'result-card';
-        card.innerHTML = `<img src="${p.sprite}"><div class="poke-name">${p.name}</div>`;
-        card.onclick = () => selectPokemon(p);
+        if (myData.grid.includes(p.id)) card.classList.add('already-used');
+        card.innerHTML = `<img src="${p.sprite}"><div class="result-name">${p.name}</div><div class="poke-id">N°${p.id}</div>`;
+        card.onclick = () => { if(!card.classList.contains('already-used')) selectPokemon(p); };
         container.appendChild(card);
     });
 }
 
 async function selectPokemon(p) {
     const role = currentGame.role;
-    const myData = role === 'p1' ? currentGame.p1Data : currentGame.p2Data;
+    const myData = role === 'p1' ? currentGame.p1 : currentGame.p2;
     myData.grid[currentCell] = p.id;
-
     if (currentGame.mode === 'multi') {
-        await db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({
-            [`${role}.grid`]: myData.grid
-        });
+        await db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({ [`${role}.grid`]: myData.grid });
     } else {
         renderGrids();
-        updateMultiStatus();
+        updateUI();
     }
     closeModal();
 }
 
 function startSolo() {
     currentGame.mode = 'solo';
-    currentGame.role = 'p1';
+    currentGame.p1 = { grid: Array(9).fill(null), validated: false };
+    currentGame.p2 = { grid: Array(9).fill(null), validated: false };
     generateGridHeaders();
-    currentGame.p1Data = { grid: Array(9).fill(null), validated: false, finalScore: 0 };
     showGameUI();
+    document.getElementById('display-room-code').innerText = "SOLO";
     renderGrids();
-    updateMultiStatus();
+    updateUI();
+}
+
+function showGameUI() {
+    document.getElementById('menu-container').style.display = 'none';
+    document.getElementById('game-container').style.display = 'flex';
+    document.getElementById('room-info').style.display = 'flex';
 }
 
 initApp();
