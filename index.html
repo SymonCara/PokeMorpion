@@ -93,6 +93,7 @@
     flex-direction: column;
     gap: 20px;
     text-align: center;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
   }
 
   .menu-btn {
@@ -129,7 +130,7 @@
   .grid-section { flex: 1; min-width: 350px; max-width: 500px; }
   .player-label { font-family: 'Rajdhani', sans-serif; font-weight: 700; color: var(--accent2); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
 
-  .score-badge { background: var(--border); padding: 2px 10px; border-radius: 4px; color: white; font-size: 12px; }
+  .score-badge { background: var(--border); padding: 4px 12px; border-radius: 6px; color: white; font-size: 12px; font-family: 'Share Tech Mono'; border: 1px solid var(--border-glow); }
 
   .grid-wrapper {
     display: grid; grid-template-columns: 90px repeat(3, 1fr); grid-template-rows: 70px repeat(3, 110px);
@@ -228,7 +229,7 @@
         <div class="grid-section">
             <div class="player-label">
                 <span>Ma Grille</span>
-                <span id="my-room-score" class="score-badge">Manches: 0</span>
+                <span id="my-room-score" class="score-badge">Points: 0</span>
             </div>
             <div id="grid-me" class="grid-wrapper"></div>
             <button id="btn-validate" class="btn btn-validate" onclick="handleValidate()" disabled>✅ VALIDER MA GRILLE</button>
@@ -237,7 +238,7 @@
         <div class="grid-section" id="opponent-section" style="display:none">
             <div class="player-label">
                 <span id="opponent-label">Adversaire</span>
-                <span id="opp-room-score" class="score-badge">Manches: 0</span>
+                <span id="opp-room-score" class="score-badge">Points: 0</span>
             </div>
             <div id="grid-opponent" class="grid-wrapper"></div>
         </div>
@@ -273,7 +274,7 @@ const auth = firebase.auth();
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'pokegrid-v5';
 
 // --- DATA SPÉCIALES ---
-const LEGENDARIES_IDS = [144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,638,639,640,641,642,643,644,646,649,716,717,718,719,720,721,772,773,785,786,787,788,789,790,791,792,793,794,795,796,797,798,799,800,801,802,803,804,805,806,807,808,809,888,889,890,891,892,893,894,895,896,897,898,905,1001,1002,1003,1004,1007,1008,1014,1015,1016,1017,1024,1025];
+const LEGENDARIES_IDS = [144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,638,639,640,641,642,643,644,645,646,647,648,649,716,717,718,719,720,721,772,773,785,786,787,788,789,790,791,792,793,794,795,796,797,798,799,800,801,802,803,804,805,806,807,808,809,888,889,890,891,892,893,894,895,896,897,898,905,1001,1002,1003,1004,1007,1008,1014,1015,1016,1017,1024,1025];
 const STARTERS_IDS = [1,4,7,152,155,158,252,255,258,387,390,393,495,498,501,650,653,658,722,725,728,810,813,816,906,909,912];
 const MEGAS_IDS = [3,6,9,15,18,65,80,94,115,127,130,142,150,181,208,212,214,229,248,254,257,260,282,302,303,306,308,310,319,323,334,354,359,362,373,376,380,381,384,428,445,448,460,475,531,719];
 const GYM_POKES = [25,54,66,74,95,102,111,120,121,130,143,1,4,7,133,6,9,3,150,68,94,112,131,149,208,212,248,306,376,445,448];
@@ -288,7 +289,8 @@ let currentGame = {
     p1: { grid: Array(9).fill(null), validated: false },
     p2: { grid: Array(9).fill(null), validated: false },
     headers: { rows: [], cols: [] },
-    roomScores: { p1: 0, p2: 0 }
+    roomScores: { p1: 0, p2: 0 },
+    finished: false
 };
 let currentCell = null;
 let userId = null;
@@ -301,8 +303,8 @@ async function initApp() {
         await loadPokemonData();
         document.getElementById('loading-screen').style.display = 'none';
     } catch (e) {
-        console.error(e);
-        document.getElementById('loading-screen').innerHTML = '<p style="color:red">Erreur de connexion. Vérifiez internet.</p>';
+        console.error("Erreur d'initialisation:", e);
+        document.getElementById('loading-screen').innerHTML = '<p style="color:red">Erreur de connexion Firebase.</p>';
     }
 }
 
@@ -314,23 +316,22 @@ async function loadPokemonData() {
     let data = null;
     const TYPE_MAP = {'Fire':'Feu','Water':'Eau','Grass':'Plante','Electric':'Électrik','Psychic':'Psy','Normal':'Normal','Fighting':'Combat','Poison':'Poison','Ground':'Sol','Flying':'Vol','Bug':'Insecte','Rock':'Roche','Ghost':'Spectre','Dragon':'Dragon','Dark':'Ténèbres','Steel':'Acier','Fairy':'Fée','Ice':'Glace'};
 
-    // Tentative de fetch sécurisée contre les erreurs d'URL parsing
     try {
-        // En mode Canvas, l'URL relative peut échouer, on tente l'absolue CDN d'abord
-        const cdnUrl = 'https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json';
-        const res = await fetch(cdnUrl);
+        // Tentative CDN absolue pour éviter les erreurs de parsing d'URL relative
+        const res = await fetch('https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json');
         if (res.ok) data = await res.json();
     } catch (e) {
-        console.warn("Échec CDN, tentative locale...");
+        console.warn("Échec CDN.");
     }
 
     if (!data) {
         try {
-            // Tentative locale seulement si on n'est pas dans un environnement de sandbox strict
-            const res = await fetch('pokedex.json');
+            // Tentative locale propre
+            const localUrl = new URL('pokedex.json', window.location.href);
+            const res = await fetch(localUrl);
             if (res.ok) data = await res.json();
         } catch (e) {
-            console.warn("Échec local, utilisation du backup.");
+            console.warn("Échec local, utilisation backup.");
         }
     }
         
@@ -340,7 +341,7 @@ async function loadPokemonData() {
         const id = p.id;
         const types = (p.type || []).map(t => TYPE_MAP[t] || t).filter(Boolean);
         return {
-            id, name: p.name.french, types,
+            id, name: p.name.french || p.name.english, types,
             generation: id <= 151 ? 1 : id <= 251 ? 2 : id <= 386 ? 3 : id <= 493 ? 4 : id <= 649 ? 5 : id <= 721 ? 6 : id <= 809 ? 7 : id <= 905 ? 8 : 9,
             isLegendary: LEGENDARIES_IDS.includes(id),
             isStarter: STARTERS_IDS.some(sid => id >= sid && id <= sid + 2),
@@ -406,8 +407,8 @@ function listenToRoom(code) {
         currentGame.roomScores = data.roomScores || { p1: 0, p2: 0 };
 
         document.getElementById('display-room-code').innerText = code;
-        document.getElementById('my-room-score').innerText = `Manches: ${currentGame.role === 'p1' ? currentGame.roomScores.p1 : currentGame.roomScores.p2}`;
-        document.getElementById('opp-room-score').innerText = `Manches: ${currentGame.role === 'p1' ? currentGame.roomScores.p2 : currentGame.roomScores.p1}`;
+        document.getElementById('my-room-score').innerText = `Points: ${currentGame.role === 'p1' ? currentGame.roomScores.p1 : currentGame.roomScores.p2}`;
+        document.getElementById('opp-room-score').innerText = `Points: ${currentGame.role === 'p1' ? currentGame.roomScores.p2 : currentGame.roomScores.p1}`;
         
         renderGrids();
         updateUI();
@@ -542,23 +543,28 @@ function updateUI() {
     if (myData.validated) {
         if (oppData && oppData.validated) {
             msg.classList.remove('hidden');
-            msg.innerText = currentGame.phase === 1 ? "Phase 1 terminée ! Phase 2 : corrigez vos erreurs." : "Partie terminée !";
+            msg.innerText = currentGame.phase === 1 ? "Phase 1 terminée ! Cliquez sur les cases rouges pour corriger en Phase 2." : "Match terminé !";
             if (currentGame.phase === 1) {
                 btn.innerText = "DÉBUTER PHASE 2";
                 btn.disabled = false;
                 btn.onclick = () => startPhase2();
+                btn.classList.remove('hidden');
             } else {
                 btn.classList.add('hidden');
-                calculateFinal();
+                if (!currentGame.finished) {
+                   currentGame.finished = true;
+                   calculateFinal();
+                }
             }
         } else if (currentGame.mode === 'multi') {
             msg.classList.remove('hidden');
-            msg.innerText = "Validation envoyée. Attente de votre adversaire...";
+            msg.innerText = "Attente de l'adversaire...";
         }
     } else {
         msg.classList.add('hidden');
         btn.innerText = "✅ VALIDER MA GRILLE";
         btn.classList.remove('hidden');
+        btn.onclick = () => handleValidate();
     }
 }
 
@@ -570,7 +576,7 @@ async function handleValidate() {
     if (currentGame.mode === 'multi') {
         await db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({ [role]: myData });
     } else {
-        currentGame.p2.validated = true; // Simuler un adversaire déjà prêt pour le solo
+        currentGame.p2.validated = true;
         renderGrids();
         updateUI();
     }
@@ -602,14 +608,14 @@ function calculateFinal() {
         return s;
     };
 
-    const myScore = getScore(currentGame.role === 'p1' ? currentGame.p1 : currentGame.p2);
-    const oppScore = currentGame.mode === 'multi' ? getScore(currentGame.role === 'p1' ? currentGame.p2 : currentGame.p1) : 0;
+    const s1 = getScore(currentGame.p1);
+    const s2 = currentGame.mode === 'multi' ? getScore(currentGame.p2) : 0;
+    const myScore = currentGame.role === 'p1' ? s1 : s2;
+    const oppScore = currentGame.role === 'p1' ? s2 : s1;
 
-    // Mise à jour du score général de la salle par le créateur
+    // Mise à jour du score général (uniquement par P1 pour éviter les doublons)
     if (currentGame.mode === 'multi' && currentGame.role === 'p1') {
         const scores = currentGame.roomScores;
-        const s1 = getScore(currentGame.p1);
-        const s2 = getScore(currentGame.p2);
         if (s1 > s2) scores.p1++;
         else if (s2 > s1) scores.p2++;
         db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({ roomScores: scores });
@@ -674,6 +680,7 @@ async function selectPokemon(p) {
 
 function startSolo() {
     currentGame.mode = 'solo';
+    currentGame.finished = false;
     currentGame.p1 = { grid: Array(9).fill(null), validated: false };
     currentGame.p2 = { grid: Array(9).fill(null), validated: false };
     generateGridHeaders();
