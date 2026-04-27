@@ -378,10 +378,12 @@ async function initApp() {
             
             if (db && userId) {
                 try {
-                    const memRef = doc(db, 'artifacts', appId, 'public', 'data', 'memory_disputes');
+                    const memRef = doc(db, 'games', appId, 'config', 'memory_disputes');
                     const snap = await getDoc(memRef);
                     if (snap.exists()) disputesMemory = snap.data().list || [];
-                } catch(e) {}
+                } catch(e) {
+                    console.error("Erreur chargement mémoire disputes:", e);
+                }
             }
         } catch (e) { console.error("Init error:", e); }
     };
@@ -432,8 +434,6 @@ window.createRoom = async function() {
     currentGame.role = 'p1';
     generateGridHeaders();
 
-    const roomRef = doc(db, 'artifacts', appId, 'public', 'data', `room_${code}`);
-    
     const msg = document.getElementById('game-message');
     msg.classList.remove('hidden');
     msg.innerHTML = `
@@ -446,6 +446,7 @@ window.createRoom = async function() {
     `;
 
     try {
+        const roomRef = doc(db, 'games', appId, 'rooms', code);
         await setDoc(roomRef, {
             code, headers: currentGame.headers,
             p1: { uid: userId, grid: Array(9).fill(null), validated: false },
@@ -457,8 +458,8 @@ window.createRoom = async function() {
         showGameUI();
     } catch(e) {
         msg.classList.add('hidden');
-        console.error("Firebase Error:", e);
-        window.showToast("Erreur permissions Firebase. Avez-vous publié les règles ?", true);
+        console.error("Firebase Error (createRoom):", e);
+        window.showToast("Erreur Firebase : " + e.message, true);
     }
 }
 
@@ -467,8 +468,8 @@ window.joinRoom = async function() {
     if (!code) return window.showToast("Veuillez entrer un code.", true);
     if (!db) return window.showToast("Erreur: Base de données Firebase non connectée.", true);
 
-    const roomRef = doc(db, 'artifacts', appId, 'public', 'data', `room_${code}`);
     try {
+        const roomRef = doc(db, 'games', appId, 'rooms', code);
         const snap = await getDoc(roomRef);
         if (!snap.exists()) return window.showToast("Salle introuvable !", true);
         
@@ -486,14 +487,14 @@ window.joinRoom = async function() {
         listenToRoom(code);
         showGameUI();
     } catch(e) {
-        console.error("Firebase Error:", e);
-        window.showToast("Erreur de connexion à la salle. Vérifiez vos règles Firestore.", true);
+        console.error("Firebase Error (joinRoom):", e);
+        window.showToast("Erreur de connexion : " + e.message, true);
     }
 }
 
 function listenToRoom(code) {
     if (!db) return;
-    const roomRef = doc(db, 'artifacts', appId, 'public', 'data', `room_${code}`);
+    const roomRef = doc(db, 'games', appId, 'rooms', code);
     
     if (unsubscribeRoom) unsubscribeRoom();
     
@@ -717,7 +718,7 @@ window.handleValidate = async function() {
 
     if (currentGame.mode === 'multi') {
         if (!db) return;
-        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', `room_${currentGame.roomCode}`);
+        const roomRef = doc(db, 'games', appId, 'rooms', currentGame.roomCode);
         await updateDoc(roomRef, { [role]: myData });
     } else {
         currentGame.p2.validated = true;
@@ -729,7 +730,7 @@ window.handleValidate = async function() {
 window.startPhase2 = async function() {
     if (currentGame.mode === 'multi') {
         if (!db) return;
-        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', `room_${currentGame.roomCode}`);
+        const roomRef = doc(db, 'games', appId, 'rooms', currentGame.roomCode);
         await updateDoc(roomRef, {
             'p1.validated': false,
             'p2.validated': false,
@@ -763,7 +764,7 @@ function calculateFinal() {
         const scores = currentGame.roomScores;
         if (s1 > s2) scores.p1++;
         else if (s2 > s1) scores.p2++;
-        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', `room_${currentGame.roomCode}`);
+        const roomRef = doc(db, 'games', appId, 'rooms', currentGame.roomCode);
         updateDoc(roomRef, { roomScores: scores });
     }
 
@@ -825,7 +826,7 @@ window.handleDispute = async function(pokeId, rowIdx, colIdx) {
     
     if (db && userId) {
         try {
-            const memRef = doc(db, 'artifacts', appId, 'public', 'data', 'memory_disputes');
+            const memRef = doc(db, 'games', appId, 'config', 'memory_disputes');
             await setDoc(memRef, { list: disputesMemory }, { merge: true });
             window.showToast("Contestation enregistrée pour les prochaines parties !");
         } catch(e) { 
@@ -875,7 +876,7 @@ async function selectPokemon(p) {
     myData.grid[currentCell] = p.id;
     if (currentGame.mode === 'multi') {
         if (!db) return;
-        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', `room_${currentGame.roomCode}`);
+        const roomRef = doc(db, 'games', appId, 'rooms', currentGame.roomCode);
         await updateDoc(roomRef, { [`${role}.grid`]: myData.grid });
     } else {
         renderGrids();
