@@ -611,6 +611,53 @@
             margin-bottom: 10px;
             text-shadow: 0 0 15px rgba(76, 201, 240, 0.3);
         }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-family: 'Share Tech Mono', monospace;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            animation: fadeInOut 4.5s forwards;
+        }
+
+        .toast.error {
+            background: var(--accent);
+            border: 1px solid #ff4d4d;
+        }
+
+        .toast.success {
+            background: var(--success);
+            border: 1px solid #2ecc71;
+        }
+
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, 20px);
+            }
+
+            10% {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+
+            90% {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -20px);
+            }
+        }
     </style>
 </head>
 
@@ -764,6 +811,15 @@
         let disputesMemory = [];
         let unsubscribeRoom = null;
 
+        // --- UTILITAIRES ---
+        window.showToast = function (msg, isError = false) {
+            const t = document.createElement('div');
+            t.className = `toast ${isError ? 'error' : 'success'}`;
+            t.innerText = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 5000);
+        };
+
         // --- INITIALISATION ---
         async function initApp() {
             const mainInit = async () => {
@@ -833,7 +889,7 @@
 
         // --- MULTIJOUEUR ---
         window.createRoom = async function () {
-            if (!db) return alert("Erreur: Base de données Firebase non initialisée.");
+            if (!db) return window.showToast("Erreur: Base de données Firebase non connectée.", true);
 
             const code = Math.random().toString(36).substring(2, 8).toUpperCase();
             currentGame.mode = 'multi';
@@ -867,22 +923,22 @@
             } catch (e) {
                 msg.classList.add('hidden');
                 console.error("Firebase Error:", e);
-                alert("Erreur Firebase : " + e.message + "\n\nAstuce: Sur Github Pages, vérifiez que 'symoncara.github.io' est autorisé dans Firebase Auth, et que vos règles Firestore autorisent l'écriture.");
+                window.showToast("Erreur permissions Firebase. Avez-vous publié les règles ?", true);
             }
         }
 
         window.joinRoom = async function () {
             const code = document.getElementById('join-input').value.toUpperCase();
-            if (!code) return;
-            if (!db) return alert("Erreur: Base de données Firebase non initialisée.");
+            if (!code) return window.showToast("Veuillez entrer un code.", true);
+            if (!db) return window.showToast("Erreur: Base de données Firebase non connectée.", true);
 
             const roomRef = doc(db, 'artifacts', appId, 'public', 'data', `room_${code}`);
             try {
                 const snap = await getDoc(roomRef);
-                if (!snap.exists()) return alert("Salle introuvable !");
+                if (!snap.exists()) return window.showToast("Salle introuvable !", true);
 
                 const roomData = snap.data();
-                if (roomData.p2) return alert("Salle déjà pleine !");
+                if (roomData.p2) return window.showToast("Cette salle est déjà pleine !", true);
 
                 currentGame.mode = 'multi';
                 currentGame.roomCode = code;
@@ -896,7 +952,7 @@
                 showGameUI();
             } catch (e) {
                 console.error("Firebase Error:", e);
-                alert("Erreur de connexion : " + e.message + "\n\nVérifiez vos règles de sécurité Firestore.");
+                window.showToast("Erreur de connexion à la salle. Vérifiez vos règles Firestore.", true);
             }
         }
 
@@ -1221,8 +1277,7 @@
         }
 
         window.handleDispute = async function (pokeId, rowIdx, colIdx) {
-            if (!confirm("Voulez-vous vraiment contester ? Cela ajoutera ce Pokémon comme valide pour ces critères à l'avenir.")) return;
-
+            // Les alert() et confirm() sont bloqués. On applique directement la contestation.
             const rowH = currentGame.headers.rows[rowIdx];
             const colH = currentGame.headers.cols[colIdx];
 
@@ -1237,13 +1292,13 @@
                 try {
                     const memRef = doc(db, 'artifacts', appId, 'public', 'data', 'memory_disputes');
                     await setDoc(memRef, { list: disputesMemory }, { merge: true });
-                    alert("Contestation enregistrée ! Elle sera effective dès la prochaine partie.");
+                    window.showToast("Contestation enregistrée pour les prochaines parties !");
                 } catch (e) {
                     console.error(e);
-                    alert("Erreur lors de la sauvegarde.");
+                    window.showToast("Erreur lors de la sauvegarde de la contestation.", true);
                 }
             } else {
-                alert("Exception ajoutée localement pour cette session !");
+                window.showToast("Exception ajoutée localement pour cette session !");
             }
         }
 
