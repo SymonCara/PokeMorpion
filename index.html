@@ -180,6 +180,14 @@
   .loader-ring { width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--accent2); animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  .header-stats { display: flex; align-items: center; gap: 15px; }
+  .stat-badge { background: var(--bg-card); border: 1px solid var(--border); padding: 5px 15px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; min-width: 80px; }
+  .stat-badge .val { font-family: 'Share Tech Mono', monospace; font-size: 16px; color: var(--accent2); line-height: 1.2; }
+  .stat-badge .lbl { font-family: 'Rajdhani', sans-serif; font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .stat-badge.code-badge { border-color: var(--accent2); background: rgba(76, 201, 240, 0.05); min-width: 110px; }
+  .stat-badge.code-badge .val { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: 2px; }
+  .divider-v { width: 1px; height: 30px; background: var(--border); }
+
   /* New Styles */
   .home-btn { font-size: 24px; cursor: pointer; color: var(--text-secondary); transition: color 0.3s; padding: 10px; }
   .home-btn:hover { color: var(--accent2); }
@@ -211,8 +219,7 @@
       </div>
     </div>
     <div id="room-info" class="header-stats" style="display:none">
-       <div class="stat-badge"><span class="val" id="display-room-code">----</span><span class="lbl">CODE SALLE</span></div>
-       <div class="divider-v"></div>
+       <div class="stat-badge code-badge"><span class="val" id="display-room-code">----</span><span class="lbl">CODE</span></div>
        <div class="stat-badge"><span class="val" id="stat-round">1/2</span><span class="lbl">PHASE</span></div>
     </div>
     <div class="home-btn" onclick="location.reload()">🏠</div>
@@ -330,7 +337,7 @@ async function initApp() {
         // Charger la mémoire des contestations
         if (db) {
             try {
-                const snap = await db.doc(`/artifacts/${appId}/public/data/memory/disputes`).get();
+                const snap = await db.collection("memory").doc("disputes").get();
                 if (snap.exists()) disputesMemory = snap.data().list || [];
             } catch(e) { console.warn("Mémoire indisponible"); }
         }
@@ -411,21 +418,18 @@ async function loadPokemonData() {
 }
 
 // --- MULTIJOUEUR ---
-async function createRoom() {
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    currentGame.mode = 'multi';
-    currentGame.roomCode = code;
-    currentGame.role = 'p1';
+    const roomRef = db.collection("rooms").doc(code);
     
-    generateGridHeaders();
-
-    if (!db) return alert("Firebase non configuré pour le multijoueur !");
-    const roomRef = db.doc(`/artifacts/${appId}/public/data/rooms/${code}`);
-    
-    // Affichage plus gros du code pour l'hôte
     const msg = document.getElementById('game-message');
     msg.classList.remove('hidden');
-    msg.innerHTML = `<div class="room-code-display">${code}</div>Attente de votre adversaire...`;
+    msg.innerHTML = `
+        <div style="margin-bottom: 20px;">
+            <div class="lbl" style="font-size: 14px; color: var(--text-secondary);">CODE DE LA SALLE</div>
+            <div class="room-code-display">${code}</div>
+        </div>
+        <div class="loader-ring" style="width: 30px; height: 30px; margin: 0 auto 15px;"></div>
+        <p>En attente d'un adversaire...</p>
+    `;
 
     await roomRef.set({
         code, headers: currentGame.headers,
@@ -443,10 +447,13 @@ async function joinRoom() {
     const code = document.getElementById('join-input').value.toUpperCase();
     if (!code) return;
 
-    if (!db) return alert("Firebase non configuré !");
-    const roomRef = db.doc(`/artifacts/${appId}/public/data/rooms/${code}`);
+    if (!db) return alert("Firebase non disponible");
+    const roomRef = db.collection("rooms").doc(code);
     const snap = await roomRef.get();
     if (!snap.exists()) return alert("Salle introuvable !");
+    
+    const roomData = snap.data();
+    if (roomData.p2) return alert("Salle déjà pleine !");
 
     currentGame.mode = 'multi';
     currentGame.roomCode = code;
@@ -462,7 +469,7 @@ async function joinRoom() {
 
 function listenToRoom(code) {
     if (!db) return;
-    db.doc(`/artifacts/${appId}/public/data/rooms/${code}`).onSnapshot((doc) => {
+    db.collection("rooms").doc(code).onSnapshot((doc) => {
         const data = doc.data();
         if (!data) return;
 
@@ -561,6 +568,13 @@ function renderGrids() {
     const myData = currentGame.role === 'p1' ? currentGame.p1 : currentGame.p2;
     const oppData = currentGame.role === 'p1' ? currentGame.p2 : currentGame.p1;
 
+    // Si on est en multi et que l'adversaire n'est pas là, on ne rend pas la grille
+    if (currentGame.mode === 'multi' && !currentGame.p2) {
+        document.querySelector('.game-layout').style.visibility = 'hidden';
+        return;
+    }
+    document.querySelector('.game-layout').style.visibility = 'visible';
+
     renderOneGrid('grid-me', myData, true);
 
     if (currentGame.mode === 'multi' && oppData && myData.validated && oppData.validated) {
@@ -633,6 +647,13 @@ function updateUI() {
 
     document.getElementById('stat-round').innerText = currentGame.phase + "/2";
     
+    // Lobby d'attente
+    if (currentGame.mode === 'multi' && !currentGame.p2) {
+        msg.classList.remove('hidden');
+        btn.classList.add('hidden');
+        return;
+    }
+
     // Bouton de reset uniquement en Solo et non validé
     document.getElementById('btn-reset').classList.toggle('hidden', currentGame.mode === 'multi' || myData.validated);
 
@@ -680,7 +701,7 @@ async function handleValidate() {
 
     if (currentGame.mode === 'multi') {
         if (!db) return alert("Firebase non disponible");
-        await db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({ [role]: myData });
+        await db.collection("rooms").doc(currentGame.roomCode).update({ [role]: myData });
     } else {
         currentGame.p2.validated = true;
         renderGrids();
@@ -691,7 +712,7 @@ async function handleValidate() {
 async function startPhase2() {
     if (currentGame.mode === 'multi') {
         if (!db) return;
-        await db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({
+        await db.collection("rooms").doc(currentGame.roomCode).update({
             'p1.validated': false,
             'p2.validated': false,
             'phase': 2
@@ -725,7 +746,7 @@ function calculateFinal() {
         const scores = currentGame.roomScores;
         if (s1 > s2) scores.p1++;
         else if (s2 > s1) scores.p2++;
-        db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({ roomScores: scores });
+        db.collection("rooms").doc(currentGame.roomCode).update({ roomScores: scores });
     }
 
     let title = "TERMINÉ !";
@@ -789,7 +810,7 @@ async function handleDispute(pokeId, rowIdx, colIdx) {
     
     if (db) {
         try {
-            await db.doc(`/artifacts/${appId}/public/data/memory/disputes`).set({ list: disputesMemory });
+            await db.collection("memory").doc("disputes").set({ list: disputesMemory });
             alert("Contestation enregistrée ! Elle sera effective dès la prochaine partie.");
         } catch(e) { 
             console.error(e);
@@ -838,7 +859,7 @@ async function selectPokemon(p) {
     myData.grid[currentCell] = p.id;
     if (currentGame.mode === 'multi') {
         if (!db) return;
-        await db.doc(`/artifacts/${appId}/public/data/rooms/${currentGame.roomCode}`).update({ [`${role}.grid`]: myData.grid });
+        await db.collection("rooms").doc(currentGame.roomCode).update({ [`${role}.grid`]: myData.grid });
     } else {
         renderGrids();
         updateUI();
