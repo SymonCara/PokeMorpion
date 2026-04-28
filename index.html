@@ -177,9 +177,11 @@
 
   /* ===== GRID ===== */
   .grid-wrapper {
-    display: grid; grid-template-columns: 110px repeat(3, 1fr); grid-template-rows: 90px repeat(3, 140px);
+    display: grid; 
+    grid-template-columns: 120px repeat(3, 120px); 
+    grid-template-rows: 120px repeat(3, 120px);
     gap: 8px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 16px; padding: 12px;
-    width: 100%; max-width: 680px;
+    width: fit-content; margin: 0 auto;
   }
 
   .header-cell { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px; text-align: center; }
@@ -862,12 +864,15 @@ window.handleValidate = async function() {
         msg.classList.remove('hidden');
         
         if (currentGame.phase === 1) {
-            msg.innerHTML = `Phase 1 terminée ! Cliquez sur le bouton pour la Phase 2.`;
+            msg.innerHTML = `Phase 1 terminée ! Cliquez sur le bouton bleu ci-dessous.`;
             const btn = document.getElementById('btn-validate');
-            btn.innerText = "🚀 DÉBUTER PHASE 2";
-            btn.classList.add('btn-primary');
+            btn.innerText = "🚀 PASSER À LA PHASE 2";
+            btn.style.background = "var(--accent2)"; // Change de couleur pour être très visible
+            btn.style.borderColor = "var(--accent2)";
             btn.disabled = false;
             btn.onclick = () => {
+                btn.style.background = ""; // Reset style
+                btn.style.borderColor = "";
                 msg.classList.add('hidden');
                 startPhase2();
             };
