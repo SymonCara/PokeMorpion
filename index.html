@@ -119,6 +119,27 @@
     margin-top: 10px;
     text-transform: uppercase;
   }
+  
+  .phase-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    background: var(--bg-deep);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .phase-selector label { font-size: 12px; color: var(--accent2); font-weight: bold; }
+  .phase-selector select { 
+    background: #1a1a1a; 
+    color: white; 
+    border: 1px solid var(--border); 
+    padding: 4px 8px; 
+    border-radius: 4px;
+    font-family: 'Share Tech Mono';
+  }
 
   /* ===== GAME STYLES ===== */
   #game-container { width: 100%; max-width: 1100px; display: none; flex-direction: column; gap: 20px; }
@@ -143,6 +164,17 @@
   .game-cell.correct { border-color: var(--success); background: rgba(46, 204, 113, 0.05); border-width: 2px; }
   .game-cell.error { border-color: var(--accent); background: rgba(230, 57, 70, 0.1); border-width: 2px; }
   .game-cell.pending { border-color: var(--accent2); }
+  .game-cell.persisted-correct { border-color: var(--success); background: rgba(46, 204, 113, 0.2); border-width: 2px; }
+  .game-cell.persisted-correct::after {
+    content: "L";
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 8px;
+    color: var(--success);
+    font-weight: bold;
+    opacity: 0.6;
+  }
 
   .pokemon-entry { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 2px; }
   .pokemon-entry img { width: 55px; height: 55px; object-fit: contain; }
@@ -235,6 +267,15 @@
     <div class="menu-btn" onclick="createRoom()">
       <h3>Créer une Salle</h3>
       <p>Génère un code et attends un ami.</p>
+      <div class="phase-selector" onclick="event.stopPropagation()">
+        <label>Phases :</label>
+        <select id="max-phases-select">
+            <option value="2">2 Phases</option>
+            <option value="3">3 Phases</option>
+            <option value="5">5 Phases</option>
+            <option value="999">Infini (jusqu'à 9/9)</option>
+        </select>
+      </div>
     </div>
     <div class="menu-btn">
       <h3>Rejoindre</h3>
@@ -401,6 +442,10 @@ async function loadPokemonData() {
         [1,"Bulbizarre",1,["Plante","Poison"]],[4,"Salamèche",1,["Feu"]],[6,"Dracaufeu",1,["Feu","Vol"]],[7,"Carapuce",1,["Eau"]],[9,"Tortank",1,["Eau"]],[25,"Pikachu",1,["Électrik"]],[38,"Feunard",1,["Feu"]],[68,"Mackogneur",1,["Combat"]],[94,"Ectoplasma",1,["Spectre","Poison"]],[131,"Lokhlass",1,["Eau","Glace"]],[143,"Ronflex",1,["Normal"]],[149,"Dracolosse",1,["Dragon","Vol"]],[150,"Mewtwo",1,["Psy"]],[151,"Mew",1,["Psy"]],[157,"Typhlosion",2,["Feu"]],[197,"Noctali",2,["Ténèbres"]],[212,"Cizayox",2,["Insecte","Acier"]],[248,"Tyranocif",2,["Roche","Ténèbres"]],[257,"Braségali",3,["Feu","Combat"]],[282,"Gardevoir",3,["Psy","Fée"]],[306,"Galeking",3,["Acier","Roche"]],[384,"Rayquaza",3,["Dragon","Vol"]],[445,"Carchacrok",4,["Dragon","Sol"]],[448,"Lucario",4,["Combat","Acier"]],[475,"Gallame",4,["Psy","Combat"]],[658,"Amphinobi",6,["Eau","Ténèbres"]],[700,"Nymphali",6,["Fée"]],[800,"Necrozma",7,["Psy"]],[815,"Pyrobut",8,["Feu"]],[887,"Lanssorien",8,["Dragon","Spectre"]],[906,"Poussacha",9,["Plante"]],[911,"Soublier",9,["Feu","Spectre"]],[1007,"Koraidon",9,["Combat","Dragon"]]
     ];
 
+    const GEN9_DATA = [
+        [906,"Poussacha",["Plante"]],[907,"Matourgeon",["Plante"]],[908,"Miascarade",["Plante","Ténèbres"]],[909,"Chochodile",["Feu"]],[910,"Crocogril",["Feu"]],[911,"Flâmigator",["Feu","Spectre"]],[912,"Coiffeton",["Eau"]],[913,"Canarbello",["Eau"]],[914,"Palmaval",["Eau","Combat"]],[915,"Gourmelet",["Normal"]],[916,"Fragroin",["Normal"]],[917,"Tissenlune",["Insecte"]],[918,"Filentrappe",["Insecte"]],[919,"Lilliterre",["Insecte"]],[920,"Gambex",["Insecte","Combat"]],[921,"Pohm",["Électrik"]],[922,"Pohmotte",["Électrik","Combat"]],[923,"Pawmot",["Électrik","Combat"]],[924,"Compagnol",["Normal"]],[925,"Famignol",["Normal"]],[926,"Patauchi",["Fée"]],[927,"Briochien",["Fée"]],[928,"Olivini",["Plante","Normal"]],[929,"Olivado",["Plante","Normal"]],[930,"Arboliva",["Plante","Normal"]],[931,"Tapatoès",["Normal","Vol"]],[932,"Selutin",["Roche"]],[933,"Selsel",["Roche"]],[934,"Gigansel",["Roche"]],[935,"Charbambin",["Feu"]],[936,"Carmadura",["Feu","Psy"]],[937,"Malvalame",["Feu","Spectre"]],[938,"Têtampoule",["Électrik"]],[939,"Ampibidou",["Électrik"]],[940,"Zapétrel",["Électrik","Vol"]],[941,"Fulguliro",["Électrik","Vol"]],[942,"Grondogue",["Normal"]],[943,"Mastouffe",["Normal"]],[944,"Gribouraigne",["Poison","Normal"]],[945,"Tag-Tag",["Poison","Normal"]],[946,"Virevorreur",["Plante","Spectre"]],[947,"Terracool",["Sol","Plante"]],[948,"Terracruel",["Sol","Plante"]],[949,"Crabaupique",["Roche"]],[950,"Craparoi",["Roche"]],[951,"Pimito",["Plante"]],[952,"Scovillain",["Plante","Feu"]],[953,"Léboulere",["Insecte"]],[954,"Bérasca",["Insecte","Psy"]],[955,"Flotillon",["Psy"]],[956,"Cléopsytra",["Psy"]],[957,"Forgerette",["Fée","Acier"]],[958,"Forgella",["Fée","Acier"]],[959,"Forgelina",["Fée","Acier"]],[960,"Taupikeau",["Eau"]],[961,"Triopikeau",["Eau"]],[962,"Lestombaile",["Vol","Ténèbres"]],[963,"Dofin",["Eau"]],[964,"Superdofin",["Eau"]],[965,"Vrombi",["Acier","Poison"]],[966,"Vrombotor",["Acier","Poison"]],[967,"Motorizard",["Dragon","Normal"]],[968,"Ferdeter",["Acier"]],[969,"Glimmet",["Roche","Poison"]],[970,"Glimmora",["Roche","Poison"]],[971,"Toutombe",["Spectre"]],[972,"Tomberro",["Spectre"]],[973,"Flamenroule",["Vol","Combat"]],[974,"Piétace",["Glace"]],[975,"Balbalèze",["Glace"]],[976,"Delestin",["Eau","Psy"]],[977,"Oyacata",["Eau"]],[978,"Nigirigon",["Dragon","Eau"]],[979,"Courrousinge",["Combat","Spectre"]],[980,"Salunours",["Sel","Ténèbres"]],[981,"Fort-Ivoire",["Sol","Combat"]],[982,"Hurle-Queue",["Fée","Psy"]],[983,"Fongus-Furie",["Plante","Ténèbres"]],[984,"Flotte-Mèche",["Spectre","Fée"]],[985,"Ramp-Ailes",["Insecte","Combat"]],[986,"Pelage-Sablé",["Électrik","Sol"]],[987,"Roue-de-Fer",["Acier","Sol"]],[988,"Hotte-de-Fer",["Glace","Eau"]],[989,"Paume-de-Fer",["Combat","Électrik"]],[990,"Tête-de-Fer",["Ténèbres","Vol"]],[991,"Mite-de-Fer",["Feu","Poison"]],[992,"Épine-de-Fer",["Roche","Électrik"]],[993,"Glaivodo",["Dragon","Glace"]],[994,"Cryodo",["Dragon","Glace"]],[995,"Frigodo",["Dragon","Glace"]],[996,"Mordudor",["Spectre"]],[997,"Gromago",["Acier","Spectre"]],[998,"Chien-Pao",["Ténèbres","Glace"]],[999,"Dinglu",["Ténèbres","Sol"]],[1000,"Yuyu",["Ténèbres","Feu"]],[1001,"Chongjian",["Ténèbres","Plante"]],[1002,"Miraidon",["Électrik","Dragon"]],[1003,"Koraidon",["Combat","Dragon"]]
+    ];
+
     let data = null;
     let frNames = [];
     const TYPE_MAP = {'Fire':'Feu','Water':'Eau','Grass':'Plante','Electric':'Électrik','Psychic':'Psy','Normal':'Normal','Fighting':'Combat','Poison':'Poison','Ground':'Sol','Flying':'Vol','Bug':'Insecte','Rock':'Roche','Ghost':'Spectre','Dragon':'Dragon','Dark':'Ténèbres','Steel':'Acier','Fairy':'Fée','Ice':'Glace'};
@@ -439,7 +484,24 @@ async function loadPokemonData() {
             isBlackShiny: BLACK_SHINIES.includes(id),
             sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
         };
-    }).sort((a,b) => a.id - b.id);
+    });
+
+    // Fusionner Gen 9 si absente
+    GEN9_DATA.forEach(p => {
+        if (!allPokemon.some(x => x.id === p[0])) {
+            allPokemon.push({
+                id: p[0], name: p[1], types: p[2], generation: 9,
+                isLegendary: LEGENDARIES_IDS.includes(p[0]),
+                isStarter: STARTERS_IDS.some(sid => p[0] >= sid && p[0] <= sid + 2),
+                isMega: MEGAS_IDS.includes(p[0]),
+                isGym: GYM_POKES.includes(p[0]),
+                isBlackShiny: BLACK_SHINIES.includes(p[0]),
+                sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p[0]}.png`
+            });
+        }
+    });
+
+    allPokemon.sort((a,b) => a.id - b.id);
 }
 
 // --- MULTIJOUEUR ---
@@ -447,9 +509,11 @@ window.createRoom = async function() {
     if (!db) return window.showToast("Erreur: Base de données Firebase non connectée.", true);
     
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const maxPhases = parseInt(document.getElementById('max-phases-select').value) || 2;
     currentGame.mode = 'multi';
     currentGame.roomCode = code;
     currentGame.role = 'p1';
+    currentGame.maxPhases = maxPhases;
     generateGridHeaders();
 
     const msg = document.getElementById('game-message');
@@ -467,10 +531,11 @@ window.createRoom = async function() {
         const roomRef = doc(db, 'games', appId, 'rooms', code);
         await setDoc(roomRef, {
             code, headers: currentGame.headers,
-            p1: { uid: userId, grid: Array(9).fill(null), validated: false },
-            p2: null, phase: 1, 
+            p1: { uid: userId, grid: Array(9).fill(null), validated: false, correctCells: [] },
+            p2: null, phase: 1, maxPhases: maxPhases,
             roomScores: { p1: 0, p2: 0 },
             finished: false,
+            winner: null,
             lastUpdated: Date.now()
         });
         listenToRoom(code);
@@ -525,7 +590,23 @@ function listenToRoom(code) {
         currentGame.p1 = data.p1;
         currentGame.p2 = data.p2;
         currentGame.phase = data.phase;
+        currentGame.maxPhases = data.maxPhases || 2;
         currentGame.roomScores = data.roomScores || { p1: 0, p2: 0 };
+        
+        // Update phase display
+        const phaseLabel = data.maxPhases === 999 ? "∞" : data.maxPhases;
+        document.getElementById('stat-round').innerText = `${data.phase}/${phaseLabel}`;
+
+        if (data.finished === true && currentGame.finished === false) {
+            currentGame.finished = true;
+            calculateFinal();
+        }
+        
+        // Check for instant winner
+        if (data.winner && !currentGame.finished) {
+            currentGame.finished = true;
+            calculateFinal();
+        }
 
         if (data.finished === false && currentGame.finished === true) {
             document.getElementById('result-screen').classList.remove('active');
@@ -662,10 +743,12 @@ function renderOneGrid(containerId, playerData, isInteractive) {
             const p = pId ? allPokemon.find(x => x.id === pId) : null;
 
             if (p) {
+                const isPersisted = (playerData.correctCells || []).includes(idx);
+                if (isPersisted) cell.classList.add('persisted-correct');
+
                 if (playerData.validated) {
-                    const ok = checkCriteria(p, rh) && checkCriteria(p, currentGame.headers.cols[c]);
-                    cell.classList.add(ok ? 'correct' : 'error');
-                } else {
+                    cell.classList.add(isPersisted ? 'correct' : 'error');
+                } else if (!isPersisted) {
                     cell.classList.add('pending');
                 }
                 cell.innerHTML = `<div class="pokemon-entry"><img src="${p.sprite}"><div class="poke-name">${p.name}</div><div class="poke-id">N°${p.id}</div></div>`;
@@ -689,8 +772,6 @@ function updateUI() {
     const btn = document.getElementById('btn-validate');
     const msg = document.getElementById('game-message');
 
-    document.getElementById('stat-round').innerText = currentGame.phase + "/2";
-    
     if (currentGame.mode === 'multi' && !currentGame.p2) {
         msg.classList.remove('hidden');
         btn.classList.add('hidden');
@@ -703,19 +784,8 @@ function updateUI() {
     if (myData.validated) {
         if (oppData && oppData.validated) {
             msg.classList.remove('hidden');
-            msg.innerText = currentGame.phase === 1 ? "Phase 1 terminée ! Cliquez sur les cases rouges pour corriger en Phase 2." : "Match terminé !";
-            if (currentGame.phase === 1) {
-                btn.innerText = "DÉBUTER PHASE 2";
-                btn.disabled = false;
-                btn.onclick = () => startPhase2();
-                btn.classList.remove('hidden');
-            } else {
-                btn.classList.add('hidden');
-                if (!currentGame.finished) {
-                   currentGame.finished = true;
-                   calculateFinal();
-                }
-            }
+            msg.innerText = currentGame.phase < currentGame.maxPhases ? "Phase terminée ! Attente du prochain tour..." : "Match terminé !";
+            btn.classList.add('hidden');
         } else if (currentGame.mode === 'multi') {
             msg.classList.remove('hidden');
             msg.innerText = "Attente de l'adversaire...";
@@ -736,18 +806,69 @@ window.resetGrid = function() {
 }
 
 window.handleValidate = async function() {
-    const role = currentGame.role;
-    const myData = role === 'p1' ? currentGame.p1 : currentGame.p2;
-    myData.validated = true;
-
     if (currentGame.mode === 'multi') {
-        if (!db) return;
         const roomRef = doc(db, 'games', appId, 'rooms', currentGame.roomCode);
-        await updateDoc(roomRef, { [role]: myData });
+        const myData = currentGame.role === 'p1' ? currentGame.p1 : currentGame.p2;
+        myData.validated = true;
+        
+        // Calculer les cellules correctes pour la persistance
+        const newCorrectCells = [];
+        myData.grid.forEach((pId, i) => {
+            if (!pId) return;
+            const r = Math.floor(i/3);
+            const c = i%3;
+            const p = allPokemon.find(x => x.id === pId);
+            if (p && checkCriteria(p, currentGame.headers.rows[r]) && checkCriteria(p, currentGame.headers.cols[c])) {
+                newCorrectCells.push(i);
+            }
+        });
+        myData.correctCells = newCorrectCells;
+        
+        const score = newCorrectCells.length;
+        
+        const update = {};
+        update[currentGame.role] = myData;
+        await updateDoc(roomRef, update);
+
+        // Instant win if 9/9
+        if (score === 9) {
+            await updateDoc(roomRef, { winner: userId, finished: true });
+        }
+
+        checkPhaseEnd();
     } else {
+        currentGame.p1.validated = true;
         currentGame.p2.validated = true;
         renderGrids();
         updateUI();
+        if (currentGame.phase === 1) {
+            const btn = document.getElementById('btn-validate');
+            btn.innerText = "DÉBUTER PHASE 2";
+            btn.disabled = false;
+            btn.onclick = () => startPhase2();
+        } else {
+            calculateFinal();
+        }
+    }
+}
+
+async function checkPhaseEnd() {
+    const roomRef = doc(db, 'games', appId, 'rooms', currentGame.roomCode);
+    const snap = await getDoc(roomRef);
+    const data = snap.data();
+    
+    if (data.p1.validated && data.p2.validated) {
+        if (data.phase < data.maxPhases) {
+            generateGridHeaders();
+            await updateDoc(roomRef, {
+                phase: data.phase + 1,
+                headers: currentGame.headers,
+                'p1.validated': false,
+                'p2.validated': false
+            });
+        } else {
+            await updateDoc(roomRef, { finished: true });
+        }
     }
 }
 
@@ -837,7 +958,6 @@ function calculateFinal() {
 }
 
 window.handleDispute = async function(pokeId, rowIdx, colIdx) {
-    // Les alert() et confirm() sont bloqués. On applique directement la contestation.
     const rowH = currentGame.headers.rows[rowIdx];
     const colH = currentGame.headers.cols[colIdx];
 
@@ -889,24 +1009,31 @@ function showResults(query) {
         card.className = 'result-card';
         if (myData.grid.includes(p.id)) card.classList.add('already-used');
         card.innerHTML = `<img src="${p.sprite}"><div class="result-name">${p.name}</div><div class="poke-id">N°${p.id}</div>`;
-        card.onclick = () => { if(!card.classList.contains('already-used')) selectPokemon(p); };
+        card.onclick = () => { if(!card.classList.contains('already-used')) selectPokemon(p.id); };
         container.appendChild(card);
     });
-}
-
-async function selectPokemon(p) {
+window.selectPokemon = async function(pId) {
     const role = currentGame.role;
     const myData = role === 'p1' ? currentGame.p1 : currentGame.p2;
-    myData.grid[currentCell] = p.id;
+    
+    if (myData.correctCells) {
+        const cIdx = myData.correctCells.indexOf(currentCell);
+        if (cIdx > -1) myData.correctCells.splice(cIdx, 1);
+    }
+    
+    myData.grid[currentCell] = pId;
+    
     if (currentGame.mode === 'multi') {
         if (!db) return;
         const roomRef = doc(db, 'games', appId, 'rooms', currentGame.roomCode);
-        await updateDoc(roomRef, { [`${role}.grid`]: myData.grid });
+        const update = {};
+        update[role] = myData;
+        await updateDoc(roomRef, update);
     } else {
         renderGrids();
         updateUI();
     }
-    window.closeModal();
+    closeModal();
 }
 
 window.handleRestart = async function() {
@@ -923,10 +1050,13 @@ window.handleRestart = async function() {
             headers: currentGame.headers,
             'p1.grid': Array(9).fill(null),
             'p1.validated': false,
+            'p1.correctCells': [],
             'p2.grid': Array(9).fill(null),
             'p2.validated': false,
+            'p2.correctCells': [],
             phase: 1,
-            finished: false
+            finished: false,
+            winner: null
         });
     }
 }
