@@ -913,10 +913,8 @@ async function checkPhaseEnd() {
     
     if (data.p1.validated && data.p2.validated) {
         if (data.phase < data.maxPhases) {
-            generateGridHeaders();
             await updateDoc(roomRef, {
                 phase: data.phase + 1,
-                headers: currentGame.headers,
                 'p1.validated': false,
                 'p2.validated': false
             });
@@ -937,11 +935,9 @@ window.startPhase2 = async function() {
         });
     } else {
         currentGame.phase++;
-        // On ne vide plus la grille, on garde TOUS les Pokémon (vrai et faux) pour qu'ils puissent être modifiés
         const myData = currentGame.p1;
         myData.validated = false;
         
-        generateGridHeaders(); 
         renderGrids();
         updateUI();
     }
