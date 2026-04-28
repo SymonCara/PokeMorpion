@@ -685,9 +685,8 @@ function generateGridHeaders() {
 function checkCriteria(p, c, rowH, colH) {
     if (!p) return false;
 
-    // Restriction Méga : Un Méga ne peut être utilisé que si la case demande explicitement une Méga-Évolution.
-    // Si aucune des deux catégories de la case n'est 'mega', on rejette le Pokémon Méga.
-    if (p.isMega && rowH && colH && rowH.type !== 'mega' && colH.type !== 'mega') return false;
+    // Suppression de la restriction Méga stricte pour permettre leur utilisation via leurs types de base
+    // if (p.isMega && rowH && colH && rowH.type !== 'mega' && colH.type !== 'mega') return false;
 
     const isApproved = disputesMemory.some(d => d.pokeId === p.id && d.criteriaType === c.type && d.criteriaValue === c.value);
     if (isApproved) return true;
@@ -855,26 +854,42 @@ window.handleValidate = async function() {
 
         checkPhaseEnd();
     } else {
+        // Mode Solo : Calcul des bonnes réponses
+        const myData = currentGame.p1;
+        const newCorrectCells = [];
+        myData.grid.forEach((pId, i) => {
+            if (!pId) return;
+            const r = Math.floor(i/3);
+            const c = i%3;
+            const rowH = currentGame.headers.rows[r];
+            const colH = currentGame.headers.cols[c];
+            const p = allPokemon.find(x => x.id === pId);
+            if (p && checkCriteria(p, rowH, rowH, colH) && checkCriteria(p, colH, rowH, colH)) {
+                newCorrectCells.push(i);
+            }
+        });
+        myData.correctCells = newCorrectCells;
         currentGame.p1.validated = true;
-        currentGame.p2.validated = true;
+        currentGame.p2.validated = true; // Non utilisé en solo mais par sécurité
+        
         renderGrids();
         updateUI();
         
         const msg = document.getElementById('game-message');
         msg.classList.remove('hidden');
         
-        if (currentGame.phase === 1) {
-            msg.innerHTML = `Phase 1 terminée ! Cliquez sur le bouton bleu ci-dessous.`;
+        if (currentGame.phase < currentGame.maxPhases) {
+            msg.innerHTML = `Phase ${currentGame.phase} terminée ! Les bonnes réponses sont en vert.<br>Cliquez sur le bouton bleu pour la suite.`;
             const btn = document.getElementById('btn-validate');
-            btn.innerText = "🚀 PASSER À LA PHASE 2";
-            btn.style.background = "var(--accent2)"; // Change de couleur pour être très visible
+            btn.innerText = `🚀 PASSER À LA PHASE ${currentGame.phase + 1}`;
+            btn.style.background = "var(--accent2)";
             btn.style.borderColor = "var(--accent2)";
             btn.disabled = false;
             btn.onclick = () => {
-                btn.style.background = ""; // Reset style
+                btn.style.background = ""; 
                 btn.style.borderColor = "";
                 msg.classList.add('hidden');
-                startPhase2();
+                startPhase2(); // Cette fonction gère maintenant l'incrémentation
             };
         } else {
             msg.innerHTML = `Partie terminée ! Vérifie tes résultats.`;
@@ -913,9 +928,13 @@ window.startPhase2 = async function() {
             'phase': 2
         });
     } else {
-        currentGame.phase = 2;
-        currentGame.p1.validated = false;
-        currentGame.p2.validated = false;
+        currentGame.phase++;
+        // Garder uniquement les bonnes réponses sur la grille
+        const myData = currentGame.p1;
+        myData.grid = myData.grid.map((pId, i) => (myData.correctCells.includes(i) ? pId : null));
+        myData.validated = false;
+        
+        generateGridHeaders(); // Nouvelles catégories pour la nouvelle phase
         renderGrids();
         updateUI();
     }
@@ -1120,7 +1139,8 @@ function showResults(query) {
 
     const filtered = allPokemon.filter(p => {
         const nameMatch = p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q);
-        if (p.isMega && !isMegaCell) return false; // Cache les mégas pour les cases normales
+        // On permet la recherche des Mégas tout le temps pour plus de flexibilité
+        // if (p.isMega && !isMegaCell) return false; 
         return nameMatch;
     });
     
