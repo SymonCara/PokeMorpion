@@ -1035,6 +1035,8 @@ function showResults(query) {
         card.onclick = () => { if(!card.classList.contains('already-used')) selectPokemon(p.id); };
         container.appendChild(card);
     });
+}
+
 window.selectPokemon = async function(pId) {
     const role = currentGame.role;
     const myData = role === 'p1' ? currentGame.p1 : currentGame.p2;
