@@ -135,8 +135,10 @@
   .result-card.already-used { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
   .result-card img { width: 50px; }
 
-  .game-message { background: rgba(76, 201, 240, 0.1); border: 1px solid var(--accent2); color: var(--accent2); padding: 12px; border-radius: 8px; text-align: center; margin-bottom: 15px; font-weight: 600; }
+  .game-message { background: rgba(76, 201, 240, 0.1); border: 1px solid var(--accent2); color: var(--accent2); padding: 15px 30px; border-radius: 12px; text-align: center; margin-bottom: 25px; font-weight: 700; font-size: 20px; width: 100%; max-width: 600px; box-shadow: 0 0 20px rgba(76, 201, 240, 0.2); }
   .hidden { display: none !important; }
+
+  #game-container { width: 100%; max-width: 1100px; display: none; flex-direction: column; align-items: center; gap: 20px; }
 
   #result-screen { display: none; position: fixed; inset: 0; background: rgba(8, 12, 20, 0.95); z-index: 2000; align-items: center; justify-content: center; flex-direction: column; gap: 20px; }
   #result-screen.active { display: flex; }
@@ -327,7 +329,7 @@ const appId = typeof __app_id !== 'undefined' ? __app_id : 'pokemorpion-v5';
 // --- DATA SPÉCIALES ---
 const LEGENDARIES_IDS = [144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,638,639,640,641,642,643,644,645,646,647,648,649,716,717,718,719,720,721,772,773,785,786,787,788,789,790,791,792,793,794,795,796,797,798,799,800,801,802,803,804,805,806,807,808,809,888,889,890,891,892,893,894,895,896,897,898,905,1001,1002,1003,1004,1007,1008,1014,1015,1016,1017,1024,1025];
 const STARTERS_IDS = [1,4,7,152,155,158,252,255,258,387,390,393,495,498,501,650,653,658,722,725,728,810,813,816,906,909,912];
-const MEGAS_IDS = [10001,10002,10003,10004,10005,10006,10007,10008,10009,10010,10011,10012,10013,10014,10015,10016,10017,10018,10019,10020,10021,10022,10023,10024,10025,10026,10027,10028,10029,10030,10033,10034,10035,10036,10037,10038,10039,10040,10041,10042,10043,10044,10045,10046,10047,10048,10049,10050];
+const MEGAS_IDS = [10033, 10034, 10035, 10036, 10037, 10038, 10039, 10040, 10041, 10042, 10043, 10044, 10045, 10046, 10047, 10048, 10049, 10050, 10051, 10052, 10053, 10054, 10055, 10056, 10057, 10058, 10059, 10060, 10061, 10062, 10063, 10064, 10065, 10066, 10067, 10068, 10069, 10070, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079, 10080, 10081, 10082, 10083, 10084, 10085, 10086, 10087, 10088, 10089, 10090, 10091, 10092];
 const GYM_POKES = [25,54,66,74,95,102,111,120,121,130,143,1,4,7,133,6,9,3,150,68,94,112,131,149,208,212,248,306,376,445,448];
 const BLACK_SHINIES = [6,38,94,197,248,282,359,384,445,448,461,612,635,658,823,887,1007,1008];
 const SHINY_GREEN_IDS = [1,2,3,15,31,42,45,68,89,114,123,135,149,196,217,254,284,373,380,465,212,621,604,593,652,840,715,718,830,1019,252,253,357];
@@ -427,7 +429,7 @@ async function loadPokemonData() {
     ];
 
     const OFFICIAL_MEGAS_DATA = [
-        [10033,"Méga-Florizarre",["Plante","Poison"]],[10034,"Méga-Dracaufeu X",["Feu","Dragon"]],[10035,"Méga-Dracaufeu Y",["Feu","Vol"]],[10036,"Méga-Tortank",["Eau"]],[10037,"Méga-Alakazam",["Psy"]],[10038,"Méga-Ectoplasma",["Spectre","Poison"]],[10039,"Méga-Kangourex",["Normal"]],[10040,"Méga-Scarabrute",["Insecte","Vol"]],[10041,"Méga-Léviator",["Eau","Ténèbres"]],[10042,"Méga-Ptéra",["Roche","Vol"]],[10043,"Méga-Mewtwo X",["Psy","Combat"]],[10044,"Méga-Mewtwo Y",["Psy"]],[10045,"Méga-Pharamp",["Électrik","Dragon"]],[10046,"Méga-Cizayox",["Insecte","Acier"]],[10047,"Méga-Scarhino",["Insecte","Combat"]],[10048,"Méga-Démolosse",["Feu","Ténèbres"]],[10049,"Méga-Tyranocif",["Roche","Ténèbres"]],[10050,"Méga-Braségali",["Feu","Combat"]],[10051,"Méga-Gardevoir",["Psy","Fée"]],[10052,"Méga-Mysdibule",["Acier","Fée"]],[10053,"Méga-Galeking",["Acier"]],[10054,"Méga-Charmina",["Combat","Psy"]],[10055,"Méga-Élecsprint",["Électrik"]],[10056,"Méga-Branette",["Spectre"]],[10057,"Méga-Absol",["Ténèbres"]],[10058,"Méga-Carchacrok",["Dragon","Sol"]],[10059,"Méga-Lucario",["Combat","Acier"]],[10060,"Méga-Blizzaroi",["Plante","Glace"]],[10061,"Méga-Latias",["Dragon","Psy"]],[10062,"Méga-Latios",["Dragon","Psy"]],[10063,"Méga-Laggron",["Eau","Sol"]],[10064,"Méga-Jungko",["Plante","Dragon"]],[10065,"Méga-Ténéfix",["Ténèbres","Spectre"]],[10066,"Méga-Sharpedo",["Eau","Ténèbres"]],[10067,"Méga-Camérupt",["Feu","Sol"]],[10068,"Méga-Altaria",["Dragon","Fée"]],[10069,"Méga-Oniglali",["Glace"]],[10070,"Méga-Drattak",["Dragon","Vol"]],[10071,"Méga-Métalosse",["Acier","Psy"]],[10072,"Méga-Rayquaza",["Dragon","Vol"]],[10073,"Méga-Lockpin",["Normal","Combat"]],[10074,"Méga-Gallame",["Psy","Combat"]],[10075,"Méga-Nanméouïe",["Normal","Fée"]],[10076,"Méga-Diancie",["Roche","Fée"]]
+        [10033,"Méga-Florizarre",["Plante","Poison"]],[10034,"Méga-Dracaufeu X",["Feu","Dragon"]],[10035,"Méga-Dracaufeu Y",["Feu","Vol"]],[10036,"Méga-Tortank",["Eau"]],[10037,"Méga-Alakazam",["Psy"]],[10038,"Méga-Ectoplasma",["Spectre","Poison"]],[10039,"Méga-Kangourex",["Normal"]],[10040,"Méga-Scarabrute",["Insecte","Vol"]],[10041,"Méga-Léviator",["Eau","Ténèbres"]],[10042,"Méga-Ptéra",["Roche","Vol"]],[10043,"Méga-Mewtwo X",["Psy","Combat"]],[10044,"Méga-Mewtwo Y",["Psy"]],[10045,"Méga-Pharamp",["Électrik","Dragon"]],[10046,"Méga-Cizayox",["Insecte","Acier"]],[10047,"Méga-Scarhino",["Insecte","Combat"]],[10048,"Méga-Démolosse",["Feu","Ténèbres"]],[10049,"Méga-Tyranocif",["Roche","Ténèbres"]],[10050,"Méga-Braségali",["Feu","Combat"]],[10051,"Méga-Gardevoir",["Psy","Fée"]],[10052,"Méga-Mysdibule",["Acier","Fée"]],[10053,"Méga-Galeking",["Acier"]],[10054,"Méga-Charmina",["Combat","Psy"]],[10055,"Méga-Élecsprint",["Électrik"]],[10056,"Méga-Branette",["Spectre"]],[10057,"Méga-Absol",["Ténèbres"]],[10058,"Méga-Carchacrok",["Dragon","Sol"]],[10059,"Méga-Lucario",["Combat","Acier"]],[10060,"Méga-Blizzaroi",["Plante","Glace"]],[10061,"Méga-Latias",["Dragon","Psy"]],[10062,"Méga-Latios",["Dragon","Psy"]],[10064,"Méga-Swampert",["Eau","Sol"]],[10065,"Méga-Sceptile",["Plante","Dragon"]],[10066,"Méga-Sableye",["Ténèbres","Spectre"]],[10070,"Méga-Sharpedo",["Eau","Ténèbres"]],[10071,"Méga-Camerupt",["Feu","Sol"]],[10072,"Méga-Altaria",["Dragon","Fée"]],[10073,"Méga-Glalie",["Glace"]],[10074,"Méga-Salamence",["Dragon","Vol"]],[10075,"Méga-Metagross",["Acier","Psy"]],[10076,"Méga-Rayquaza",["Dragon","Vol"]],[10077,"Méga-Lopunny",["Normal","Combat"]],[10078,"Méga-Gallade",["Psy","Combat"]],[10079,"Méga-Audino",["Normal","Fée"]],[10080,"Méga-Diancie",["Roche","Fée"]],[10081,"Méga-Beedrill",["Insecte","Poison"]],[10082,"Méga-Pidgeot",["Normal","Vol"]],[10083,"Méga-Steelix",["Acier","Sol"]],[10084,"Méga-Slowbro",["Eau","Psy"]]
     ];
 
     let data = null;
@@ -1164,8 +1166,10 @@ window.handleRestart = async function() {
 
 window.startSolo = function() {
     currentGame.mode = 'solo';
+    currentGame.phase = 1;
+    currentGame.maxPhases = 2;
     currentGame.finished = false;
-    currentGame.p1 = { grid: Array(9).fill(null), validated: false };
+    currentGame.p1 = { grid: Array(9).fill(null), validated: false, correctCells: [] };
     currentGame.p2 = { grid: Array(9).fill(null), validated: false };
     generateGridHeaders();
     showGameUI();
