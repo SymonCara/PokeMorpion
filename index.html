@@ -177,8 +177,9 @@
 
   /* ===== GRID ===== */
   .grid-wrapper {
-    display: grid; grid-template-columns: 90px repeat(3, 1fr); grid-template-rows: 70px repeat(3, 110px);
-    gap: 4px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; padding: 6px;
+    display: grid; grid-template-columns: 110px repeat(3, 1fr); grid-template-rows: 90px repeat(3, 140px);
+    gap: 8px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 16px; padding: 12px;
+    width: 100%; max-width: 680px;
   }
 
   .header-cell { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px; text-align: center; }
@@ -190,8 +191,9 @@
   .game-cell.correct { border-color: var(--success); background: rgba(46, 204, 113, 0.05); border-width: 2px; }
   .game-cell.error { border-color: var(--accent); background: rgba(230, 57, 70, 0.1); border-width: 2px; }
   
-  .pokemon-entry img { width: 55px; height: 55px; object-fit: contain; }
-  .pokemon-entry .poke-name { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; text-align: center; line-height: 1; margin-top: 2px;}
+  .pokemon-entry img { width: 75px; height: 75px; object-fit: contain; }
+  .pokemon-entry .poke-name { font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; text-align: center; line-height: 1; margin-top: 4px; color: #fff;}
+  .pokemon-entry .poke-id { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--accent2); margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -429,7 +431,7 @@ async function loadPokemonData() {
     ];
 
     const OFFICIAL_MEGAS_DATA = [
-        [10033,"Méga-Florizarre",["Plante","Poison"]],[10034,"Méga-Dracaufeu X",["Feu","Dragon"]],[10035,"Méga-Dracaufeu Y",["Feu","Vol"]],[10036,"Méga-Tortank",["Eau"]],[10037,"Méga-Alakazam",["Psy"]],[10038,"Méga-Ectoplasma",["Spectre","Poison"]],[10039,"Méga-Kangourex",["Normal"]],[10040,"Méga-Scarabrute",["Insecte","Vol"]],[10041,"Méga-Léviator",["Eau","Ténèbres"]],[10042,"Méga-Ptéra",["Roche","Vol"]],[10043,"Méga-Mewtwo X",["Psy","Combat"]],[10044,"Méga-Mewtwo Y",["Psy"]],[10045,"Méga-Pharamp",["Électrik","Dragon"]],[10046,"Méga-Cizayox",["Insecte","Acier"]],[10047,"Méga-Scarhino",["Insecte","Combat"]],[10048,"Méga-Démolosse",["Feu","Ténèbres"]],[10049,"Méga-Tyranocif",["Roche","Ténèbres"]],[10050,"Méga-Braségali",["Feu","Combat"]],[10051,"Méga-Gardevoir",["Psy","Fée"]],[10052,"Méga-Mysdibule",["Acier","Fée"]],[10053,"Méga-Galeking",["Acier"]],[10054,"Méga-Charmina",["Combat","Psy"]],[10055,"Méga-Élecsprint",["Électrik"]],[10056,"Méga-Branette",["Spectre"]],[10057,"Méga-Absol",["Ténèbres"]],[10058,"Méga-Carchacrok",["Dragon","Sol"]],[10059,"Méga-Lucario",["Combat","Acier"]],[10060,"Méga-Blizzaroi",["Plante","Glace"]],[10061,"Méga-Latias",["Dragon","Psy"]],[10062,"Méga-Latios",["Dragon","Psy"]],[10064,"Méga-Swampert",["Eau","Sol"]],[10065,"Méga-Sceptile",["Plante","Dragon"]],[10066,"Méga-Sableye",["Ténèbres","Spectre"]],[10070,"Méga-Sharpedo",["Eau","Ténèbres"]],[10071,"Méga-Camerupt",["Feu","Sol"]],[10072,"Méga-Altaria",["Dragon","Fée"]],[10073,"Méga-Glalie",["Glace"]],[10074,"Méga-Salamence",["Dragon","Vol"]],[10075,"Méga-Metagross",["Acier","Psy"]],[10076,"Méga-Rayquaza",["Dragon","Vol"]],[10077,"Méga-Lopunny",["Normal","Combat"]],[10078,"Méga-Gallade",["Psy","Combat"]],[10079,"Méga-Audino",["Normal","Fée"]],[10080,"Méga-Diancie",["Roche","Fée"]],[10081,"Méga-Beedrill",["Insecte","Poison"]],[10082,"Méga-Pidgeot",["Normal","Vol"]],[10083,"Méga-Steelix",["Acier","Sol"]],[10084,"Méga-Slowbro",["Eau","Psy"]]
+        [10033,"Méga-Florizarre",["Plante","Poison"]],[10034,"Méga-Dracaufeu X",["Feu","Dragon"]],[10035,"Méga-Dracaufeu Y",["Feu","Vol"]],[10036,"Méga-Tortank",["Eau"]],[10037,"Méga-Alakazam",["Psy"]],[10038,"Méga-Ectoplasma",["Spectre","Poison"]],[10039,"Méga-Kangourex",["Normal"]],[10040,"Méga-Scarabrute",["Insecte","Vol"]],[10041,"Méga-Léviator",["Eau","Ténèbres"]],[10042,"Méga-Ptéra",["Roche","Vol"]],[10043,"Méga-Mewtwo X",["Psy","Combat"]],[10044,"Méga-Mewtwo Y",["Psy"]],[10045,"Méga-Pharamp",["Électrik","Dragon"]],[10046,"Méga-Cizayox",["Insecte","Acier"]],[10047,"Méga-Scarhino",["Insecte","Combat"]],[10048,"Méga-Démolosse",["Feu","Ténèbres"]],[10049,"Méga-Tyranocif",["Roche","Ténèbres"]],[10050,"Méga-Braségali",["Feu","Combat"]],[10051,"Méga-Gardevoir",["Psy","Fée"]],[10052,"Méga-Mysdibule",["Acier","Fée"]],[10053,"Méga-Galeking",["Acier"]],[10054,"Méga-Charmina",["Combat","Psy"]],[10055,"Méga-Élecsprint",["Électrik"]],[10056,"Méga-Branette",["Spectre"]],[10057,"Méga-Absol",["Ténèbres"]],[10058,"Méga-Carchacrok",["Dragon","Sol"]],[10059,"Méga-Lucario",["Combat","Acier"]],[10060,"Méga-Blizzaroi",["Plante","Glace"]],[10061,"Méga-Latias",["Dragon","Psy"]],[10062,"Méga-Latios",["Dragon","Psy"]],[10064,"Méga-Laggron",["Eau","Sol"]],[10065,"Méga-Jungko",["Plante","Dragon"]],[10066,"Méga-Ténéfix",["Ténèbres","Spectre"]],[10067,"Méga-Altaria",["Dragon","Fée"]],[10068,"Méga-Gallade",["Psy","Combat"]],[10069,"Méga-Audino",["Normal","Fée"]],[10070,"Méga-Sharpedo",["Eau","Ténèbres"]],[10071,"Méga-Flagadoss",["Eau","Psy"]],[10072,"Méga-Steelix",["Acier","Sol"]],[10073,"Méga-Roucarnage",["Normal","Vol"]],[10074,"Méga-Oniglali",["Glace"]],[10075,"Méga-Diancie",["Roche","Fée"]],[10076,"Méga-Métalosse",["Acier","Psy"]],[10079,"Méga-Rayquaza",["Dragon","Vol"]],[10087,"Méga-Camérupt",["Feu","Sol"]],[10088,"Méga-Lockpin",["Normal","Combat"]],[10089,"Méga-Drattak",["Dragon","Vol"]],[10090,"Méga-Dardargnan",["Insecte","Poison"]]
     ];
 
     let data = null;
@@ -855,12 +857,22 @@ window.handleValidate = async function() {
         currentGame.p2.validated = true;
         renderGrids();
         updateUI();
+        
+        const msg = document.getElementById('game-message');
+        msg.classList.remove('hidden');
+        
         if (currentGame.phase === 1) {
+            msg.innerHTML = `Phase 1 terminée ! Cliquez sur le bouton pour la Phase 2.`;
             const btn = document.getElementById('btn-validate');
-            btn.innerText = "DÉBUTER PHASE 2";
+            btn.innerText = "🚀 DÉBUTER PHASE 2";
+            btn.classList.add('btn-primary');
             btn.disabled = false;
-            btn.onclick = () => startPhase2();
+            btn.onclick = () => {
+                msg.classList.add('hidden');
+                startPhase2();
+            };
         } else {
+            msg.innerHTML = `Partie terminée ! Vérifie tes résultats.`;
             calculateFinal();
         }
     }
@@ -1095,7 +1107,17 @@ window.filterPokemon = function(v) { showResults(v); }
 function showResults(query) {
     const container = document.getElementById('results-grid');
     const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const filtered = allPokemon.filter(p => p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q));
+    
+    // Restriction Méga : On ne montre les Mégas QUE si la case a le critère Méga
+    const rHeader = currentGame.headers.rows[Math.floor(currentCell/3)];
+    const cHeader = currentGame.headers.cols[currentCell%3];
+    const isMegaCell = (rHeader.type === 'mega' || cHeader.type === 'mega');
+
+    const filtered = allPokemon.filter(p => {
+        const nameMatch = p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q);
+        if (p.isMega && !isMegaCell) return false; // Cache les mégas pour les cases normales
+        return nameMatch;
+    });
     
     container.innerHTML = '';
     const myData = currentGame.role === 'p1' ? currentGame.p1 : currentGame.p2;
