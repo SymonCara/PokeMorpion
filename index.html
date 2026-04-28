@@ -434,6 +434,22 @@ async function initApp() {
 
     const timeoutGlobal = new Promise(resolve => setTimeout(resolve, 6000));
     await Promise.race([mainInit(), timeoutGlobal]);
+    
+    // Charger les ajouts communautaires de champions
+    if (db) {
+        try {
+            const gymRef = doc(db, 'games', appId, 'config', 'gym_additions');
+            const snap = await getDoc(gymRef);
+            if (snap.exists()) {
+                const additions = snap.data().list || [];
+                additions.forEach(id => {
+                    const p = allPokemon.find(x => x.id === id);
+                    if (p) p.isGym = true;
+                });
+            }
+        } catch(e) { console.error("Erreur chargement gym_additions:", e); }
+    }
+
     document.getElementById('loading-screen').style.display = 'none';
 }
 
@@ -963,11 +979,17 @@ function calculateFinal() {
             row.className = 'detail-row';
             
             const solution = allPokemon.find(x => checkCriteria(x, rowH) && checkCriteria(x, colH));
-            
+            const isGymFail = (rowH.type === 'gym' || colH.type === 'gym') && p && !p.isGym;
+
             row.innerHTML = `
                 <div class="detail-info">
                     ${p ? `<img src="${p.sprite}"> ❌ ${p.name}` : '❌ Case vide'}
-                    ${p ? `<button class="dispute-btn" onclick="handleDispute(${p.id}, ${r}, ${c})">Contester</button>` : ''}
+                    ${p ? `
+                        <div style="display:flex; flex-direction:column; gap:4px;">
+                            <button class="dispute-btn" onclick="handleDispute(${p.id}, ${r}, ${c})">Contester</button>
+                            ${isGymFail ? `<button class="dispute-btn" style="background:var(--accent3); color:#000;" onclick="handleGymDispute(${p.id})">C'est un Pokémon de Champion !</button>` : ''}
+                        </div>
+                    ` : ''}
                 </div>
                 <div class="detail-solution">
                     Solution : ${solution ? solution.name : '???'}
@@ -995,13 +1017,87 @@ window.handleDispute = async function(pokeId, rowIdx, colIdx) {
         try {
             const memRef = doc(db, 'games', appId, 'config', 'memory_disputes');
             await setDoc(memRef, { list: disputesMemory }, { merge: true });
-            window.showToast("Contestation enregistrée pour les prochaines parties !");
+            window.showToast("Contestation enregistrée localement !");
         } catch(e) { 
             console.error(e);
-            window.showToast("Erreur lors de la sauvegarde de la contestation.", true);
+            window.showToast("Erreur lors de la sauvegarde.", true);
         }
     } else {
-        window.showToast("Exception ajoutée localement pour cette session !");
+        window.showToast("Exception ajoutée pour cette session !");
+    }
+}
+
+async function verifyWithAI(pokemonName) {
+    window.showToast(`Recherche approfondie pour ${pokemonName}...`, false);
+    try {
+        const response = await fetch('http://localhost:11434/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'gemma4:e4b',
+                prompt: `Tu es un expert Pokémon. Analyse la requête suivante : "Le Pokémon ${pokemonName} est-il utilisé par un dresseur important (Champion, Conseil 4, Maître) dans les jeux officiels ?"
+                
+                CONSIGNES :
+                1. Si c'est VRAI, réponds par "OUI" suivi du nom du dresseur, du jeu et de la ville/lieu.
+                2. Si c'est FAUX, réponds par "NON".
+                3. Ne réponds que par OUI ou NON si tu as un doute.
+                
+                Exemple attendu : "OUI - Ondine, Pokémon Bleu/Rouge, Azuria" ou "NON".`,
+                stream: false
+            })
+        });
+        
+        if (!response.ok) throw new Error("Ollama non joignable");
+        
+        const data = await response.json();
+        const res = data.response;
+        console.log("Analyse IA :", res);
+
+        if (res.toUpperCase().startsWith("OUI")) {
+            // Afficher la preuve à l'utilisateur
+            const evidence = res.split("-")[1] || res.substring(3);
+            const confirmAI = confirm(`L'IA a trouvé une correspondance :\n\n"${res}"\n\nSouhaites-tu valider cet ajout à la base de données ?`);
+            return confirmAI;
+        }
+        
+        return false;
+    } catch (e) {
+        console.warn("Échec recherche IA locale.", e);
+        const bulbapediaUrl = `https://bulbapedia.bulbagarden.net/wiki/Special:Search?search=${encodeURIComponent(pokemonName)}+trainer`;
+        return confirm(`L'IA locale n'a pas pu vérifier. Peux-tu vérifier sur Bulbapedia ?\n\n${bulbapediaUrl}\n\nConfirmes-tu manuellement ?`);
+    }
+}
+
+window.handleGymDispute = async function(pokeId) {
+    if (!db) return window.showToast("Firestore non disponible.", true);
+    
+    const p = allPokemon.find(x => x.id === pokeId);
+    if (!p) return;
+
+    // Étape de vérification par Gemma 4
+    const isVerified = await verifyWithAI(p.name);
+    
+    if (!isVerified) {
+        return window.showToast(`L'IA locale a rejeté la contestation : ${p.name} n'est pas reconnu comme Pokémon de Champion.`, true);
+    }
+
+    try {
+        const gymRef = doc(db, 'games', appId, 'config', 'gym_additions');
+        const snap = await getDoc(gymRef);
+        let list = snap.exists() ? (snap.data().list || []) : [];
+        
+        if (!list.includes(pokeId)) {
+            list.push(pokeId);
+            await setDoc(gymRef, { list });
+            
+            p.isGym = true;
+            window.showToast(`Vérifié par Gemma 4 ! ${p.name} ajouté à la base de données.`);
+        } else {
+            window.showToast("Ce Pokémon est déjà enregistré.");
+        }
+    } catch(e) {
+        console.error(e);
+        window.showToast("Erreur lors de l'ajout.", true);
     }
 }
 
