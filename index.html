@@ -769,9 +769,12 @@ function renderOneGrid(containerId, playerData, isInteractive) {
                 const rowH = currentGame.headers.rows[r];
                 const colH = currentGame.headers.cols[c];
                 const isCorrect = checkCriteria(p, rowH, rowH, colH) && checkCriteria(p, colH, rowH, colH);
+                const isPersisted = (playerData.correctCells || []).includes(idx);
 
-                if (playerData.validated || isInteractive) {
+                if (playerData.validated) {
                     cell.classList.add(isCorrect ? 'correct' : 'error');
+                } else if (isPersisted) {
+                    cell.classList.add('correct'); // Reste vert en phase suivante
                 }
                 
                 cell.innerHTML = `<div class="pokemon-entry"><img src="${p.sprite}"><div class="poke-name">${p.name}</div><div class="poke-id">N°${p.id}</div></div>`;
@@ -805,17 +808,26 @@ function updateUI() {
     btn.disabled = myData.validated;
 
     if (myData.validated) {
-        if (oppData && oppData.validated) {
+        if (currentGame.mode === 'solo' && currentGame.phase < currentGame.maxPhases) {
+            btn.innerHTML = `<span style="font-size:32px;">🚀</span><span>PHASE SUIVANTE</span>`;
+            btn.style.background = "var(--accent2)";
+            btn.classList.remove('hidden');
+            btn.disabled = false;
+            btn.onclick = () => startPhase2();
+        } else if (oppData && oppData.validated) {
             msg.classList.remove('hidden');
             msg.innerText = currentGame.phase < currentGame.maxPhases ? "Phase terminée ! Attente du prochain tour..." : "Match terminé !";
             btn.classList.add('hidden');
         } else if (currentGame.mode === 'multi') {
             msg.classList.remove('hidden');
             msg.innerText = "Attente de l'adversaire...";
+        } else if (currentGame.mode === 'solo' && currentGame.phase >= currentGame.maxPhases) {
+            btn.classList.add('hidden');
         }
     } else {
         msg.classList.add('hidden');
-        btn.innerHTML = `<span style="font-size:32px;">✅</span><span>VALIDER LA PHASE</span>`;
+        btn.innerHTML = `<span style="font-size:32px;">✅</span><span>VALIDER LA GRILLE</span>`;
+        btn.style.background = ""; 
         btn.classList.remove('hidden');
         btn.disabled = false;
         document.getElementById('btn-reset').classList.remove('hidden');
@@ -864,7 +876,7 @@ window.handleValidate = async function() {
 
         checkPhaseEnd();
     } else {
-        // Mode Solo : On passe directement à l'étape suivante ou finale
+        // Mode Solo : Affichage des résultats d'abord
         const myData = currentGame.p1;
         const newCorrectCells = [];
         myData.grid.forEach((pId, i) => {
@@ -879,11 +891,12 @@ window.handleValidate = async function() {
             }
         });
         myData.correctCells = newCorrectCells;
+        myData.validated = true;
         
-        if (currentGame.phase < currentGame.maxPhases) {
-            startPhase2(); 
-        } else {
-            currentGame.p1.validated = true;
+        renderGrids();
+        updateUI();
+
+        if (currentGame.phase >= currentGame.maxPhases) {
             calculateFinal();
         }
     }
