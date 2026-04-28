@@ -258,9 +258,16 @@
                 <span>Ma Grille</span>
                 <span id="my-room-score" class="score-badge">Points: 0</span>
             </div>
-            <div id="grid-me" class="grid-wrapper"></div>
-            <button id="btn-validate" class="btn btn-validate" onclick="handleValidate()" disabled>✅ VALIDER MA GRILLE</button>
-            <button id="btn-reset" class="btn reset-btn" onclick="resetGrid()">🔄 RÉINITIALISER</button>
+            <div class="grid-main-area" style="display:flex; align-items:flex-end; gap:15px; flex-wrap:wrap; justify-content:center;">
+                <div id="grid-me" class="grid-wrapper"></div>
+                <div class="grid-side-actions" style="display:flex; flex-direction:column; gap:10px; min-width:180px;">
+                    <button id="btn-validate" class="btn btn-validate" onclick="handleValidate()" style="height: 120px; font-size: 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;">
+                        <span style="font-size:32px;">✅</span>
+                        <span>VALIDER LA PHASE</span>
+                    </button>
+                    <button id="btn-reset" class="btn reset-btn" onclick="resetGrid()">🔄 RÉINITIALISER</button>
+                </div>
+            </div>
         </div>
 
         <div class="grid-section" id="opponent-section" style="display:none">
@@ -757,14 +764,16 @@ function renderOneGrid(containerId, playerData, isInteractive) {
             const p = pId ? allPokemon.find(x => x.id === pId) : null;
 
             if (p) {
-                const isPersisted = (playerData.correctCells || []).includes(idx);
-                if (isPersisted) cell.classList.add('persisted-correct');
+                const r = Math.floor(idx/3);
+                const c = idx%3;
+                const rowH = currentGame.headers.rows[r];
+                const colH = currentGame.headers.cols[c];
+                const isCorrect = checkCriteria(p, rowH, rowH, colH) && checkCriteria(p, colH, rowH, colH);
 
-                if (playerData.validated) {
-                    cell.classList.add(isPersisted ? 'correct' : 'error');
-                } else if (!isPersisted) {
-                    cell.classList.add('pending');
+                if (playerData.validated || isInteractive) {
+                    cell.classList.add(isCorrect ? 'correct' : 'error');
                 }
+                
                 cell.innerHTML = `<div class="pokemon-entry"><img src="${p.sprite}"><div class="poke-name">${p.name}</div><div class="poke-id">N°${p.id}</div></div>`;
             } else {
                 cell.innerHTML = '<span class="cell-plus">+</span>';
@@ -806,8 +815,9 @@ function updateUI() {
         }
     } else {
         msg.classList.add('hidden');
-        btn.innerText = "✅ VALIDER MA GRILLE";
+        btn.innerHTML = `<span style="font-size:32px;">✅</span><span>VALIDER LA PHASE</span>`;
         btn.classList.remove('hidden');
+        btn.disabled = false;
         document.getElementById('btn-reset').classList.remove('hidden');
         btn.onclick = () => handleValidate();
     }
@@ -854,7 +864,7 @@ window.handleValidate = async function() {
 
         checkPhaseEnd();
     } else {
-        // Mode Solo : Calcul des bonnes réponses
+        // Mode Solo : On passe directement à l'étape suivante ou finale
         const myData = currentGame.p1;
         const newCorrectCells = [];
         myData.grid.forEach((pId, i) => {
@@ -869,30 +879,11 @@ window.handleValidate = async function() {
             }
         });
         myData.correctCells = newCorrectCells;
-        currentGame.p1.validated = true;
-        currentGame.p2.validated = true; // Non utilisé en solo mais par sécurité
-        
-        renderGrids();
-        updateUI();
-        
-        const msg = document.getElementById('game-message');
-        msg.classList.remove('hidden');
         
         if (currentGame.phase < currentGame.maxPhases) {
-            msg.innerHTML = `Phase ${currentGame.phase} terminée ! Les bonnes réponses sont en vert.<br>Cliquez sur le bouton bleu pour la suite.`;
-            const btn = document.getElementById('btn-validate');
-            btn.innerText = `🚀 PASSER À LA PHASE ${currentGame.phase + 1}`;
-            btn.style.background = "var(--accent2)";
-            btn.style.borderColor = "var(--accent2)";
-            btn.disabled = false;
-            btn.onclick = () => {
-                btn.style.background = ""; 
-                btn.style.borderColor = "";
-                msg.classList.add('hidden');
-                startPhase2(); // Cette fonction gère maintenant l'incrémentation
-            };
+            startPhase2(); 
         } else {
-            msg.innerHTML = `Partie terminée ! Vérifie tes résultats.`;
+            currentGame.p1.validated = true;
             calculateFinal();
         }
     }
