@@ -286,7 +286,10 @@
   <div class="result-title" id="result-title">BIEN JOUÉ !</div>
   <div class="result-score" id="result-score">Note : <span>0/9</span></div>
   <div id="result-details" class="result-details"></div>
-  <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 10px;">RETOURNER AU MENU</button>
+  <div style="display:flex; gap:10px; margin-top:20px;">
+    <button class="btn btn-primary" onclick="handleRestart()">REJOUER</button>
+    <button class="btn" style="background:var(--bg-card); color:white; border:1px solid var(--border)" onclick="location.reload()">MENU</button>
+  </div>
 </div>
 
 <script type="module">
@@ -399,20 +402,35 @@ async function loadPokemonData() {
     ];
 
     let data = null;
+    let frNames = [];
     const TYPE_MAP = {'Fire':'Feu','Water':'Eau','Grass':'Plante','Electric':'Électrik','Psychic':'Psy','Normal':'Normal','Fighting':'Combat','Poison':'Poison','Ground':'Sol','Flying':'Vol','Bug':'Insecte','Rock':'Roche','Ghost':'Spectre','Dragon':'Dragon','Dark':'Ténèbres','Steel':'Acier','Fairy':'Fée','Ice':'Glace'};
 
     try {
         const res = await fetch('https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json');
         if (res.ok) data = await res.json();
-    } catch (e) { console.warn("Échec CDN."); }
+    } catch (e) { console.warn("Échec chargement data."); }
 
     const rawData = data || offlineBackup.map(p => ({id:p[0], name:{french:p[1]}, type:p[3]}));
+
+    const ALOLA_FIX = {
+        772: "Type:0", 773: "Silvallié", 774: "Météno", 775: "Dodoala", 776: "Boumata", 777: "Togedemaru", 
+        778: "Mimiqui", 779: "Denticrisse", 780: "Draïeul", 781: "Sinistrail", 782: "Bébécaille", 
+        783: "Écaïd", 784: "Ékaïser", 785: "Tokorico", 786: "Tokopiyon", 787: "Tokotoro", 
+        788: "Tokopisco", 789: "Cosmog", 790: "Cosmovum", 791: "Solgaleo", 792: "Lunala", 
+        793: "Zéroïd", 794: "Mouscoto", 795: "Cancrelove", 796: "Câblifère", 797: "Bamboiselle", 
+        798: "Katagami", 799: "Engloutyran", 800: "Necrozma", 801: "Magearna", 802: "Marshadow", 
+        803: "Vémini", 804: "Mandrillon", 805: "Ama-Ama", 806: "Pierroteknik", 807: "Zeraora", 
+        808: "Meltan", 809: "Melmetal"
+    };
 
     allPokemon = rawData.map(p => {
         const id = p.id;
         const types = (p.type || []).map(t => TYPE_MAP[t] || t).filter(Boolean);
+        let name = p.name.french || p.name.english;
+        if (ALOLA_FIX[id]) name = ALOLA_FIX[id];
+        
         return {
-            id, name: p.name.french || p.name.english, types,
+            id, name, types,
             generation: id <= 151 ? 1 : id <= 251 ? 2 : id <= 386 ? 3 : id <= 493 ? 4 : id <= 649 ? 5 : id <= 721 ? 6 : id <= 809 ? 7 : id <= 905 ? 8 : 9,
             isLegendary: LEGENDARIES_IDS.includes(id),
             isStarter: STARTERS_IDS.some(sid => id >= sid && id <= sid + 2),
@@ -452,6 +470,7 @@ window.createRoom = async function() {
             p1: { uid: userId, grid: Array(9).fill(null), validated: false },
             p2: null, phase: 1, 
             roomScores: { p1: 0, p2: 0 },
+            finished: false,
             lastUpdated: Date.now()
         });
         listenToRoom(code);
@@ -507,6 +526,11 @@ function listenToRoom(code) {
         currentGame.p2 = data.p2;
         currentGame.phase = data.phase;
         currentGame.roomScores = data.roomScores || { p1: 0, p2: 0 };
+
+        if (data.finished === false && currentGame.finished === true) {
+            document.getElementById('result-screen').classList.remove('active');
+            currentGame.finished = false;
+        }
 
         document.getElementById('display-room-code').innerText = code;
         document.getElementById('my-room-score').innerText = `Points: ${currentGame.role === 'p1' ? currentGame.roomScores.p1 : currentGame.roomScores.p2}`;
@@ -765,7 +789,7 @@ function calculateFinal() {
         if (s1 > s2) scores.p1++;
         else if (s2 > s1) scores.p2++;
         const roomRef = doc(db, 'games', appId, 'rooms', currentGame.roomCode);
-        updateDoc(roomRef, { roomScores: scores });
+        updateDoc(roomRef, { roomScores: scores, finished: true });
     }
 
     let title = "TERMINÉ !";
@@ -883,6 +907,28 @@ async function selectPokemon(p) {
         updateUI();
     }
     window.closeModal();
+}
+
+window.handleRestart = async function() {
+    document.getElementById('result-screen').classList.remove('active');
+    currentGame.finished = false;
+
+    if (currentGame.mode === 'solo') {
+        startSolo();
+    } else {
+        if (!db) return;
+        generateGridHeaders();
+        const roomRef = doc(db, 'games', appId, 'rooms', currentGame.roomCode);
+        await updateDoc(roomRef, {
+            headers: currentGame.headers,
+            'p1.grid': Array(9).fill(null),
+            'p1.validated': false,
+            'p2.grid': Array(9).fill(null),
+            'p2.validated': false,
+            phase: 1,
+            finished: false
+        });
+    }
 }
 
 window.startSolo = function() {
