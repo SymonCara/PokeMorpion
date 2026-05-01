@@ -719,6 +719,9 @@ function listenToRoom(code) {
         currentGame.maxPhases = data.maxPhases || 2;
         currentGame.roomScores = data.roomScores || { p1: 0, p2: 0 };
         
+        currentGame.p1Ready = data.p1Ready || false;
+        currentGame.p2Ready = data.p2Ready || false;
+        
         // Update phase display
         const phaseLabel = data.maxPhases === 999 ? "∞" : data.maxPhases;
         document.getElementById('stat-round').innerText = `${data.phase}/${phaseLabel}`;
@@ -745,6 +748,27 @@ function listenToRoom(code) {
         
         renderGrids();
         updateUI();
+
+        // Gestion transition de phase en Multi
+        if (data.p1Ready && data.p2Ready && currentGame.role === 'p1' && !data.finished) {
+            const roomRef = doc(db, 'games', appId, 'rooms', code);
+            const nextPhase = data.phase + 1;
+            
+            if (nextPhase <= data.maxPhases) {
+                updateDoc(roomRef, {
+                    phase: nextPhase,
+                    p1Ready: false,
+                    p2Ready: false,
+                    'p1.validated': false,
+                    'p2.validated': false,
+                    'p1.grid': Array(9).fill(null),
+                    'p2.grid': Array(9).fill(null),
+                    lastUpdated: Date.now()
+                });
+            } else {
+                updateDoc(roomRef, { finished: true, p1Ready: false, p2Ready: false });
+            }
+        }
     }, (error) => {
         console.error("Erreur de synchronisation", error);
     });
@@ -926,13 +950,32 @@ function updateUI() {
             btn.classList.remove('hidden');
             btn.disabled = false;
             btn.onclick = () => startPhase2();
-        } else if (oppData && oppData.validated) {
-            msg.classList.remove('hidden');
-            msg.innerText = currentGame.phase < currentGame.maxPhases ? "Phase terminée ! Attente du prochain tour..." : "Match terminé !";
-            btn.classList.add('hidden');
+        } else if (currentGame.mode === 'multi' && oppData && oppData.validated) {
+            const isReady = currentGame.role === 'p1' ? currentGame.p1Ready : currentGame.p2Ready;
+            const oppReady = currentGame.role === 'p1' ? currentGame.p2Ready : currentGame.p1Ready;
+
+            if (currentGame.phase < currentGame.maxPhases) {
+                if (!isReady) {
+                    btn.innerHTML = `<span style="font-size:32px;">🚀</span><span>PHASE SUIVANTE</span>`;
+                    btn.style.background = "var(--accent2)";
+                    btn.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.onclick = () => multiNextPhase();
+                    msg.classList.add('hidden');
+                } else {
+                    btn.classList.add('hidden');
+                    msg.classList.remove('hidden');
+                    msg.innerText = oppReady ? "Transition en cours..." : "Attente de l'adversaire (Prêt !)";
+                }
+            } else {
+                msg.classList.remove('hidden');
+                msg.innerText = "Match terminé !";
+                btn.classList.add('hidden');
+            }
         } else if (currentGame.mode === 'multi') {
             msg.classList.remove('hidden');
             msg.innerText = "Attente de l'adversaire...";
+            btn.classList.add('hidden');
         } else if (currentGame.mode === 'solo' && currentGame.phase >= currentGame.maxPhases) {
             btn.classList.add('hidden');
         }
@@ -977,7 +1020,8 @@ window.handleValidate = async function() {
                 newCorrectCells.push(i);
             }
         });
-        myData.correctCells = newCorrectCells;
+        const existingCorrect = myData.correctCells || [];
+        myData.correctCells = [...new Set([...existingCorrect, ...newCorrectCells])];
         
         const score = newCorrectCells.length;
         
@@ -985,12 +1029,9 @@ window.handleValidate = async function() {
         update[currentGame.role] = myData;
         await updateDoc(roomRef, update);
 
-        // Instant win if 9/9
         if (score === 9) {
             await updateDoc(roomRef, { winner: userId, finished: true });
         }
-
-        checkPhaseEnd();
     } else {
         // Mode Solo : Affichage des résultats d'abord
         const myData = currentGame.p1;
@@ -1006,7 +1047,8 @@ window.handleValidate = async function() {
                 newCorrectCells.push(i);
             }
         });
-        myData.correctCells = newCorrectCells;
+        const existingCorrect = myData.correctCells || [];
+        myData.correctCells = [...new Set([...existingCorrect, ...newCorrectCells])];
         myData.validated = true;
         
         renderGrids();
@@ -1018,22 +1060,17 @@ window.handleValidate = async function() {
     }
 }
 
-async function checkPhaseEnd() {
+async function multiNextPhase() {
+    if (!db || !currentGame.roomCode) return;
     const roomRef = doc(db, 'games', appId, 'rooms', currentGame.roomCode);
-    const snap = await getDoc(roomRef);
-    const data = snap.data();
-    
-    if (data.p1.validated && data.p2.validated) {
-        if (data.phase < data.maxPhases) {
-            await updateDoc(roomRef, {
-                phase: data.phase + 1,
-                'p1.validated': false,
-                'p2.validated': false
-            });
-        } else {
-            await updateDoc(roomRef, { finished: true });
-        }
-    }
+    const update = {};
+    update[currentGame.role + 'Ready'] = true;
+    await updateDoc(roomRef, update);
+}
+
+async function checkPhaseEnd() {
+    // Cette fonction n'est plus utilisée pour l'auto-advance, 
+    // la logique est déplacée dans listenToRoom pour synchroniser via p1Ready/p2Ready
 }
 
 window.startPhase2 = async function() {
