@@ -24,7 +24,85 @@
     --success: #2ecc71;
     --pokered: #cc2929;
     --scan-line: rgba(76, 201, 240, 0.03);
+    --error: #e74c3c;
   }
+
+  .screen { transition: all 0.3s ease; }
+  .hidden { display: none !important; }
+
+  .menu-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 30px;
+      width: 350px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+  }
+  .menu-card:hover {
+      transform: translateY(-10px);
+      border-color: var(--accent3);
+      box-shadow: 0 10px 30px rgba(255, 204, 0, 0.1);
+  }
+  .menu-card-icon {
+      font-size: 40px;
+      margin-bottom: 20px;
+  }
+  .menu-card h3 { font-size: 24px; margin-bottom: 10px; color: white; }
+  .menu-card p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+
+  .btn-icon {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: white;
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content:center;
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.2s;
+  }
+  .btn-icon:hover { border-color: var(--accent); background: var(--border); }
+
+  .starter-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 25px;
+      width: 320px;
+      text-align: center;
+      animation: fadeInScale 0.5s ease backwards;
+  }
+  @keyframes fadeInScale {
+      from { opacity:0; transform: scale(0.9); }
+      to { opacity:1; transform: scale(1); }
+  }
+  .starter-img-container {
+      background: rgba(255,255,255,0.05);
+      border-radius: 100px;
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+  }
+  .stat-bar-container {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      margin-top: 4px;
+      overflow: hidden;
+  }
+  .stat-bar { height: 100%; border-radius: 3px; }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -77,7 +155,6 @@
   .logo-text h1 { font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; }
   .logo-text h1 span { color: var(--accent2); }
 
-  /* ===== MENU ===== */
   #menu-container {
     width: 100%;
     max-width: 500px;
@@ -136,7 +213,6 @@
   .result-card img { width: 50px; }
 
   .game-message { background: rgba(76, 201, 240, 0.1); border: 1px solid var(--accent2); color: var(--accent2); padding: 15px 30px; border-radius: 12px; text-align: center; margin-bottom: 25px; font-weight: 700; font-size: 20px; width: 100%; max-width: 600px; box-shadow: 0 0 20px rgba(76, 201, 240, 0.2); }
-  .hidden { display: none !important; }
 
   #game-container { width: 100%; max-width: 1100px; display: none; flex-direction: column; align-items: center; gap: 20px; }
 
@@ -150,32 +226,6 @@
   .loader-ring { width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--accent2); animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .header-stats { display: flex; align-items: center; gap: 15px; }
-  .stat-badge { background: var(--bg-card); border: 1px solid var(--border); padding: 5px 15px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; min-width: 80px; }
-  .stat-badge .val { font-family: 'Share Tech Mono', monospace; font-size: 16px; color: var(--accent2); line-height: 1.2; }
-  .stat-badge .lbl { font-family: 'Rajdhani', sans-serif; font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
-  .stat-badge.code-badge { border-color: var(--accent2); background: rgba(76, 201, 240, 0.05); min-width: 110px; }
-  .stat-badge.code-badge .val { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: 2px; }
-  .divider-v { width: 1px; height: 30px; background: var(--border); }
-
-  .home-btn { font-size: 24px; cursor: pointer; color: var(--text-secondary); transition: color 0.3s; padding: 10px; }
-  .home-btn:hover { color: var(--accent2); }
-  .reset-btn { background: #34495e; color: white; width: 100%; margin-top: 10px; }
-  .result-details { width: 100%; max-width: 600px; margin-top: 20px; overflow-y: auto; max-height: 250px; }
-  .detail-row { display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border); }
-  .detail-info { display: flex; align-items: center; gap: 10px; font-size: 13px; }
-  .detail-info img { width: 30px; height: 30px; }
-  .detail-solution { color: var(--accent2); font-weight: 600; font-size: 12px; }
-  .dispute-btn { background: var(--border); color: var(--text-secondary); border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; transition: all 0.2s; }
-  .dispute-btn:hover { background: var(--accent); color: white; }
-  .room-code-display { font-size: 32px; font-weight: 800; color: var(--accent2); letter-spacing: 4px; margin-bottom: 10px; text-shadow: 0 0 15px rgba(76, 201, 240, 0.3); }
-
-  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 8px; color: white; font-family: 'Share Tech Mono', monospace; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); opacity: 0; animation: fadeInOut 4.5s forwards; }
-  .toast.error { background: var(--accent); border: 1px solid #ff4d4d; }
-  .toast.success { background: var(--success); border: 1px solid #2ecc71; }
-  @keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, 20px); } 10% { opacity: 1; transform: translate(-50%, 0); } 90% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -20px); } }
-
-  /* ===== GRID ===== */
   .grid-wrapper {
     display: grid; 
     grid-template-columns: 120px repeat(3, 120px); 
@@ -196,6 +246,21 @@
   .pokemon-entry img { width: 75px; height: 75px; object-fit: contain; }
   .pokemon-entry .poke-name { font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; text-align: center; line-height: 1; margin-top: 4px; color: #fff;}
   .pokemon-entry .poke-id { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--accent2); margin-top: 2px; }
+
+  .loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--border);
+    border-bottom-color: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+  }
+  @keyframes rotation {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 </style>
 </head>
 <body>
@@ -205,21 +270,46 @@
     <p style="margin-top: 20px; font-family: 'Share Tech Mono';">Synchronisation du Pokédex...</p>
 </div>
 
-<div id="app">
-  <header>
-    <div class="logo" onclick="location.reload()" style="cursor:pointer">
-      <div class="logo-ball"></div>
-      <div class="logo-text">
-        <h1>Poke<span>Morpion</span></h1>
-        <p>Championnat Pokémon</p>
-      </div>
+<!-- MENU PRINCIPAL -->
+<div id="main-menu-screen" class="screen active">
+    <div class="hero-section" style="text-align:center; padding: 60px 20px;">
+        <h1 class="glitch-text" style="font-size: 3.5rem; margin-bottom: 10px;">POKÉ<span style="color:var(--accent3)">CHAMPION</span></h1>
+        <p style="color:var(--text-dim); margin-bottom: 40px;">Choisissez votre défi Pokémon</p>
+        
+        <div style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center; max-width:900px; margin:0 auto;">
+            <div class="menu-card" onclick="showScreen('pokedoku')">
+                <div class="menu-card-icon">🧩</div>
+                <h3>PokeMorpion</h3>
+                <p>Le classique PokeDoku. Remplissez la grille avec les bons Pokémon.</p>
+                <button class="btn btn-primary" style="width:100%; margin-top:15px;">JOUER</button>
+            </div>
+            
+            <div class="menu-card" onclick="showScreen('blind-starter')">
+                <div class="menu-card-icon">🎁</div>
+                <h3>Starter Aveugle</h3>
+                <p>Générez 3 Pokémon aléatoires et découvrez leurs statistiques et formes Shiny.</p>
+                <button class="btn btn-primary" style="width:100%; margin-top:15px;">DÉCOUVRIR</button>
+            </div>
+        </div>
     </div>
-    <div id="room-info" class="header-stats" style="display:none">
-       <div class="stat-badge code-badge"><span class="val" id="display-room-code">----</span><span class="lbl">CODE</span></div>
-       <div class="stat-badge"><span class="val" id="stat-round">1/2</span><span class="lbl">PHASE</span></div>
-    </div>
-    <div class="home-btn" onclick="location.reload()">🏠</div>
-  </header>
+</div>
+
+<!-- ÉCRAN POKEDOKU -->
+<div id="pokedoku-screen" class="screen hidden">
+  <div class="container">
+    <header class="header" style="margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px;">
+        <div style="display:flex; align-items:center; gap:15px; width:100%; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:15px;">
+                <button class="btn-icon" onclick="showScreen('main-menu')">🏠</button>
+                <div class="logo">PokeMorpion <span id="room-code-badge" class="badge-multi hidden">ROOM: XXXX</span></div>
+            </div>
+            <div id="room-info" class="header-stats" style="display:none">
+               <div class="stat-badge code-badge"><span class="val" id="display-room-code">----</span><span class="lbl">CODE</span></div>
+               <div class="stat-badge"><span class="val" id="stat-round">1/2</span><span class="lbl">PHASE</span></div>
+            </div>
+        </div>
+    </header>
+
 
   <!-- MENU D'ACCUEIL -->
   <div id="menu-container">
@@ -279,6 +369,28 @@
         </div>
     </div>
   </div>
+</div>
+
+<!-- ÉCRAN STARTER AVEUGLE -->
+<div id="blind-starter-screen" class="screen hidden">
+    <div class="container">
+        <header class="header" style="margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 16px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <button class="btn-icon" onclick="showScreen('main-menu')">🏠</button>
+                    <div class="logo">Starter Aveugle</div>
+                </div>
+                <button class="btn btn-primary" onclick="generateBlindStarters()">GÉNÉRER 3 POKÉMON</button>
+            </div>
+        </header>
+        
+        <div id="starters-container" style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;">
+            <div style="text-align:center; color:var(--text-dim); padding:100px;">
+                <div style="font-size:50px; margin-bottom:20px;">🎲</div>
+                <p>Cliquez sur Générer pour découvrir vos 3 Pokémon !</p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- MODALE RECHERCHE -->
