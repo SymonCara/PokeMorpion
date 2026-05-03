@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeMorpion - Pokedoku</title>
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --bg-card: #16161a;
+            --accent: #ff3e3e;
+            --accent2: #3e86ff;
+            --accent3: #ffcd19;
+            --text: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-dim: #606060;
+            --border: #2d2d35;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .btn-back {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        .btn-back:hover { color: white; }
+
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loader-ring {
+            width: 80px;
+            height: 80px;
+            border: 5px solid var(--border);
+            border-top: 5px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Game UI */
+        .game-container {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .header-cell {
+            background: #1a1a20;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+        .header-label { font-weight: bold; color: white; font-size: 14px; margin-bottom: 4px; }
+
+        .game-cell {
+            aspect-ratio: 1;
+            background: var(--bg-card);
+            border: 1px dashed var(--border);
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .game-cell:hover { border-color: var(--accent); background: #1e1e24; transform: scale(1.02); }
+        .game-cell.locked { cursor: default; border-style: solid; border-color: var(--border); }
+        .game-cell.locked:hover { transform: none; background: var(--bg-card); }
+        .game-cell.correct { border-color: #4CAF50; background: rgba(76, 175, 80, 0.1); border-style: solid; }
+        .game-cell.error { border-color: var(--accent); background: rgba(255, 62, 62, 0.1); border-style: solid; }
+
+        .pokemon-entry { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .pokemon-entry img { width: 70%; image-rendering: pixelated; }
+        .poke-name { font-size: 11px; font-weight: bold; text-align: center; }
+
+        /* Modal Search */
+        #modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            z-index: 1000;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 50px;
+        }
+        #modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--bg-card);
+            width: 95%;
+            max-width: 500px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .modal-header { padding: 20px; border-bottom: 1px solid var(--border); }
+        .search-input {
+            width: 100%;
+            background: #23232a;
+            border: 1px solid var(--border);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        .results-grid { height: 400px; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .result-card {
+            background: #23232a;
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .result-card:hover { background: #2d2d35; }
+        .result-card img { width: 60px; }
+        .result-name { font-size: 11px; margin-top: 5px; }
+
+        .btn-validate {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        .btn-validate:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            z-index: 10000;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(100px); } to { transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="loading-screen">
+        <div class="loader-ring"></div>
+        <p style="margin-top: 20px; color: var(--text-secondary);">Récupération du Pokédex National...</p>
+    </div>
+
+    <header>
+        <a href="index.html" class="btn-back"><span>←</span> Retour au Menu</a>
+        <div style="text-align: center;">
+            <h1 style="font-size: 18px;">POKEDOKU</h1>
+            <p id="stat-round" style="font-size: 12px; color: var(--accent);">Manche 1/2</p>
+        </div>
+        <div style="width: 100px;"></div>
+    </header>
+
+    <main class="game-container">
+        <div id="grid-me" class="grid-layout">
+            <!-- Grid generated by JS -->
+        </div>
+
+        <button id="btn-validate" class="btn-validate" onclick="handleValidate()">VALIDER LA GRILLE</button>
+        <button id="btn-restart" class="btn-validate" style="background: var(--bg-card); border: 1px solid var(--border); margin-top: 10px; display:none;" onclick="location.reload()">REJOUER</button>
+    </main>
+
+    <div id="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div id="modal-target-title" style="margin-bottom: 10px; font-weight: bold; color: var(--accent2);"></div>
+                <input type="text" id="search-input" class="search-input" placeholder="Chercher un Pokémon..." oninput="filterPokemon(this.value)">
+            </div>
+            <div id="results-grid" class="results-grid"></div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script type="module">
+        // Import Firebase components if needed for disputes
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKi9ExC0q1FtMF-vYaqklmntYldgWIfDc",
+            authDomain: "pokemorpion.firebaseapp.com",
+            projectId: "pokemorpion",
+            storageBucket: "pokemorpion.firebasestorage.app",
+            messagingSenderId: "702634428380",
+            appId: "1:702634428380:web:3cf2e1ca03d5d2cdc43119"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let allPokemon = [];
+        let gridHeaders = { rows: [], cols: [] };
+        let myGrid = Array(9).fill(null);
+        let currentCell = null;
+        let isValidated = false;
+
+        async function init() {
+            try {
+                // Fetch from CDN
+                const res = await fetch('https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json');
+                let data = res.ok ? await res.json() : null;
+
+                const rawData = data || offlineBackup.map(p => ({id:p[0], name:{french:p[1]}, type:p[3]}));
+                
+                allPokemon = rawData.map(p => {
+                    const id = p.id;
+                    const types = (p.type || []).map(t => TYPE_MAP[t] || t).filter(Boolean);
+                    let name = p.name.french || p.name.english;
+                    
+                    return {
+                        id, name, types,
+                        generation: id <= 151 ? 1 : id <= 251 ? 2 : id <= 386 ? 3 : id <= 493 ? 4 : id <= 649 ? 5 : id <= 721 ? 6 : id <= 809 ? 7 : id <= 905 ? 8 : 9,
+                        isLegendary: LEGENDARIES_IDS.includes(id),
+                        isMythical: MYTHICAL_IDS.includes(id),
+                        isStarter: STARTERS_IDS.some(sid => id >= sid && id <= sid + 2),
+                        isMega: MEGAS_IDS.includes(id),
+                        isGym: GYM_POKES.includes(id),
+                        isBlackShiny: BLACK_SHINIES.includes(id),
+                        isGreenShiny: SHINY_GREEN_IDS.includes(id),
+                        isBlueShiny: SHINY_BLUE_IDS.includes(id),
+                        isPinkShiny: SHINY_PINK_IDS.includes(id),
+                        isGoldShiny: SHINY_GOLD_IDS.includes(id),
+                        isRedShiny: SHINY_RED_IDS.includes(id),
+                        isBaby: BABY_IDS.includes(id),
+                        isFossil: FOSSIL_IDS.includes(id),
+                        isParadox: PARADOX_IDS.includes(id),
+                        isUB: UB_IDS.includes(id),
+                        stage: STAGE3_IDS.includes(id) ? 3 : STAGE2_IDS.includes(id) ? 2 : 1,
+                        needsItem: NEEDS_ITEM_IDS.includes(id),
+                        sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
+                    };
+                });
+
+                // Add Gen 8 & 9 & Megas
+                [...GEN8_DATA, ...GEN9_DATA, ...ZA_MEGAS_DATA, ...OFFICIAL_MEGAS_DATA].forEach(p => {
+                    if (!allPokemon.find(x => x.id === p[0])) {
+                        allPokemon.push({
+                            id: p[0], name: p[1], types: p[2],
+                            generation: p[0] < 810 ? 6 : (p[0] < 906 ? 8 : 9),
+                            isLegendary: LEGENDARIES_IDS.includes(p[0]),
+                            isMythical: MYTHICAL_IDS.includes(p[0]),
+                            isStarter: STARTERS_IDS.some(sid => p[0] >= sid && p[0] <= sid + 2),
+                            isMega: MEGAS_IDS.includes(p[0]) || p[0] > 10000,
+                            isGym: GYM_POKES.includes(p[0]),
+                            isBlackShiny: BLACK_SHINIES.includes(p[0]),
+                            isGreenShiny: SHINY_GREEN_IDS.includes(p[0]),
+                            isBlueShiny: SHINY_BLUE_IDS.includes(p[0]),
+                            isPinkShiny: SHINY_PINK_IDS.includes(p[0]),
+                            isGoldShiny: SHINY_GOLD_IDS.includes(p[0]),
+                            isRedShiny: SHINY_RED_IDS.includes(p[0]),
+                            isBaby: BABY_IDS.includes(p[0]),
+                            isFossil: FOSSIL_IDS.includes(p[0]),
+                            isParadox: PARADOX_IDS.includes(p[0]),
+                            isUB: UB_IDS.includes(p[0]),
+                            stage: STAGE3_IDS.includes(p[0]) ? 3 : STAGE2_IDS.includes(p[0]) ? 2 : 1,
+                            sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p[0]}.png`
+                        });
+                    }
+                });
+
+                allPokemon.sort((a,b) => a.id - b.id);
+                generateHeaders();
+                renderGrid();
+                document.getElementById('loading-screen').style.display = 'none';
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function generateHeaders() {
+            const types = ['Feu', 'Eau', 'Plante', 'Électrik', 'Dragon', 'Spectre', 'Combat', 'Fée', 'Acier', 'Normal', 'Vol', 'Sol', 'Poison', 'Psy', 'Roche', 'Glace', 'Insecte', 'Ténèbres'];
+            const specials = [
+                { type: 'legend', label: 'Légendaire', sub: 'STATUT' },
+                { type: 'mythical', label: 'Fabuleux', sub: 'STATUT' },
+                { type: 'mega', label: 'Méga', sub: 'FORME' },
+                { type: 'shiny_noir', label: 'Shiny Noir', sub: 'COULEUR' },
+                { type: 'starter', label: 'Starter', sub: 'DÉBUT' },
+                { type: 'dual', label: 'Double Type', sub: 'ATTRIBUT' },
+                { type: 'stage3', label: 'Stade 3', sub: 'ÉVOLUTION' }
+            ];
+
+            const pool = [
+                ...types.map(t => ({ type: 'type', value: t, label: t, sub: 'TYPE' })),
+                ...[1,2,3,4,5,6,7,8,9].map(g => ({ type: 'gen', value: g, label: 'Gen ' + g, sub: 'GÉNÉRATION' })),
+                ...specials
+            ];
+
+            let ok = false;
+            while(!ok) {
+                const shuf = [...pool].sort(() => Math.random() - 0.5);
+                const rows = shuf.slice(0, 3);
+                const cols = shuf.slice(3, 6);
+                
+                // Check if grid is possible
+                let possible = true;
+                for(let r of rows) {
+                    for(let c of cols) {
+                        if (!allPokemon.some(p => checkCriteria(p, r) && checkCriteria(p, c))) {
+                            possible = false;
+                            break;
+                        }
+                    }
+                    if (!possible) break;
+                }
+                if (possible) {
+                    gridHeaders = { rows, cols };
+                    ok = true;
+                }
+            }
+        }
+
+        function checkCriteria(p, c) {
+            if (c.type === 'type') return p.types.includes(c.value);
+            if (c.type === 'gen') return p.generation === c.value;
+            if (c.type === 'legend') return p.isLegendary;
+            if (c.type === 'mythical') return p.isMythical;
+            if (c.type === 'mega') return p.isMega;
+            if (c.type === 'shiny_noir') return p.isBlackShiny;
+            if (c.type === 'starter') return p.isStarter;
+            if (c.type === 'dual') return p.types.length === 2;
+            if (c.type === 'stage3') return p.stage === 3;
+            return false;
+        }
+
+        function renderGrid() {
+            const container = document.getElementById('grid-me');
+            container.innerHTML = '';
+
+            const corner = document.createElement('div');
+            corner.className = 'header-cell';
+            corner.innerHTML = '🧩';
+            container.appendChild(corner);
+
+            gridHeaders.cols.forEach(h => {
+                const c = document.createElement('div');
+                c.className = 'header-cell';
+                c.innerHTML = `<div class="header-label">${h.label}</div><div class="header-sub">${h.sub}</div>`;
+                container.appendChild(c);
+            });
+
+            for (let r = 0; r < 3; r++) {
+                const rh = gridHeaders.rows[r];
+                const rhc = document.createElement('div');
+                rhc.className = 'header-cell';
+                rhc.innerHTML = `<div class="header-label">${rh.label}</div><div class="header-sub">${rh.sub}</div>`;
+                container.appendChild(rhc);
+
+                for (let c = 0; c < 3; c++) {
+                    const idx = r * 3 + c;
+                    const cell = document.createElement('div');
+                    cell.className = 'game-cell';
+                    
+                    const pId = myGrid[idx];
+                    const p = pId ? allPokemon.find(x => x.id === pId) : null;
+
+                    if (p) {
+                        if (isValidated) {
+                            const isOk = checkCriteria(p, gridHeaders.rows[r]) && checkCriteria(p, gridHeaders.cols[c]);
+                            cell.classList.add(isOk ? 'correct' : 'error');
+                        }
+                        cell.innerHTML = `<div class="pokemon-entry"><img src="${p.sprite}"><div class="poke-name">${p.name}</div></div>`;
+                    } else {
+                        cell.innerHTML = '<span style="font-size:30px; color:var(--text-dim);">+</span>';
+                    }
+
+                    if (!isValidated) {
+                        cell.onclick = () => openModal(idx);
+                    }
+                    container.appendChild(cell);
+                }
+            }
+        }
+
+        window.openModal = (idx) => {
+            currentCell = idx;
+            const r = gridHeaders.rows[Math.floor(idx/3)];
+            const c = gridHeaders.cols[idx%3];
+            document.getElementById('modal-target-title').innerText = `${r.label} × ${c.label}`;
+            document.getElementById('modal-overlay').classList.add('active');
+            document.getElementById('search-input').value = '';
+            showResults('');
+            setTimeout(() => document.getElementById('search-input').focus(), 100);
+        };
+
+        window.filterPokemon = (v) => showResults(v);
+
+        function showResults(query) {
+            const container = document.getElementById('results-grid');
+            const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            
+            const filtered = allPokemon.filter(p => p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q)).slice(0, 50);
+            
+            container.innerHTML = '';
+            filtered.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.innerHTML = `<img src="${p.sprite}"><div class="result-name">${p.name}</div>`;
+                card.onclick = () => selectPokemon(p.id);
+                container.appendChild(card);
+            });
+        }
+
+        function selectPokemon(pId) {
+            myGrid[currentCell] = pId;
+            renderGrid();
+            document.getElementById('modal-overlay').classList.remove('active');
+        }
+
+        window.handleValidate = () => {
+            isValidated = true;
+            renderGrid();
+            document.getElementById('btn-validate').style.display = 'none';
+            document.getElementById('btn-restart').style.display = 'block';
+        };
+
+        init();
+    </script>
+</body>
+</html>

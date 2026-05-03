@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starter Aveugle — PokeChampion</title>
+<link rel="icon" type="image/png" href="image/master_ball.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #080c14;
+    --bg-panel: #0d1422;
+    --bg-card: #121929;
+    --border: #1e2d45;
+    --accent: #e63946;
+    --accent2: #4cc9f0;
+    --accent3: #f4d03f;
+    --text-primary: #e8edf5;
+    --text-dim: #7a8fa8;
+    --scan-line: rgba(76, 201, 240, 0.03);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: 'Exo 2', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, var(--scan-line) 2px, var(--scan-line) 4px);
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+  
+  header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 50px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+  }
+
+  .btn {
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      padding: 12px 24px; border-radius: 8px; border: none;
+      cursor: pointer; text-transform: uppercase; transition: 0.2s;
+  }
+  .btn-primary { background: var(--accent2); color: #000; }
+  .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(76, 201, 240, 0.4); }
+
+  .btn-icon {
+      background: var(--bg-card); border: 1px solid var(--border);
+      color: white; width: 45px; height: 45px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 20px; text-decoration: none;
+  }
+
+  .starter-grid {
+      display: flex; flex-wrap: wrap; gap: 25px; justify-content: center;
+  }
+
+  .starter-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 30px;
+      width: 330px;
+      text-align: center;
+      animation: fadeInScale 0.5s ease backwards;
+      transition: border-color 0.3s;
+  }
+  .starter-card:hover { border-color: var(--accent2); }
+
+  @keyframes fadeInScale {
+      from { opacity:0; transform: scale(0.9); }
+      to { opacity:1; transform: scale(1); }
+  }
+
+  .img-box {
+      background: rgba(255,255,255,0.03);
+      border-radius: 50%; width: 160px; height: 160px;
+      margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;
+  }
+
+  .type-badge {
+      display: inline-block; padding: 4px 12px; border-radius: 6px;
+      font-size: 11px; font-weight: 700; color: white; text-transform: uppercase;
+      margin: 0 4px;
+  }
+
+  .stat-row { margin-bottom: 10px; text-align: left; }
+  .stat-header { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
+  .stat-bar-bg { background: rgba(255,255,255,0.05); height: 6px; border-radius: 3px; overflow: hidden; }
+  .stat-bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease-out; }
+
+  .loader {
+    width: 48px; height: 48px; border: 5px solid var(--border);
+    border-bottom-color: var(--accent2); border-radius: 50%;
+    display: inline-block; animation: rotation 1s linear infinite;
+  }
+  @keyframes rotation { to { transform: rotate(360deg); } }
+
+  .toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      padding: 12px 24px; background: var(--accent2); color: black;
+      border-radius: 8px; font-weight: bold; z-index: 10000;
+      animation: slideUp 0.5s ease-out, fadeOut 0.5s 2.5s forwards;
+  }
+  @keyframes slideUp { from { transform: translate(-50%, 50px); opacity: 0; } }
+  @keyframes fadeOut { to { opacity: 0; } }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div style="display:flex; align-items:center; gap:20px;">
+            <a href="index.html" class="btn-icon">🏠</a>
+            <h1 style="font-family: 'Rajdhani'; font-weight: 700; letter-spacing: 2px;">STARTER AVEUGLE</h1>
+        </div>
+        <button class="btn btn-primary" onclick="generateStarters()">GÉNÉRER 3 POKÉMON</button>
+    </header>
+
+    <div id="starters-container" class="starter-grid">
+        <div style="text-align:center; padding: 100px; color:var(--text-dim);">
+            <div style="font-size: 60px; margin-bottom: 20px;">🎲</div>
+            <p>Cliquez sur le bouton pour générer vos starters aléatoires !</p>
+        </div>
+    </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+    let allPokemon = [];
+
+    async function init() {
+        // Fusionner toutes les sources de données pour avoir le pool complet
+        const rawData = offlineBackup.map(p => ({id:p[0], name:p[1], types:p[3]}));
+        const gen8 = GEN8_DATA.map(p => ({id:p[0], name:p[1], types:p[2]}));
+        const gen9 = GEN9_DATA.map(p => ({id:p[0], name:p[1], types:p[2]}));
+        const megas = [...ZA_MEGAS_DATA, ...OFFICIAL_MEGAS_DATA].map(p => ({id:p[0], name:p[1], types:p[2]}));
+        
+        allPokemon = [...rawData, ...gen8, ...gen9, ...megas];
+    }
+
+    async function generateStarters() {
+        const container = document.getElementById('starters-container');
+        container.innerHTML = '<div style="width:100%; text-align:center;"><div class="loader"></div></div>';
+        
+        const shuffled = [...allPokemon].sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, 3);
+        
+        const cardsHTML = await Promise.all(selected.map(async (p, idx) => {
+            let stats = { hp: 50, atk: 50, def: 50, spa: 50, spd: 50, spe: 50 };
+            try {
+                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${p.id}`);
+                const data = await res.json();
+                data.stats.forEach(s => {
+                    const name = s.stat.name.replace('-', '');
+                    if (stats[name] !== undefined) stats[name] = s.base_stat;
+                    else if (s.stat.name === 'special-attack') stats.spa = s.base_stat;
+                    else if (s.stat.name === 'special-defense') stats.spd = s.base_stat;
+                });
+            } catch(e) {}
+
+            return `
+                <div class="starter-card" style="animation-delay: ${idx * 0.15}s">
+                    <div class="img-box">
+                        <img id="img-${p.id}" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png" style="width:130px;">
+                    </div>
+                    <div style="font-family:'Share Tech Mono'; color:var(--accent2); font-size:12px; margin-bottom:5px;">N°${p.id}</div>
+                    <h2 style="font-family:'Rajdhani'; margin-bottom:10px;">${p.name.toUpperCase()}</h2>
+                    <div style="margin-bottom:25px;">
+                        ${p.types.map(t => `<span class="type-badge" style="background:${TYPE_COLORS[t] || '#777'}">${t}</span>`).join('')}
+                    </div>
+                    
+                    <div style="margin-bottom:25px;">
+                        ${renderStat('PV', stats.hp, '#ff5e5e')}
+                        ${renderStat('ATK', stats.atk, '#ff9e5e')}
+                        ${renderStat('DEF', stats.def, '#ffda5e')}
+                        ${renderStat('VIT', stats.spe, '#5eafff')}
+                    </div>
+                    
+                    <button class="btn" style="width:100%; background:rgba(255,255,255,0.05); color:white; border:1px solid var(--border);" onclick="toggleShiny(${p.id})">FORMES CHROMATIQUES</button>
+                </div>
+            `;
+        }));
+        
+        container.innerHTML = cardsHTML.join('');
+    }
+
+    function renderStat(label, value, color) {
+        const percent = Math.min(100, (value / 255) * 100);
+        return `
+            <div class="stat-row">
+                <div class="stat-header"><span>${label}</span><span style="color:white; font-weight:700;">${value}</span></div>
+                <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${percent}%; background:${color}; box-shadow: 0 0 10px ${color}44;"></div></div>
+            </div>
+        `;
+    }
+
+    window.toggleShiny = function(id) {
+        const img = document.getElementById(`img-${id}`);
+        const normal = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+        const shiny = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/${id}.png`;
+        
+        if (img.src === normal) {
+            img.src = shiny;
+            showToast("✨ Forme Shiny détectée !");
+        } else {
+            img.src = normal;
+        }
+    }
+
+    function showToast(msg) {
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.innerText = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+
+    init();
+</script>
+
+</body>
+</html>
