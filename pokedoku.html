@@ -499,10 +499,13 @@
                     const p = pId ? allPokemon.find(x => x.id === pId) : null;
 
                     if (p) {
-                        if (isValidated) {
-                            const isOk = checkCriteria(p, gridHeaders.rows[r]) && checkCriteria(p, gridHeaders.cols[c]);
+                        const isOk = checkCriteria(p, gridHeaders.rows[r]) && checkCriteria(p, gridHeaders.cols[c]);
+                        
+                        // Si validé ou si c'est un Pokémon qui était déjà là (et donc forcément bon si on est en phase > 1)
+                        if (isValidated || isOk) {
                             cell.classList.add(isOk ? 'correct' : 'error');
                         }
+                        
                         cell.innerHTML = `<div class="pokemon-entry"><img src="${p.sprite}"><div class="poke-name">${p.name}</div></div>`;
                     } else { cell.innerHTML = '<span style="font-size:30px; color:var(--text-dim);">+</span>'; }
                     if (!isValidated && target === 'me') cell.onclick = () => openModal(idx);
@@ -512,9 +515,10 @@
         }
 
         window.handleValidate = async () => {
+            isValidated = true;
+            renderGrid('me');
+            
             if (gameMode === 'solo') {
-                isValidated = true;
-                renderGrid('me');
                 document.getElementById('btn-validate').style.display = 'none';
                 document.getElementById('btn-next').style.display = 'block';
             } else {
