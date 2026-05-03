@@ -267,7 +267,7 @@
             }
 
             try {
-                const rawData = data || offlineBackup.map(p => ({id:p[0], name:{french:p[1]}, type:p[3]}));
+                const rawData = data || offlineBackup.map(p => ({id:p[0], name:{french:p[1]}, type:p[2]}));
                 
                 allPokemon = rawData.map(p => {
                     const id = p.id;
