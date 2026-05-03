@@ -332,6 +332,7 @@
         let gridHeaders = { rows: [], cols: [] };
         let myGrid = Array(9).fill(null);
         let oppGrid = Array(9).fill(null);
+        let gridAtPhaseStart = Array(9).fill(null);
         let currentCell = null;
         let isValidated = false;
         let roomName = null;
@@ -377,6 +378,7 @@
             if (allPokemon.length === 0) return alert("Le Pokédex est encore en cours de chargement...");
             try {
                 generateHeaders();
+                gridAtPhaseStart = Array(9).fill(null);
                 renderGrid('me');
                 document.getElementById('setup-menu').style.display = 'none';
                 document.getElementById('main-game').style.display = 'block';
@@ -533,8 +535,12 @@
                     if (p) {
                         const isOk = checkCriteria(p, gridHeaders.rows[r]) && checkCriteria(p, gridHeaders.cols[c]);
                         
-                        // Si validé ou si c'est un Pokémon qui était déjà là (et donc forcément bon si on est en phase > 1)
-                        if (isValidated || isOk) {
+                        // On affiche la couleur si :
+                        // 1. On a cliqué sur Valider (isValidated)
+                        // 2. OU si le Pokémon était déjà là au début de la phase (survivant d'une phase précédente)
+                        const wasAlreadyThere = target === 'me' && gridAtPhaseStart[idx] === pId;
+
+                        if (isValidated || wasAlreadyThere) {
                             cell.classList.add(isOk ? 'correct' : 'error');
                         }
                         
@@ -549,6 +555,7 @@
         window.handleValidate = async () => {
             isValidated = true;
             renderGrid('me');
+            // ...
             
             if (gameMode === 'solo') {
                 document.getElementById('btn-validate').style.display = 'none';
@@ -589,13 +596,13 @@
 
         function resetForNextPhase() {
             isValidated = false;
-            // On garde les bons, on vire les mauvais
             myGrid = myGrid.map((pId, i) => {
                 if (!pId) return null;
                 const p = allPokemon.find(x => x.id === pId);
                 const ok = checkCriteria(p, gridHeaders.rows[Math.floor(i/3)]) && checkCriteria(p, gridHeaders.cols[i%3]);
                 return ok ? pId : null;
             });
+            gridAtPhaseStart = [...myGrid];
             renderGrid('me');
             document.getElementById('btn-next').style.display = 'none';
             document.getElementById('btn-next').disabled = false;
