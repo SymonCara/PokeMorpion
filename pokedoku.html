@@ -457,7 +457,7 @@
             
             // On s'assure que allPokemon est bien trié par ID
             const sortedPool = [...allPokemon].sort((a, b) => a.id - b.id);
-            const filtered = sortedPool.filter(p => p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q)).slice(0, 300);
+            const filtered = sortedPool.filter(p => p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q));
             
             container.innerHTML = '';
             filtered.forEach(p => {
