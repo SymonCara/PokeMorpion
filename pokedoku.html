@@ -251,11 +251,16 @@
         let isValidated = false;
 
         async function init() {
+            let data = null;
             try {
                 // Fetch from CDN
                 const res = await fetch('https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json');
-                let data = res.ok ? await res.json() : null;
+                if (res.ok) data = await res.json();
+            } catch (e) {
+                console.warn("Fetch failed, using local backup", e);
+            }
 
+            try {
                 const rawData = data || offlineBackup.map(p => ({id:p[0], name:{french:p[1]}, type:p[3]}));
                 
                 allPokemon = rawData.map(p => {
@@ -292,7 +297,7 @@
                     if (!allPokemon.find(x => x.id === p[0])) {
                         allPokemon.push({
                             id: p[0], name: p[1], types: p[2],
-                            generation: p[0] < 810 ? 6 : (p[0] < 906 ? 8 : 9),
+                            generation: p[0] < 810 ? (p[0] > 721 ? 7 : 6) : (p[0] < 906 ? 8 : 9),
                             isLegendary: LEGENDARIES_IDS.includes(p[0]),
                             isMythical: MYTHICAL_IDS.includes(p[0]),
                             isStarter: STARTERS_IDS.some(sid => p[0] >= sid && p[0] <= sid + 2),
@@ -319,7 +324,7 @@
                 renderGrid();
                 document.getElementById('loading-screen').style.display = 'none';
             } catch (e) {
-                console.error(e);
+                console.error("Erreur critique initialisation Pokedoku:", e);
             }
         }
 
