@@ -114,8 +114,17 @@
         .game-cell:hover { border-color: var(--accent); background: #1e1e24; transform: scale(1.02); }
         .game-cell.locked { cursor: default; border-style: solid; border-color: var(--border); }
         .game-cell.locked:hover { transform: none; background: var(--bg-card); }
-        .game-cell.correct { border-color: #4CAF50; background: rgba(76, 175, 80, 0.1); border-style: solid; }
+        .game-cell.correct { border-color: #4CAF50; background: rgba(76, 175, 80, 0.1); border-style: solid; box-shadow: inset 0 0 10px rgba(76, 175, 80, 0.2); }
         .game-cell.error { border-color: var(--accent); background: rgba(255, 62, 62, 0.1); border-style: solid; }
+
+        .grids-wrapper {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .grid-container { flex: 1; min-width: 300px; max-width: 450px; }
 
         .pokemon-entry { display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .pokemon-entry img { width: 70%; image-rendering: pixelated; }
@@ -244,24 +253,28 @@
             <h1 style="font-size: 18px;">POKEDOKU</h1>
             <p id="phase-counter" style="font-size: 10px; color: var(--accent);">PHASE 1</p>
         </div>
-        <div id="waiting-status" style="font-size: 10px; color: var(--accent3); visibility:hidden;">ATTENTE...</div>
+        <div id="waiting-status" style="font-size: 10px; color: var(--accent3); visibility:hidden; font-weight:bold;">EN ATTENTE DE L'ADVERSAIRE...</div>
     </header>
 
-    <main class="game-container" id="main-game" style="display:none;">
-        <div id="my-zone">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <h3 id="my-label" style="font-size:14px; color:var(--accent2);">VOTRE GRILLE</h3>
-                <span id="my-score" style="font-size:12px; font-weight:bold;">0/9</span>
+    <main class="game-container" id="main-game" style="display:none; max-width:1200px;">
+        <div class="grids-wrapper">
+            <!-- Mon Plateau -->
+            <div id="my-zone" class="grid-container">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h3 id="my-label" style="font-size:14px; color:var(--accent2);">VOTRE GRILLE</h3>
+                    <span id="my-score" style="font-size:12px; font-weight:bold;">0/9</span>
+                </div>
+                <div id="grid-me" class="grid-layout"></div>
             </div>
-            <div id="grid-me" class="grid-layout"></div>
-        </div>
 
-        <div id="opp-zone" style="display:none; margin-top:30px; opacity:0.6; pointer-events:none; border-top: 1px dashed var(--border); padding-top:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <h3 style="font-size:14px; color:var(--accent);">ADVERSAIRE</h3>
-                <span id="opp-score" style="font-size:12px; font-weight:bold;">0/9</span>
+            <!-- Plateau Adversaire -->
+            <div id="opp-zone" class="grid-container" style="display:none; opacity:0.8; pointer-events:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h3 style="font-size:14px; color:var(--accent);">ADVERSAIRE</h3>
+                    <span id="opp-score" style="font-size:12px; font-weight:bold;">0/9</span>
+                </div>
+                <div id="grid-opp" class="grid-layout"></div>
             </div>
-            <div id="grid-opp" class="grid-layout"></div>
         </div>
 
         <div id="game-controls">
