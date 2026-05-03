@@ -449,7 +449,7 @@
             const container = document.getElementById('results-grid');
             const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             
-            const filtered = allPokemon.filter(p => p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q)).slice(0, 50);
+            const filtered = allPokemon.filter(p => p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q)).slice(0, 250);
             
             container.innerHTML = '';
             filtered.forEach(p => {
@@ -459,6 +459,10 @@
                 card.onclick = () => selectPokemon(p.id);
                 container.appendChild(card);
             });
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1/4; padding: 40px; text-align: center; color: var(--text-dim);">Aucun Pokémon trouvé.</div>';
+            }
         }
 
         function selectPokemon(pId) {
