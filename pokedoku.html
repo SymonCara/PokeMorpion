@@ -199,30 +199,64 @@
         <p style="margin-top: 20px; color: var(--text-secondary);">Récupération du Pokédex National...</p>
     </div>
 
+    <!-- Setup Menu -->
+    <div id="setup-menu" style="position:fixed; inset:0; background:var(--bg); z-index:500; display:flex; align-items:center; justify-content:center; padding:20px;">
+        <div class="modal" style="display:block; padding:30px; text-align:center;">
+            <h1 style="color:var(--accent); margin-bottom:20px;">CONFIGURATION POKEDOKU</h1>
+            
+            <div style="margin-bottom:30px;">
+                <p style="color:var(--text-secondary); margin-bottom:10px;">MODE DE JEU</p>
+                <div style="display:flex; gap:10px; justify-content:center;">
+                    <button id="mode-solo" class="btn-validate" style="margin:0; width:auto; padding:10px 20px; background:var(--accent2);" onclick="selectMode('solo')">SOLO (2 PHASES)</button>
+                    <button id="mode-multi" class="btn-validate" style="margin:0; width:auto; padding:10px 20px; background:var(--bg-card); border:1px solid var(--border);" onclick="selectMode('multi')">MULTIJOUEUR</button>
+                </div>
+            </div>
+
+            <div id="multi-options" style="display:none; margin-bottom:30px; animation: slideUp 0.3s ease;">
+                <p style="color:var(--text-secondary); margin-bottom:10px;">NOMBRE DE PHASES</p>
+                <div style="display:flex; gap:5px; justify-content:center; margin-bottom:15px;">
+                    <button class="phase-btn" onclick="setPhases(1)">1</button>
+                    <button class="phase-btn" onclick="setPhases(2)">2</button>
+                    <button class="phase-btn" onclick="setPhases(3)">3</button>
+                    <button class="phase-btn" onclick="setPhases(5)">5</button>
+                    <button class="phase-btn" onclick="setPhases(999)">∞</button>
+                </div>
+                <input type="text" id="multi-room" placeholder="Nom de la salle..." class="search-input" style="text-align:center;">
+            </div>
+
+            <button id="start-game" class="btn-validate" onclick="startGame()">LANCER LA PARTIE</button>
+            <br>
+            <a href="index.html" style="color:var(--text-dim); text-decoration:none; font-size:12px; display:inline-block; margin-top:20px;">RETOUR AU MENU</a>
+        </div>
+    </div>
+
+    <style>
+        .phase-btn { background:var(--bg-card); border:1px solid var(--border); color:white; padding:10px; border-radius:8px; cursor:pointer; width:45px; }
+        .phase-btn.active { background:var(--accent); border-color:var(--accent); }
+    </style>
+
     <header>
-        <a href="index.html" class="btn-back"><span>←</span> Menu</a>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <a href="pokedoku.html" class="btn-back"><span>↺</span></a>
+            <div id="room-status" style="font-size: 10px; color: var(--text-dim);">SOLO</div>
+        </div>
         <div style="text-align: center;">
-            <h1 style="font-size: 18px;">POKEDOKU DUEL</h1>
-            <p id="room-status" style="font-size: 10px; color: var(--text-dim);">MODE SOLO</p>
+            <h1 style="font-size: 18px;">POKEDOKU</h1>
+            <p id="phase-counter" style="font-size: 10px; color: var(--accent);">PHASE 1</p>
         </div>
-        <div style="display:flex; gap:5px;">
-            <input type="text" id="room-id" placeholder="SALLE" style="width:60px; background:#1a1a20; border:1px solid var(--border); color:white; font-size:10px; padding:5px; border-radius:5px;">
-            <button onclick="joinRoom()" style="background:var(--accent2); color:white; border:none; padding:5px 10px; border-radius:5px; font-size:10px; cursor:pointer;">REJOINDRE</button>
-        </div>
+        <div id="waiting-status" style="font-size: 10px; color: var(--accent3); visibility:hidden;">ATTENTE...</div>
     </header>
 
-    <main class="game-container">
-        <!-- Mon Plateau -->
-        <div style="margin-bottom: 30px;">
+    <main class="game-container" id="main-game" style="display:none;">
+        <div id="my-zone">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <h3 style="font-size:14px; color:var(--accent2);">VOTRE GRILLE</h3>
+                <h3 id="my-label" style="font-size:14px; color:var(--accent2);">VOTRE GRILLE</h3>
                 <span id="my-score" style="font-size:12px; font-weight:bold;">0/9</span>
             </div>
             <div id="grid-me" class="grid-layout"></div>
         </div>
 
-        <!-- Plateau Adversaire -->
-        <div id="opponent-section" style="display:none; opacity:0.7; pointer-events:none;">
+        <div id="opp-zone" style="display:none; margin-top:30px; opacity:0.6; pointer-events:none; border-top: 1px dashed var(--border); padding-top:20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                 <h3 style="font-size:14px; color:var(--accent);">ADVERSAIRE</h3>
                 <span id="opp-score" style="font-size:12px; font-weight:bold;">0/9</span>
@@ -230,8 +264,11 @@
             <div id="grid-opp" class="grid-layout"></div>
         </div>
 
-        <button id="btn-validate" class="btn-validate" onclick="handleValidate()">VALIDER LA GRILLE</button>
-        <button id="btn-restart" class="btn-validate" style="background: var(--bg-card); border: 1px solid var(--border); margin-top: 10px; display:none;" onclick="location.reload()">REJOUER / RESET</button>
+        <div id="game-controls">
+            <button id="btn-validate" class="btn-validate" onclick="handleValidate()">VALIDER LA GRILLE</button>
+            <button id="btn-next" class="btn-validate" style="background:var(--accent2); display:none;" onclick="handleNextPhase()">PASSER À LA PHASE SUIVANTE</button>
+            <button id="btn-restart" class="btn-validate" style="background: var(--bg-card); border: 1px solid var(--border); margin-top: 10px; display:none;" onclick="location.reload()">REJOUER</button>
+        </div>
     </main>
 
     <div id="modal-overlay">
@@ -271,27 +308,54 @@
         let isValidated = false;
         let roomName = null;
         let myPlayerId = 'p1';
+        let gameMode = 'solo';
+        let maxPhases = 2;
+        let currentPhase = 1;
+        let isWaitingForNext = false;
+
+        window.selectMode = (m) => {
+            gameMode = m;
+            document.getElementById('mode-solo').style.background = m === 'solo' ? 'var(--accent2)' : 'var(--bg-card)';
+            document.getElementById('mode-multi').style.background = m === 'multi' ? 'var(--accent2)' : 'var(--bg-card)';
+            document.getElementById('multi-options').style.display = m === 'multi' ? 'block' : 'none';
+            if (m === 'solo') maxPhases = 2;
+        };
+
+        window.setPhases = (n) => {
+            maxPhases = n;
+            document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        };
+
+        window.startGame = async () => {
+            if (gameMode === 'multi') {
+                const room = document.getElementById('multi-room').value.trim();
+                if (!room) return alert("Entrez un nom de salle !");
+                roomName = room;
+                await joinRoom();
+            } else {
+                generateHeaders();
+                renderGrid('me');
+            }
+            document.getElementById('setup-menu').style.display = 'none';
+            document.getElementById('main-game').style.display = 'block';
+            updateUI();
+        };
 
         async function init() {
             let data = null;
             try {
                 const res = await fetch('https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json');
                 if (res.ok) data = await res.json();
-            } catch (e) {
-                try {
-                    const res2 = await fetch('https://unpkg.com/pokemon.json@1.0.0/pokedex.json');
-                    if (res2.ok) data = await res2.json();
-                } catch (e2) {}
-            }
+            } catch (e) {}
 
             try {
                 const rawData = data || offlineBackup.map(p => ({id:p[0], name:{french:p[1]}, type:p[2]}));
                 allPokemon = rawData.map(p => {
                     const id = p.id;
                     const types = (p.type || []).map(t => TYPE_MAP[t] || t).filter(Boolean);
-                    let name = p.name.french || p.name.english;
                     return {
-                        id, name, types,
+                        id, name: p.name.french || p.name.english, types,
                         generation: id <= 151 ? 1 : id <= 251 ? 2 : id <= 386 ? 3 : id <= 493 ? 4 : id <= 649 ? 5 : id <= 721 ? 6 : id <= 809 ? 7 : id <= 905 ? 8 : 9,
                         isLegendary: LEGENDARIES_IDS.includes(id),
                         isMythical: MYTHICAL_IDS.includes(id),
@@ -318,28 +382,12 @@
                         });
                     }
                 });
-
                 allPokemon.sort((a,b) => a.id - b.id);
-                
-                // Si pas de room, on génère localement
-                if (!roomName) {
-                    generateHeaders();
-                    renderGrid('me');
-                }
-                
                 document.getElementById('loading-screen').style.display = 'none';
-            } catch (e) {
-                console.error("Init error:", e);
-            }
+            } catch (e) { console.error(e); }
         }
 
-        window.joinRoom = async () => {
-            const id = document.getElementById('room-id').value.trim();
-            if (!id) return;
-            roomName = id;
-            document.getElementById('room-status').innerText = `SALLE: ${id}`;
-            document.getElementById('opponent-section').style.display = 'block';
-
+        async function joinRoom() {
             const roomRef = doc(db, "pokedoku_rooms", roomName);
             const snap = await getDoc(roomRef);
 
@@ -348,67 +396,66 @@
                 generateHeaders();
                 await setDoc(roomRef, {
                     headers: gridHeaders,
-                    p1_grid: myGrid,
-                    p2_grid: Array(9).fill(null),
-                    p1_ready: false,
-                    p2_ready: false
+                    p1_grid: myGrid, p2_grid: Array(9).fill(null),
+                    p1_done: false, p2_done: false,
+                    p1_next: false, p2_next: false,
+                    maxPhases: maxPhases, currentPhase: 1
                 });
             } else {
                 myPlayerId = 'p2';
-                gridHeaders = snap.data().headers;
+                const d = snap.data();
+                gridHeaders = d.headers;
+                maxPhases = d.maxPhases;
+                currentPhase = d.currentPhase;
             }
 
             onSnapshot(roomRef, (doc) => {
-                const data = doc.data();
-                if (!data) return;
-                gridHeaders = data.headers;
-                oppGrid = myPlayerId === 'p1' ? data.p2_grid : data.p1_grid;
-                myGrid = myPlayerId === 'p1' ? data.p1_grid : data.p2_grid;
+                const d = doc.data();
+                if (!d) return;
+                oppGrid = myPlayerId === 'p1' ? d.p2_grid : d.p1_grid;
+                
+                const oppDone = myPlayerId === 'p1' ? d.p2_done : d.p1_done;
+                const myDone = myPlayerId === 'p1' ? d.p1_done : d.p2_done;
+
+                if (oppDone && myDone) {
+                    isValidated = true;
+                    document.getElementById('opp-zone').style.display = 'block';
+                    document.getElementById('btn-next').style.display = 'block';
+                    document.getElementById('waiting-status').style.visibility = 'hidden';
+                }
+
+                // Transition phase
+                if (d.p1_next && d.p2_next) {
+                    currentPhase = d.currentPhase;
+                    resetForNextPhase();
+                }
+
                 renderGrid('me');
                 renderGrid('opp');
-                
-                // Score
                 document.getElementById('my-score').innerText = `${myGrid.filter(x => x).length}/9`;
                 document.getElementById('opp-score').innerText = `${oppGrid.filter(x => x).length}/9`;
+                updateUI();
             });
-        };
+        }
 
         function generateHeaders() {
             const types = ['Feu', 'Eau', 'Plante', 'Électrik', 'Dragon', 'Spectre', 'Combat', 'Fée', 'Acier', 'Normal', 'Vol', 'Sol', 'Poison', 'Psy', 'Roche', 'Glace', 'Insecte', 'Ténèbres'];
-            const specials = [
-                { type: 'legend', label: 'Légendaire', sub: 'STATUT' },
-                { type: 'mythical', label: 'Fabuleux', sub: 'STATUT' },
-                { type: 'mega', label: 'Méga', sub: 'FORME' },
-                { type: 'shiny_noir', label: 'Shiny Noir', sub: 'COULEUR' },
-                { type: 'starter', label: 'Starter', sub: 'DÉBUT' },
-                { type: 'dual', label: 'Double Type', sub: 'ATTRIBUT' },
-                { type: 'stage3', label: 'Stade 3', sub: 'ÉVOLUTION' }
-            ];
-            const pool = [...types.map(t => ({ type: 'type', value: t, label: t, sub: 'TYPE' })), ...[1,2,3,4,5,6,7,8,9].map(g => ({ type: 'gen', value: g, label: 'Gen ' + g, sub: 'GÉNÉRATION' })), ...specials];
+            const specials = [{ type: 'legend', label: 'Légendaire' }, { type: 'starter', label: 'Starter' }, { type: 'dual', label: 'Double Type' }, { type: 'stage3', label: 'Stade 3' }];
+            const pool = [...types.map(t => ({ type: 'type', value: t, label: t, sub: 'TYPE' })), ...specials.map(s => ({...s, sub: 'STATUT'}))];
 
             let ok = false;
             while(!ok) {
                 const shuf = [...pool].sort(() => Math.random() - 0.5);
-                const rows = shuf.slice(0, 3);
-                const cols = shuf.slice(3, 6);
+                const rows = shuf.slice(0, 3); const cols = shuf.slice(3, 6);
                 let possible = true;
-                for(let r of rows) {
-                    for(let c of cols) {
-                        if (!allPokemon.some(p => checkCriteria(p, r) && checkCriteria(p, c))) { possible = false; break; }
-                    }
-                    if (!possible) break;
-                }
+                for(let r of rows) { for(let c of cols) { if (!allPokemon.some(p => checkCriteria(p, r) && checkCriteria(p, c))) { possible = false; break; } } if (!possible) break; }
                 if (possible) { gridHeaders = { rows, cols }; ok = true; }
             }
         }
 
         function checkCriteria(p, c) {
             if (c.type === 'type') return p.types.includes(c.value);
-            if (c.type === 'gen') return p.generation === c.value;
             if (c.type === 'legend') return p.isLegendary;
-            if (c.type === 'mythical') return p.isMythical;
-            if (c.type === 'mega') return p.isMega;
-            if (c.type === 'shiny_noir') return p.isBlackShiny;
             if (c.type === 'starter') return p.isStarter;
             if (c.type === 'dual') return p.types.length === 2;
             if (c.type === 'stage3') return p.stage === 3;
@@ -417,33 +464,24 @@
 
         function renderGrid(target) {
             const container = document.getElementById(target === 'me' ? 'grid-me' : 'grid-opp');
-            if (!container) return;
-            container.innerHTML = '';
-
-            const corner = document.createElement('div');
-            corner.className = 'header-cell';
-            corner.innerHTML = '🧩';
-            container.appendChild(corner);
-
+            if (!container) return; container.innerHTML = '';
+            
+            const corner = document.createElement('div'); corner.className = 'header-cell'; corner.innerHTML = '🧩'; container.appendChild(corner);
             gridHeaders.cols.forEach(h => {
-                const c = document.createElement('div');
-                c.className = 'header-cell';
+                const c = document.createElement('div'); c.className = 'header-cell';
                 c.innerHTML = `<div class="header-label">${h.label}</div><div class="header-sub">${h.sub}</div>`;
                 container.appendChild(c);
             });
 
             for (let r = 0; r < 3; r++) {
                 const rh = gridHeaders.rows[r];
-                const rhc = document.createElement('div');
-                rhc.className = 'header-cell';
+                const rhc = document.createElement('div'); rhc.className = 'header-cell';
                 rhc.innerHTML = `<div class="header-label">${rh.label}</div><div class="header-sub">${rh.sub}</div>`;
                 container.appendChild(rhc);
 
                 for (let c = 0; c < 3; c++) {
                     const idx = r * 3 + c;
-                    const cell = document.createElement('div');
-                    cell.className = 'game-cell';
-                    
+                    const cell = document.createElement('div'); cell.className = 'game-cell';
                     const pId = target === 'me' ? myGrid[idx] : oppGrid[idx];
                     const p = pId ? allPokemon.find(x => x.id === pId) : null;
 
@@ -453,22 +491,90 @@
                             cell.classList.add(isOk ? 'correct' : 'error');
                         }
                         cell.innerHTML = `<div class="pokemon-entry"><img src="${p.sprite}"><div class="poke-name">${p.name}</div></div>`;
-                    } else {
-                        cell.innerHTML = '<span style="font-size:30px; color:var(--text-dim);">+</span>';
-                    }
-
-                    if (!isValidated && target === 'me') {
-                        cell.onclick = () => openModal(idx);
-                    }
+                    } else { cell.innerHTML = '<span style="font-size:30px; color:var(--text-dim);">+</span>'; }
+                    if (!isValidated && target === 'me') cell.onclick = () => openModal(idx);
                     container.appendChild(cell);
                 }
             }
         }
 
+        window.handleValidate = async () => {
+            if (gameMode === 'solo') {
+                isValidated = true;
+                renderGrid('me');
+                document.getElementById('btn-validate').style.display = 'none';
+                document.getElementById('btn-next').style.display = 'block';
+            } else {
+                const roomRef = doc(db, "pokedoku_rooms", roomName);
+                const update = {}; update[`${myPlayerId}_done`] = true;
+                await updateDoc(roomRef, update);
+                document.getElementById('waiting-status').style.visibility = 'visible';
+                document.getElementById('btn-validate').style.display = 'none';
+            }
+        };
+
+        window.handleNextPhase = async () => {
+            if (gameMode === 'solo') {
+                if (currentPhase < maxPhases) {
+                    const allCorrect = myGrid.every((pId, i) => {
+                        if (!pId) return false;
+                        const p = allPokemon.find(x => x.id === pId);
+                        return checkCriteria(p, gridHeaders.rows[Math.floor(i/3)]) && checkCriteria(p, gridHeaders.cols[i%3]);
+                    });
+                    if (allCorrect) return endGame(true);
+                    
+                    currentPhase++;
+                    resetForNextPhase();
+                } else {
+                    endGame();
+                }
+            } else {
+                const roomRef = doc(db, "pokedoku_rooms", roomName);
+                const update = { currentPhase: currentPhase + 1 };
+                update[`${myPlayerId}_next`] = true;
+                await updateDoc(roomRef, update);
+                document.getElementById('btn-next').disabled = true;
+                document.getElementById('waiting-status').style.visibility = 'visible';
+            }
+        };
+
+        function resetForNextPhase() {
+            isValidated = false;
+            // On garde les bons, on vire les mauvais
+            myGrid = myGrid.map((pId, i) => {
+                if (!pId) return null;
+                const p = allPokemon.find(x => x.id === pId);
+                const ok = checkCriteria(p, gridHeaders.rows[Math.floor(i/3)]) && checkCriteria(p, gridHeaders.cols[i%3]);
+                return ok ? pId : null;
+            });
+            renderGrid('me');
+            document.getElementById('btn-next').style.display = 'none';
+            document.getElementById('btn-next').disabled = false;
+            document.getElementById('btn-validate').style.display = 'block';
+            document.getElementById('waiting-status').style.visibility = 'hidden';
+            if (gameMode === 'multi') document.getElementById('opp-zone').style.display = 'none';
+            updateUI();
+        }
+
+        function endGame(victory = false) {
+            document.getElementById('btn-next').style.display = 'none';
+            document.getElementById('btn-restart').style.display = 'block';
+            if (victory) alert("BRAVO ! Vous avez complété la grille !");
+            else {
+                isValidated = true;
+                renderGrid('me');
+                alert("Fin des phases. Voici la correction.");
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('phase-counter').innerText = `PHASE ${currentPhase}/${maxPhases === 999 ? '∞' : maxPhases}`;
+            document.getElementById('room-status').innerText = gameMode === 'solo' ? 'SOLO' : `SALLE: ${roomName}`;
+        }
+
         window.openModal = (idx) => {
             currentCell = idx;
-            const r = gridHeaders.rows[Math.floor(idx/3)];
-            const c = gridHeaders.cols[idx%3];
+            const r = gridHeaders.rows[Math.floor(idx/3)]; const c = gridHeaders.cols[idx%3];
             document.getElementById('modal-target-title').innerText = `${r.label} × ${c.label}`;
             document.getElementById('modal-overlay').classList.add('active');
             document.getElementById('search-input').value = '';
@@ -477,44 +583,30 @@
         };
 
         window.filterPokemon = (v) => showResults(v);
-
         function showResults(query) {
             const container = document.getElementById('results-grid');
             const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            const sortedPool = [...allPokemon].sort((a, b) => a.id - b.id);
-            const filtered = sortedPool.filter(p => p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q));
+            const filtered = allPokemon.filter(p => p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q));
             container.innerHTML = '';
             filtered.forEach(p => {
-                const card = document.createElement('div');
-                card.className = 'result-card';
+                const card = document.createElement('div'); card.className = 'result-card';
                 card.innerHTML = `<img src="${p.sprite}"><div style="font-size: 9px; color: var(--accent2);">#${p.id}</div><div class="result-name">${p.name}</div>`;
-                card.onclick = () => selectPokemon(p.id);
-                container.appendChild(card);
+                card.onclick = () => selectPokemon(p.id); container.appendChild(card);
             });
         }
 
         async function selectPokemon(pId) {
-            myGrid[currentCell] = pId;
-            renderGrid('me');
+            myGrid[currentCell] = pId; renderGrid('me');
             document.getElementById('modal-overlay').classList.remove('active');
-            
             if (roomName) {
                 const roomRef = doc(db, "pokedoku_rooms", roomName);
-                const update = {};
-                update[`${myPlayerId}_grid`] = myGrid;
+                const update = {}; update[`${myPlayerId}_grid`] = myGrid;
                 await updateDoc(roomRef, update);
             }
         }
 
-        window.handleValidate = () => {
-            isValidated = true;
-            renderGrid('me');
-            renderGrid('opp');
-            document.getElementById('btn-validate').style.display = 'none';
-            document.getElementById('btn-restart').style.display = 'block';
-        };
-
         init();
+        selectMode('solo');
     </script>
 </body>
 </html>
