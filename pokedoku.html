@@ -238,8 +238,12 @@
                         <button class="phase-btn" onclick="setPhases(5)">5</button>
                         <button class="phase-btn" onclick="setPhases(999)">∞</button>
                     </div>
-                    <input type="text" id="create-room-id" placeholder="Nom de la salle à créer..." class="search-input" style="text-align:center; margin-bottom:10px;">
-                    <button class="btn-validate" style="background:var(--accent);" onclick="startMulti('create')">CRÉER ET LANCER</button>
+                    <div style="background:var(--bg-card); padding:15px; border-radius:10px; border:1px solid var(--accent2); margin-bottom:15px;">
+                        <p style="font-size:12px; color:var(--text-dim);">CODE DE VOTRE SALLE</p>
+                        <p id="generated-code-display" style="font-size:24px; font-weight:bold; color:var(--accent2); letter-spacing:4px; margin:5px 0;">------</p>
+                        <button class="btn-validate" style="background:var(--bg); border:1px solid var(--border); font-size:10px; width:auto; padding:5px 10px;" onclick="generateNewRoomCode()">🔄 CHANGER</button>
+                    </div>
+                    <button class="btn-validate" style="background:var(--accent);" onclick="startMulti('create')">LANCER LA PARTIE</button>
                 </div>
 
                 <div id="multi-join-flow" style="display:none;">
@@ -355,6 +359,20 @@
             document.getElementById('multi-main-choice').style.display = 'none';
             document.getElementById('multi-create-flow').style.display = type === 'create' ? 'block' : 'none';
             document.getElementById('multi-join-flow').style.display = type === 'join' ? 'block' : 'none';
+            if (type === 'create') generateNewRoomCode();
+        };
+
+        window.generateNewRoomCode = async () => {
+            let unique = false;
+            let code = "";
+            while(!unique) {
+                code = Math.floor(100000 + Math.random() * 900000).toString();
+                const roomRef = doc(db, "pokedoku_rooms", code);
+                const snap = await getDoc(roomRef);
+                if (!snap.exists()) unique = true;
+            }
+            roomName = code;
+            document.getElementById('generated-code-display').innerText = roomName;
         };
 
         window.setPhases = (n) => {
@@ -365,13 +383,13 @@
 
         window.startMulti = async (type) => {
             if (allPokemon.length === 0) return alert("Le Pokédex est encore en cours de chargement...");
-            if (type === 'create') {
-                roomName = Math.floor(100000 + Math.random() * 900000).toString();
-            } else {
+            
+            if (type === 'join') {
                 const room = document.getElementById('join-room-id').value.trim();
                 if (!room) return alert("Entrez un code de salle !");
                 roomName = room;
             }
+            
             const success = await joinRoom();
             if (success) {
                 document.getElementById('setup-menu').style.display = 'none';
