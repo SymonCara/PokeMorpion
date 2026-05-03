@@ -258,12 +258,17 @@
                 });
             } catch(e) {}
 
+            const bst = stats.hp + stats.atk + stats.def + stats.spa + stats.spd + stats.spe;
+
             return `
                 <div class="starter-card" style="animation-delay: ${idx * 0.15}s">
                     <div class="img-box">
                         <img id="img-${p.id}" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png" style="width:130px;">
                     </div>
-                    <div style="font-family:'Share Tech Mono'; color:var(--accent2); font-size:12px; margin-bottom:5px;">N°${p.id}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                        <div style="font-family:'Share Tech Mono'; color:var(--accent2); font-size:12px;">N°${p.id}</div>
+                        <div style="font-family:'Share Tech Mono'; color:var(--accent3); font-size:12px; font-weight:bold;">BST: ${bst}</div>
+                    </div>
                     <h2 style="font-family:'Rajdhani'; margin-bottom:10px;">${p.name.toUpperCase()}</h2>
                     <div style="margin-bottom:25px;">
                         ${p.types.map(t => `<span class="type-badge" style="background:${TYPE_COLORS[t] || '#777'}">${t}</span>`).join('')}
