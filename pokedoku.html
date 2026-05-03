@@ -222,18 +222,33 @@
             </div>
 
             <div id="multi-options" style="display:none; margin-bottom:30px; animation: slideUp 0.3s ease;">
-                <p style="color:var(--text-secondary); margin-bottom:10px;">NOMBRE DE PHASES</p>
-                <div style="display:flex; gap:5px; justify-content:center; margin-bottom:15px;">
-                    <button class="phase-btn" onclick="setPhases(1)">1</button>
-                    <button class="phase-btn" onclick="setPhases(2)">2</button>
-                    <button class="phase-btn" onclick="setPhases(3)">3</button>
-                    <button class="phase-btn" onclick="setPhases(5)">5</button>
-                    <button class="phase-btn" onclick="setPhases(999)">∞</button>
+                <div id="multi-main-choice">
+                    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
+                        <button class="btn-validate" style="margin:0; width:auto; padding:10px 20px; background:var(--accent);" onclick="showMultiFlow('create')">CRÉER UNE PARTIE</button>
+                        <button class="btn-validate" style="margin:0; width:auto; padding:10px 20px; background:var(--accent2);" onclick="showMultiFlow('join')">REJOINDRE UNE PARTIE</button>
+                    </div>
                 </div>
-                <input type="text" id="multi-room" placeholder="Nom de la salle..." class="search-input" style="text-align:center;">
+
+                <div id="multi-create-flow" style="display:none;">
+                    <p style="color:var(--text-secondary); margin-bottom:10px;">NOMBRE DE PHASES</p>
+                    <div style="display:flex; gap:5px; justify-content:center; margin-bottom:15px;">
+                        <button class="phase-btn active" onclick="setPhases(1)">1</button>
+                        <button class="phase-btn" onclick="setPhases(2)">2</button>
+                        <button class="phase-btn" onclick="setPhases(3)">3</button>
+                        <button class="phase-btn" onclick="setPhases(5)">5</button>
+                        <button class="phase-btn" onclick="setPhases(999)">∞</button>
+                    </div>
+                    <input type="text" id="create-room-id" placeholder="Nom de la salle à créer..." class="search-input" style="text-align:center; margin-bottom:10px;">
+                    <button class="btn-validate" style="background:var(--accent);" onclick="startMulti('create')">CRÉER ET LANCER</button>
+                </div>
+
+                <div id="multi-join-flow" style="display:none;">
+                    <input type="text" id="join-room-id" placeholder="Code de la salle..." class="search-input" style="text-align:center; margin-bottom:10px;">
+                    <button class="btn-validate" style="background:var(--accent2);" onclick="startMulti('join')">REJOINDRE LA SALLE</button>
+                </div>
             </div>
 
-            <button id="start-game" class="btn-validate" onclick="startGame()">LANCER LA PARTIE</button>
+            <button id="start-game-solo" class="btn-validate" onclick="startGameSolo()">LANCER LA PARTIE SOLO</button>
             <br>
             <a href="index.html" style="color:var(--text-dim); text-decoration:none; font-size:12px; display:inline-block; margin-top:20px;">RETOUR AU MENU</a>
         </div>
@@ -331,25 +346,29 @@
             document.getElementById('mode-solo').style.background = m === 'solo' ? 'var(--accent2)' : 'var(--bg-card)';
             document.getElementById('mode-multi').style.background = m === 'multi' ? 'var(--accent2)' : 'var(--bg-card)';
             document.getElementById('multi-options').style.display = m === 'multi' ? 'block' : 'none';
+            document.getElementById('start-game-solo').style.display = m === 'solo' ? 'block' : 'none';
             if (m === 'solo') maxPhases = 2;
         };
 
-        window.setPhases = (n) => {
-            maxPhases = n;
-            document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+        window.showMultiFlow = (type) => {
+            document.getElementById('multi-main-choice').style.display = 'none';
+            document.getElementById('multi-create-flow').style.display = type === 'create' ? 'block' : 'none';
+            document.getElementById('multi-join-flow').style.display = type === 'join' ? 'block' : 'none';
         };
 
-        window.startGame = async () => {
-            if (gameMode === 'multi') {
-                const room = document.getElementById('multi-room').value.trim();
-                if (!room) return alert("Entrez un nom de salle !");
-                roomName = room;
-                await joinRoom();
-            } else {
-                generateHeaders();
-                renderGrid('me');
-            }
+        window.startMulti = async (type) => {
+            const room = document.getElementById(type === 'create' ? 'create-room-id' : 'join-room-id').value.trim();
+            if (!room) return alert("Entrez un nom de salle !");
+            roomName = room;
+            await joinRoom();
+            document.getElementById('setup-menu').style.display = 'none';
+            document.getElementById('main-game').style.display = 'block';
+            updateUI();
+        };
+
+        window.startGameSolo = () => {
+            generateHeaders();
+            renderGrid('me');
             document.getElementById('setup-menu').style.display = 'none';
             document.getElementById('main-game').style.display = 'block';
             updateUI();
