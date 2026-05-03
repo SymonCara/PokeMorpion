@@ -356,7 +356,14 @@
             document.getElementById('multi-join-flow').style.display = type === 'join' ? 'block' : 'none';
         };
 
+        window.setPhases = (n) => {
+            maxPhases = n;
+            document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
+            if (event) event.target.classList.add('active');
+        };
+
         window.startMulti = async (type) => {
+            if (allPokemon.length === 0) return alert("Le Pokédex est encore en cours de chargement...");
             const room = document.getElementById(type === 'create' ? 'create-room-id' : 'join-room-id').value.trim();
             if (!room) return alert("Entrez un nom de salle !");
             roomName = room;
@@ -367,11 +374,17 @@
         };
 
         window.startGameSolo = () => {
-            generateHeaders();
-            renderGrid('me');
-            document.getElementById('setup-menu').style.display = 'none';
-            document.getElementById('main-game').style.display = 'block';
-            updateUI();
+            if (allPokemon.length === 0) return alert("Le Pokédex est encore en cours de chargement...");
+            try {
+                generateHeaders();
+                renderGrid('me');
+                document.getElementById('setup-menu').style.display = 'none';
+                document.getElementById('main-game').style.display = 'block';
+                updateUI();
+            } catch (e) {
+                console.error("Solo start error:", e);
+                alert("Erreur lors de la génération de la grille. Réessayez.");
+            }
         };
 
         async function init() {
