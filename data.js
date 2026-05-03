@@ -97,7 +97,7 @@ const offlineBackup = [
     [238,"Lippouti",["Glace","Psy"]],[239,"Élekid",["Électrik"]],[240,"Magby",["Feu"]],[241,"Écrémeuh",["Normal"]],[242,"Leuphorie",["Normal"]],
     [243,"Raikou",["Électrik"]],[244,"Entei",["Feu"]],[245,"Suicune",["Eau"]],
     [246,"Embrylex",["Roche","Sol"]],[247,"Ymphect",["Roche","Sol"]],[248,"Tyranocif",["Roche","Ténèbres"]],
-    [249,"Lugia",["Psy","Vol"]],[250,"Ho-Oh",["Feu","Vol"]],[251,"Mewtwo",["Psy"]],
+    [249,"Lugia",["Psy","Vol"]],[250,"Ho-Oh",["Feu","Vol"]],[251,"Celebi",["Psy","Plante"]],
     // --- Gen 3 ---
     [252,"Arcko",["Plante"]],[253,"Massko",["Plante"]],[254,"Jungko",["Plante"]],
     [255,"Poussifeu",["Feu"]],[256,"Galifeu",["Feu","Combat"]],[257,"Braségali",["Feu","Combat"]],
@@ -118,6 +118,7 @@ const offlineBackup = [
     [700,"Nymphali",["Fée"]],[716,"Xerneas",["Fée"]],[717,"Yveltal",["Ténèbres","Vol"]],[718,"Zygarde",["Dragon","Sol"]],
     // --- Gen 7 ---
     [722,"Brindibou",["Plante","Vol"]],[725,"Flamiaou",["Feu"]],[728,"Otaquin",["Eau"]],[744,"Rocabot",["Roche"]],[745,"Lougaroc",["Roche"]],
+    [776,"Boumata",["Feu","Dragon"]],[777,"Togedemaru",["Électrik","Acier"]],[778,"Mimiqui",["Spectre","Fée"]],
     [785,"Tokorico",["Électrik","Fée"]],[791,"Solgaleo",["Psy","Acier"]],[792,"Lunala",["Psy","Spectre"]],[800,"Necrozma",["Psy"]],[801,"Magearna",["Acier","Fée"]]
 ];
 
@@ -202,8 +203,9 @@ const GEN9_DATA = [
     [978,"Nigirigon",["Dragon","Eau"]],
     [979,"Courrousinge",["Combat","Spectre"]],
     [980,"Terraiste",["Sol","Poison"]],
-    [981,"Fort-Ivoire",["Sol","Combat"]],[982,"Hurle-Queue",["Fée","Psy"]],[983,"Fongus-Furie",["Plante","Ténèbres"]],[984,"Flotte-Mèche",["Spectre","Fée"]],[985,"Rampe-Ailes",["Insecte","Combat"]],[986,"Pelage-Sablé",["Électrik","Sol"]],
-    [987,"Roue-de-Fer",["Acier","Sol"]],[988,"Hotte-de-Fer",["Glace","Eau"]],[989,"Paume-de-Fer",["Combat","Électrik"]],[990,"Têtes-de-Fer",["Ténèbres","Vol"]],[991,"Mite-de-Fer",["Feu","Poison"]],[992,"Épine-de-Fer",["Roche","Électrik"]],
+    [981,"Bérubarbe",["Normal"]],[982,"Deusolourdo",["Normal"]],[983,"Scalpereur",["Acier","Ténèbres"]],
+    [984,"Fort-Ivoire",["Sol","Combat"]],[985,"Hurle-Queue",["Fée","Psy"]],[986,"Fongus-Furie",["Plante","Ténèbres"]],[987,"Flotte-Mèche",["Spectre","Fée"]],[988,"Rampe-Ailes",["Insecte","Combat"]],[989,"Pelage-Sablé",["Électrik","Sol"]],
+    [990,"Roue-de-Fer",["Acier","Sol"]],[991,"Hotte-de-Fer",["Glace","Eau"]],[992,"Paume-de-Fer",["Combat","Électrik"]],[993,"Têtes-de-Fer",["Ténèbres","Vol"]],[994,"Mite-de-Fer",["Feu","Poison"]],[995,"Épine-de-Fer",["Roche","Électrik"]],
     [993,"Frigodo",["Dragon","Glace"]],[994,"Cryodo",["Dragon","Glace"]],[995,"Glaivodo",["Dragon","Glace"]],
     [996,"Mordudor",["Spectre"]],[997,"Gromago",["Acier","Spectre"]],
     [1001,"Chongjian",["Ténèbres","Plante"]],[1002,"Baojian",["Ténèbres","Glace"]],[1003,"Dinglu",["Ténèbres","Sol"]],[1004,"Yuyu",["Ténèbres","Feu"]],
