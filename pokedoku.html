@@ -301,6 +301,14 @@
             <button id="btn-next" class="btn-validate" style="background:var(--accent2); display:none;" onclick="handleNextPhase()">PASSER À LA PHASE SUIVANTE</button>
             <button id="btn-restart" class="btn-validate" style="background: var(--bg-card); border: 1px solid var(--border); margin-top: 10px; display:none;" onclick="location.reload()">REJOUER</button>
         </div>
+
+        <div id="dispute-notif" style="display:none; position:fixed; bottom:20px; right:20px; background:var(--card-bg); border:1px solid var(--accent2); padding:20px; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.5); z-index:2000; animation:slideUp 0.3s ease;">
+            <p id="dispute-msg" style="font-size:14px; margin-bottom:15px;"></p>
+            <div style="display:flex; gap:10px;">
+                <button onclick="resolveDispute(true)" style="background:var(--accent2); border:none; color:white; padding:8px 15px; border-radius:8px; cursor:pointer; font-size:12px;">ACCEPTER</button>
+                <button onclick="resolveDispute(false)" style="background:var(--bg-card); border:1px solid var(--border); color:white; padding:8px 15px; border-radius:8px; cursor:pointer; font-size:12px;">REFUSER</button>
+            </div>
+        </div>
     </main>
 
     <div id="modal-overlay">
@@ -345,6 +353,36 @@
         let maxPhases = 2;
         let currentPhase = 1;
         let isWaitingForNext = false;
+
+        let forcedCorrectCells = Array(9).fill(false);
+        let activeDispute = null;
+
+        window.handleContest = async (idx) => {
+            if (gameMode === 'solo') {
+                forcedCorrectCells[idx] = true;
+                renderGrid('me');
+                return;
+            }
+            
+            // Multi: on prévient l'autre
+            const roomRef = doc(db, "pokedoku_rooms", roomName);
+            const p = allPokemon.find(x => x.id === myGrid[idx]);
+            const update = {};
+            update[`${myPlayerId}_dispute`] = { idx, pokemon: p.name, status: 'pending' };
+            await updateDoc(roomRef, update);
+            alert("Contestation envoyée à l'adversaire...");
+        };
+
+        window.resolveDispute = async (accepted) => {
+            const roomRef = doc(db, "pokedoku_rooms", roomName);
+            const oppId = myPlayerId === 'p1' ? 'p2' : 'p1';
+            const dispute = activeDispute; // On récupère celui qu'on est en train d'afficher
+            
+            const update = {};
+            update[`${oppId}_dispute`] = { ...dispute, status: accepted ? 'accepted' : 'rejected' };
+            await updateDoc(roomRef, update);
+            document.getElementById('dispute-notif').style.display = 'none';
+        };
 
         window.selectMode = (m) => {
             gameMode = m;
@@ -431,8 +469,12 @@
                         isLegendary: LEGENDARIES_IDS.includes(id),
                         isMythical: MYTHICAL_IDS.includes(id),
                         isStarter: STARTERS_IDS.some(sid => id >= sid && id <= sid + 2),
-                        isMega: MEGAS_IDS.includes(id),
+                        isMega: MEGAS_IDS.includes(id) || id > 10000,
                         isBlackShiny: BLACK_SHINIES.includes(id),
+                        isParadox: PARADOX_IDS.includes(id),
+                        isUB: UB_IDS.includes(id),
+                        isFossil: FOSSIL_IDS.includes(id),
+                        isBaby: BABY_IDS.includes(id),
                         stage: STAGE3_IDS.includes(id) ? 3 : STAGE2_IDS.includes(id) ? 2 : 1,
                         sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
                     };
@@ -440,16 +482,21 @@
 
                 [...GEN8_DATA, ...GEN9_DATA, ...ZA_MEGAS_DATA, ...OFFICIAL_MEGAS_DATA].forEach(p => {
                     if (!allPokemon.find(x => x.id === p[0])) {
+                        const id = p[0];
                         allPokemon.push({
-                            id: p[0], name: p[1], types: p[2],
-                            generation: p[0] < 810 ? (p[0] > 721 ? 7 : 6) : (p[0] < 906 ? 8 : 9),
-                            isLegendary: LEGENDARIES_IDS.includes(p[0]),
-                            isMythical: MYTHICAL_IDS.includes(p[0]),
-                            isStarter: STARTERS_IDS.some(sid => p[0] >= sid && p[0] <= sid + 2),
-                            isMega: MEGAS_IDS.includes(p[0]) || p[0] > 10000,
-                            isBlackShiny: BLACK_SHINIES.includes(p[0]),
-                            stage: STAGE3_IDS.includes(p[0]) ? 3 : STAGE2_IDS.includes(p[0]) ? 2 : 1,
-                            sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p[0]}.png`
+                            id, name: p[1], types: p[2],
+                            generation: id < 810 ? (id > 721 ? 7 : 6) : (id < 906 ? 8 : 9),
+                            isLegendary: LEGENDARIES_IDS.includes(id),
+                            isMythical: MYTHICAL_IDS.includes(id),
+                            isStarter: STARTERS_IDS.some(sid => id >= sid && id <= sid + 2),
+                            isMega: MEGAS_IDS.includes(id) || id > 10000,
+                            isBlackShiny: BLACK_SHINIES.includes(id),
+                            isParadox: PARADOX_IDS.includes(id),
+                            isUB: UB_IDS.includes(id),
+                            isFossil: FOSSIL_IDS.includes(id),
+                            isBaby: BABY_IDS.includes(id),
+                            stage: STAGE3_IDS.includes(id) ? 3 : STAGE2_IDS.includes(id) ? 2 : 1,
+                            sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
                         });
                     }
                 });
@@ -494,6 +541,27 @@
                 const oppDone = myPlayerId === 'p1' ? d.p2_done : d.p1_done;
                 const myDone = myPlayerId === 'p1' ? d.p1_done : d.p2_done;
 
+                // Gestion disputes entrantes (quelqu'un conteste mon jugement)
+                const oppDispute = myPlayerId === 'p1' ? d.p2_dispute : d.p1_dispute;
+                if (oppDispute && oppDispute.status === 'pending') {
+                    activeDispute = oppDispute;
+                    document.getElementById('dispute-msg').innerText = `L'adversaire conteste pour ${oppDispute.pokemon}. Accepter ?`;
+                    document.getElementById('dispute-notif').style.display = 'block';
+                }
+
+                // Gestion de MA dispute (l'adversaire a répondu)
+                const myDispute = myPlayerId === 'p1' ? d.p1_dispute : d.p2_dispute;
+                if (myDispute && myDispute.status === 'accepted') {
+                    forcedCorrectCells[myDispute.idx] = true;
+                    // On nettoie pour pas boucler
+                    const cleanUpdate = {}; cleanUpdate[`${myPlayerId}_dispute`] = null;
+                    updateDoc(roomRef, cleanUpdate);
+                } else if (myDispute && myDispute.status === 'rejected') {
+                    alert("Contestation refusée par l'adversaire.");
+                    const cleanUpdate = {}; cleanUpdate[`${myPlayerId}_dispute`] = null;
+                    updateDoc(roomRef, cleanUpdate);
+                }
+
                 if (oppDone && myDone) {
                     isValidated = true;
                     document.getElementById('opp-zone').style.display = 'block';
@@ -517,24 +585,78 @@
 
         function generateHeaders() {
             const types = ['Feu', 'Eau', 'Plante', 'Électrik', 'Dragon', 'Spectre', 'Combat', 'Fée', 'Acier', 'Normal', 'Vol', 'Sol', 'Poison', 'Psy', 'Roche', 'Glace', 'Insecte', 'Ténèbres'];
-            const specials = [{ type: 'legend', label: 'Légendaire' }, { type: 'starter', label: 'Starter' }, { type: 'dual', label: 'Double Type' }, { type: 'stage3', label: 'Stade 3' }];
-            const pool = [...types.map(t => ({ type: 'type', value: t, label: t, sub: 'TYPE' })), ...specials.map(s => ({...s, sub: 'STATUT'}))];
+            const gens = [1,2,3,4,5,6,7,8,9].map(g => ({ type: 'gen', value: g, label: `Gen ${g}`, sub: 'GÉNÉRATION' }));
+            const specials = [
+                { type: 'legend', label: 'Légendaire' },
+                { type: 'mythic', label: 'Fabuleux' },
+                { type: 'starter', label: 'Starter' },
+                { type: 'paradox', label: 'Paradoxe' },
+                { type: 'ub', label: 'Ultra-Chimère' },
+                { type: 'fossil', label: 'Fossile' },
+                { type: 'baby', label: 'Bébé' },
+                { type: 'black_shiny', label: 'Shiny Noir' },
+                { type: 'mega', label: 'Méga-Évo' },
+                { type: 'dual', label: 'Double Type' },
+                { type: 'stage1', label: 'Stade 1' },
+                { type: 'stage2', label: 'Stade 2' },
+                { type: 'stage3', label: 'Stade 3' }
+            ];
+            const pool = [
+                ...types.map(t => ({ type: 'type', value: t, label: t, sub: 'TYPE' })),
+                ...gens,
+                ...specials.map(s => ({...s, sub: 'STATUT'}))
+            ];
 
             let ok = false;
-            while(!ok) {
+            let attempts = 0;
+            while(!ok && attempts < 1000) {
+                attempts++;
                 const shuf = [...pool].sort(() => Math.random() - 0.5);
                 const rows = shuf.slice(0, 3); const cols = shuf.slice(3, 6);
+                
+                // Vérification de compatibilité croisée (9 cases)
                 let possible = true;
-                for(let r of rows) { for(let c of cols) { if (!allPokemon.some(p => checkCriteria(p, r) && checkCriteria(p, c))) { possible = false; break; } } if (!possible) break; }
-                if (possible) { gridHeaders = { rows, cols }; ok = true; }
+                for(let r of rows) {
+                    for(let c of cols) {
+                        // On vérifie qu'AU MOINS UN Pokémon répond aux deux critères
+                        const hasMatch = allPokemon.some(p => checkCriteria(p, r) && checkCriteria(p, c));
+                        if (!hasMatch) {
+                            possible = false;
+                            break;
+                        }
+                    }
+                    if (!possible) break;
+                }
+                
+                if (possible) {
+                    gridHeaders = { rows, cols };
+                    ok = true;
+                }
+            }
+            if (!ok) {
+                // Fallback de sécurité au cas où (très improbable)
+                gridHeaders = { 
+                    rows: pool.slice(0, 3), 
+                    cols: pool.slice(3, 6) 
+                };
             }
         }
 
         function checkCriteria(p, c) {
             if (c.type === 'type') return p.types.includes(c.value);
+            if (c.type === 'gen') return p.generation === c.value;
             if (c.type === 'legend') return p.isLegendary;
+            if (c.type === 'mythic') return p.isMythical;
             if (c.type === 'starter') return p.isStarter;
+            if (c.type === 'paradox') return p.isParadox;
+            if (c.type === 'ub') return p.isUB;
+            if (c.type === 'fossil') return p.isFossil;
+            if (c.type === 'baby') return p.isBaby;
+            if (c.type === 'black_shiny') return p.isBlackShiny;
+            if (c.type === 'mega') return p.isMega;
             if (c.type === 'dual') return p.types.length === 2;
+            if (c.type === 'stage1') return p.stage === 1;
+            if (c.type === 'stage2') return p.stage === 2;
             if (c.type === 'stage3') return p.stage === 3;
             return false;
         }
@@ -563,18 +685,29 @@
                     const p = pId ? allPokemon.find(x => x.id === pId) : null;
 
                     if (p) {
-                        const isOk = checkCriteria(p, gridHeaders.rows[r]) && checkCriteria(p, gridHeaders.cols[c]);
+                        const isOk = checkCriteria(p, gridHeaders.rows[r]) && checkCriteria(p, gridHeaders.cols[c]) || forcedCorrectCells[idx];
                         
                         // On affiche la couleur si :
                         // 1. On a cliqué sur Valider (isValidated)
-                        // 2. OU si le Pokémon était déjà là au début de la phase (survivant d'une phase précédente)
+                        // 2. OU si le Pokémon était déjà là au début de la phase
                         const wasAlreadyThere = target === 'me' && gridAtPhaseStart[idx] === pId;
 
                         if (isValidated || wasAlreadyThere) {
                             cell.classList.add(isOk ? 'correct' : 'error');
+                            // Si erreur sur ma grille, on permet de contester
+                            if (isValidated && !isOk && target === 'me') {
+                                const contestBtn = document.createElement('div');
+                                contestBtn.style = "font-size:9px; color:var(--accent2); text-decoration:underline; cursor:pointer; margin-top:5px;";
+                                contestBtn.innerText = "Contester";
+                                contestBtn.onclick = (e) => { e.stopPropagation(); handleContest(idx); };
+                                cell.appendChild(contestBtn);
+                            }
                         }
                         
-                        cell.innerHTML = `<div class="pokemon-entry"><img src="${p.sprite}"><div class="poke-name">${p.name}</div></div>`;
+                        const entry = document.createElement('div');
+                        entry.className = 'pokemon-entry';
+                        entry.innerHTML = `<img src="${p.sprite}"><div class="poke-name">${p.name}</div>`;
+                        cell.prepend(entry);
                     } else { cell.innerHTML = '<span style="font-size:30px; color:var(--text-dim);">+</span>'; }
                     if (!isValidated && target === 'me') cell.onclick = () => openModal(idx);
                     container.appendChild(cell);
