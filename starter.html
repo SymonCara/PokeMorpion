@@ -187,7 +187,13 @@
             const res = await fetch('https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json');
             if (res.ok) data = await res.json();
         } catch (e) {
-            console.warn("Fetch failed, using local backup", e);
+            console.warn("Primary CDN failed, trying Secondary...", e);
+            try {
+                const res2 = await fetch('https://unpkg.com/pokemon.json@1.0.0/pokedex.json');
+                if (res2.ok) data = await res2.json();
+            } catch (e2) {
+                console.warn("All CDNs failed, using local backup", e2);
+            }
         }
 
         try {

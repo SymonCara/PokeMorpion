@@ -253,11 +253,17 @@
         async function init() {
             let data = null;
             try {
-                // Fetch from CDN
+                // Fetch from CDN Primary
                 const res = await fetch('https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json');
                 if (res.ok) data = await res.json();
             } catch (e) {
-                console.warn("Fetch failed, using local backup", e);
+                console.warn("Primary CDN failed, trying Secondary...", e);
+                try {
+                    const res2 = await fetch('https://unpkg.com/pokemon.json@1.0.0/pokedex.json');
+                    if (res2.ok) data = await res2.json();
+                } catch (e2) {
+                    console.warn("All CDNs failed, using local backup", e2);
+                }
             }
 
             try {
@@ -449,13 +455,19 @@
             const container = document.getElementById('results-grid');
             const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             
-            const filtered = allPokemon.filter(p => p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q)).slice(0, 250);
+            // On s'assure que allPokemon est bien trié par ID
+            const sortedPool = [...allPokemon].sort((a, b) => a.id - b.id);
+            const filtered = sortedPool.filter(p => p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q)).slice(0, 300);
             
             container.innerHTML = '';
             filtered.forEach(p => {
                 const card = document.createElement('div');
                 card.className = 'result-card';
-                card.innerHTML = `<img src="${p.sprite}"><div class="result-name">${p.name}</div>`;
+                card.innerHTML = `
+                    <img src="${p.sprite}">
+                    <div style="font-size: 9px; color: var(--accent2); font-family: monospace;">#${p.id}</div>
+                    <div class="result-name">${p.name}</div>
+                `;
                 card.onclick = () => selectPokemon(p.id);
                 container.appendChild(card);
             });
