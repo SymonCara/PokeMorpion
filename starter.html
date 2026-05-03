@@ -98,6 +98,14 @@
   .stat-bar-bg { background: rgba(255,255,255,0.05); height: 6px; border-radius: 3px; overflow: hidden; }
   .stat-bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease-out; }
 
+  .gen-checkbox {
+      display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-dim);
+      cursor: pointer; padding: 6px 12px; border-radius: 8px; background: rgba(255,255,255,0.03);
+      border: 1px solid transparent; transition: 0.2s;
+  }
+  .gen-checkbox:hover { background: rgba(255,255,255,0.08); color: white; }
+  .gen-checkbox input { accent-color: var(--accent2); }
+
   .loader {
     width: 48px; height: 48px; border: 5px solid var(--border);
     border-bottom-color: var(--accent2); border-radius: 50%;
@@ -123,13 +131,40 @@
             <a href="index.html" class="btn-icon">🏠</a>
             <h1 style="font-family: 'Rajdhani'; font-weight: 700; letter-spacing: 2px;">STARTER AVEUGLE</h1>
         </div>
-        <button class="btn btn-primary" onclick="generateStarters()">GÉNÉRER 3 POKÉMON</button>
+        <div style="display:flex; align-items:center; gap:20px;">
+            <div class="filter-group">
+                <label style="font-size:12px; color:var(--text-dim); margin-right:10px;">NOMBRE :</label>
+                <input type="number" id="poke-count" value="3" min="1" max="20" style="background:var(--bg-card); border:1px solid var(--border); color:white; padding:8px; border-radius:8px; width:60px; font-family:'Share Tech Mono';">
+            </div>
+            <button class="btn btn-primary" onclick="generateStarters()">GÉNÉRER</button>
+        </div>
     </header>
 
+    <div class="gen-filters" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:30px; justify-content:center; background:var(--bg-panel); padding:20px; border-radius:16px; border:1px solid var(--border);">
+        <div style="width:100%; text-align:center; font-size:12px; color:var(--text-dim); margin-bottom:10px; letter-spacing:2px;">SÉLECTION DES GÉNÉRATIONS</div>
+        <div style="width:100%; display:flex; justify-content:center; gap:10px; margin-bottom:15px;">
+            <button class="btn" style="padding:5px 15px; font-size:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-dim);" onclick="toggleAllGens(true)">TOUT COCHER</button>
+            <button class="btn" style="padding:5px 15px; font-size:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-dim);" onclick="toggleAllGens(false)">TOUT DÉCOCHER</button>
+        </div>
+        <label class="gen-checkbox"><input type="checkbox" value="1" checked> GEN 1</label>
+        <label class="gen-checkbox"><input type="checkbox" value="2" checked> GEN 2</label>
+        <label class="gen-checkbox"><input type="checkbox" value="3" checked> GEN 3</label>
+        <label class="gen-checkbox"><input type="checkbox" value="4" checked> GEN 4</label>
+        <label class="gen-checkbox"><input type="checkbox" value="5" checked> GEN 5</label>
+        <label class="gen-checkbox"><input type="checkbox" value="6" checked> GEN 6</label>
+        <label class="gen-checkbox"><input type="checkbox" value="7" checked> GEN 7</label>
+        <label class="gen-checkbox"><input type="checkbox" value="8" checked> GEN 8</label>
+        <label class="gen-checkbox"><input type="checkbox" value="9" checked> GEN 9</label>
+    </div>
+
     <div id="starters-container" class="starter-grid">
-        <div style="text-align:center; padding: 100px; color:var(--text-dim);">
+        <div id="loading-pool" style="text-align:center; padding: 50px; display:none;">
+            <div class="loader"></div>
+            <p style="margin-top:10px; color:var(--text-dim); font-size:12px;">Chargement du pool de Pokémon...</p>
+        </div>
+        <div id="empty-state" style="text-align:center; padding: 100px; color:var(--text-dim);">
             <div style="font-size: 60px; margin-bottom: 20px;">🎲</div>
-            <p>Cliquez sur le bouton pour générer vos starters aléatoires !</p>
+            <p>Configurez vos filtres et générez vos starters !</p>
         </div>
     </div>
 </div>
@@ -138,22 +173,77 @@
 <script>
     let allPokemon = [];
 
+    const GEN_RANGES = {
+        1: [1, 151], 2: [152, 251], 3: [252, 386], 4: [387, 493], 5: [494, 649],
+        6: [650, 721], 7: [722, 809], 8: [810, 905], 9: [906, 1025]
+    };
+
     async function init() {
-        // Fusionner toutes les sources de données pour avoir le pool complet
-        const rawData = offlineBackup.map(p => ({id:p[0], name:p[1], types:p[3]}));
-        const gen8 = GEN8_DATA.map(p => ({id:p[0], name:p[1], types:p[2]}));
-        const gen9 = GEN9_DATA.map(p => ({id:p[0], name:p[1], types:p[2]}));
-        const megas = [...ZA_MEGAS_DATA, ...OFFICIAL_MEGAS_DATA].map(p => ({id:p[0], name:p[1], types:p[2]}));
-        
-        allPokemon = [...rawData, ...gen8, ...gen9, ...megas];
+        document.getElementById('loading-pool').style.display = 'block';
+        document.getElementById('empty-state').style.display = 'none';
+
+        try {
+            const res = await fetch('https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json');
+            let data = res.ok ? await res.json() : null;
+
+            const rawData = data || offlineBackup.map(p => ({id:p[0], name:{french:p[1]}, type:p[3]}));
+            
+            allPokemon = rawData.map(p => {
+                const id = p.id;
+                const types = (p.type || []).map(t => TYPE_MAP[t] || t).filter(Boolean);
+                let name = p.name.french || p.name.english;
+                return { id, name, types };
+            });
+
+            // Fusionner Gen 8 & 9 & Megas (pour filter ensuite)
+            [...GEN8_DATA, ...GEN9_DATA].forEach(p => {
+                if (!allPokemon.find(x => x.id === p[0])) {
+                    allPokemon.push({ id: p[0], name: p[1], types: p[2] });
+                }
+            });
+
+            // Enlever les MÉGAS (IDs > 10000)
+            allPokemon = allPokemon.filter(p => p.id < 10000);
+            
+            allPokemon.sort((a,b) => a.id - b.id);
+        } catch (e) {
+            console.error("Erreur pool:", e);
+        } finally {
+            document.getElementById('loading-pool').style.display = 'none';
+            document.getElementById('empty-state').style.display = 'block';
+        }
+    }
+
+    window.toggleAllGens = function(val) {
+        document.querySelectorAll('.gen-checkbox input').forEach(cb => cb.checked = val);
     }
 
     async function generateStarters() {
+        const count = parseInt(document.getElementById('poke-count').value) || 3;
+        const selectedGens = Array.from(document.querySelectorAll('.gen-checkbox input:checked')).map(cb => parseInt(cb.value));
+        
+        if (selectedGens.length === 0) {
+            return showToast("Sélectionnez au moins une génération !");
+        }
+
         const container = document.getElementById('starters-container');
         container.innerHTML = '<div style="width:100%; text-align:center;"><div class="loader"></div></div>';
         
-        const shuffled = [...allPokemon].sort(() => 0.5 - Math.random());
-        const selected = shuffled.slice(0, 3);
+        // Filtrer allPokemon par génération
+        const filteredPool = allPokemon.filter(p => {
+            return selectedGens.some(gen => {
+                const range = GEN_RANGES[gen];
+                return p.id >= range[0] && p.id <= range[1];
+            });
+        });
+
+        if (filteredPool.length === 0) {
+            container.innerHTML = '<div style="width:100%; text-align:center; color:var(--accent);">Aucun Pokémon trouvé avec ces filtres !</div>';
+            return;
+        }
+
+        const shuffled = [...filteredPool].sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, count);
         
         const cardsHTML = await Promise.all(selected.map(async (p, idx) => {
             let stats = { hp: 50, atk: 50, def: 50, spa: 50, spd: 50, spe: 50 };
