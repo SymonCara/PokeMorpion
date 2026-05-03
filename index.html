@@ -339,11 +339,22 @@ const appId = typeof __app_id !== 'undefined' ? __app_id : 'pokemorpion-v5';
 
 // --- DATA SPÉCIALES ---
 const LEGENDARIES_IDS = [144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,638,639,640,641,642,643,644,645,646,647,648,649,716,717,718,719,720,721,772,773,785,786,787,788,789,790,791,792,793,794,795,796,797,798,799,800,801,802,803,804,805,806,807,808,809,888,889,890,891,892,893,894,895,896,897,898,905,1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1014,1015,1016,1017,1018,1019,1020,1021,1022,1023,1024,1025];
+const MYTHICAL_IDS = [151, 251, 385, 386, 489, 490, 491, 492, 493, 494, 647, 648, 649, 719, 720, 721, 801, 802, 807, 808, 809, 893, 1025];
 const STARTERS_IDS = [1,4,7,152,155,158,252,255,258,387,390,393,495,498,501,650,653,658,722,725,728,810,813,816,906,909,912];
 const MEGAS_IDS = [10033, 10034, 10035, 10036, 10037, 10038, 10039, 10040, 10041, 10042, 10043, 10044, 10045, 10046, 10047, 10048, 10049, 10050, 10051, 10052, 10053, 10054, 10055, 10056, 10057, 10058, 10059, 10060, 10061, 10062, 10063, 10064, 10065, 10066, 10067, 10068, 10069, 10070, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079, 10080, 10081, 10082, 10083, 10084, 10085, 10086, 10087, 10088, 10089, 10090, 10091, 10092];
 const GYM_POKES = [25,54,66,74,95,102,111,120,121,130,143,1,4,7,133,6,9,3,150,68,94,112,131,149,208,212,248,306,376,445,448];
 const BLACK_SHINIES = [6, 38, 94, 197, 248, 282, 310, 359, 384, 445, 448, 461, 612, 631, 658, 676, 681, 770, 774, 785, 786, 787, 788, 823, 887, 1007, 1008];
 const SHINY_GREEN_IDS = [1, 2, 3, 15, 23, 24, 27, 31, 41, 42, 43, 44, 45, 66, 67, 68, 84, 85, 88, 89, 114, 123, 135, 149, 196, 212, 217, 220, 227, 234, 252, 253, 254, 268, 272, 284, 298, 316, 357, 373, 380, 381, 383, 387, 388, 389, 406, 429, 450, 465, 469, 593, 604, 621, 633, 634, 635, 652, 715, 718, 830, 834, 840, 841, 842, 1005, 1019];
+const SHINY_BLUE_IDS = [151, 132, 700, 54, 77, 78, 109, 110, 100, 101, 241, 213, 222, 228, 229, 231, 235, 245, 280, 281, 282, 475, 298, 335, 381, 193, 469, 526, 696, 697, 698, 699, 744, 745, 34, 31];
+const SHINY_PINK_IDS = [251, 382, 214, 134, 142, 148, 150, 195, 198, 430, 215, 461, 126, 467, 321, 319, 428, 417, 424, 442, 445, 97, 80, 102, 108, 463, 122, 124, 36, 40, 45];
+const SHINY_GOLD_IDS = [129, 380, 59, 38, 103, 10, 11, 12, 15, 16, 19, 23, 27, 52, 74, 75, 76, 81, 82, 462, 208, 212, 184, 213, 205, 227, 302, 303, 308, 333, 334, 426, 448, 488, 616, 617, 621, 704, 705, 706, 803, 804];
+const SHINY_RED_IDS = [130, 649, 286, 430, 359, 405, 545, 701, 794, 717, 791];
+const BABY_IDS = [172, 173, 174, 175, 236, 238, 239, 240, 298, 406, 433, 438, 439, 440, 446, 447, 458];
+const FOSSIL_IDS = [138, 139, 140, 141, 142, 345, 346, 347, 348, 408, 409, 410, 411, 564, 565, 566, 567, 696, 697, 698, 699, 880, 881, 882, 883];
+const PARADOX_IDS = [981, 982, 983, 984, 985, 986, 987, 988, 989, 990, 991, 992, 1005, 1006, 1007, 1008, 1009, 1010, 1020, 1021, 1022, 1023];
+const UB_IDS = [793, 794, 795, 796, 797, 798, 799, 803, 804, 805, 806];
+const STAGE2_IDS = [2, 5, 8, 11, 14, 17, 25, 30, 33, 35, 39, 42, 44, 61, 64, 67, 70, 75, 82, 93, 148, 153, 156, 159, 180, 183, 188, 221, 247, 253, 256, 259, 266, 268, 271, 274, 281, 288, 294, 305, 329, 372, 375, 388, 391, 394, 397, 404, 315, 444];
+const STAGE3_IDS = [3, 6, 9, 12, 15, 18, 26, 31, 34, 36, 40, 169, 45, 182, 62, 186, 65, 68, 71, 76, 462, 94, 149, 154, 157, 160, 181, 184, 189, 473, 248, 254, 257, 260, 267, 269, 272, 275, 282, 475, 289, 295, 306, 330, 373, 376, 389, 392, 395, 398, 405, 407, 445];
 const NEEDS_ITEM_IDS = [58,37,133,512,951,60,90,133,515,25,133,82,603,938,44,70,102,133,274,30,32,35,39,44,191,548,281,361,198,200,608,680,315,176,670,27,37,133,974,739,113,123,95,79,61,137,233,349,117,366,840,854,935,996];
 
 let allPokemon = [];
@@ -569,11 +580,21 @@ async function loadPokemonData() {
             id, name, types,
             generation: id <= 151 ? 1 : id <= 251 ? 2 : id <= 386 ? 3 : id <= 493 ? 4 : id <= 649 ? 5 : id <= 721 ? 6 : id <= 809 ? 7 : id <= 905 ? 8 : 9,
             isLegendary: LEGENDARIES_IDS.includes(id),
+            isMythical: MYTHICAL_IDS.includes(id),
             isStarter: STARTERS_IDS.some(sid => id >= sid && id <= sid + 2),
             isMega: MEGAS_IDS.includes(id),
             isGym: GYM_POKES.includes(id),
             isBlackShiny: BLACK_SHINIES.includes(id),
             isGreenShiny: SHINY_GREEN_IDS.includes(id),
+            isBlueShiny: SHINY_BLUE_IDS.includes(id),
+            isPinkShiny: SHINY_PINK_IDS.includes(id),
+            isGoldShiny: SHINY_GOLD_IDS.includes(id),
+            isRedShiny: SHINY_RED_IDS.includes(id),
+            isBaby: BABY_IDS.includes(id),
+            isFossil: FOSSIL_IDS.includes(id),
+            isParadox: PARADOX_IDS.includes(id),
+            isUB: UB_IDS.includes(id),
+            stage: STAGE3_IDS.includes(id) ? 3 : STAGE2_IDS.includes(id) ? 2 : 1,
             needsItem: NEEDS_ITEM_IDS.includes(id),
             sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
         };
@@ -585,10 +606,21 @@ async function loadPokemonData() {
         const pokeObj = {
             id: p[0], name: p[1], types: p[2], generation: 8,
             isLegendary: LEGENDARIES_IDS.includes(p[0]),
+            isMythical: MYTHICAL_IDS.includes(p[0]),
             isStarter: STARTERS_IDS.some(sid => p[0] >= sid && p[0] <= sid + 2),
             isMega: MEGAS_IDS.includes(p[0]),
             isGym: GYM_POKES.includes(p[0]),
             isBlackShiny: BLACK_SHINIES.includes(p[0]),
+            isGreenShiny: SHINY_GREEN_IDS.includes(p[0]),
+            isBlueShiny: SHINY_BLUE_IDS.includes(p[0]),
+            isPinkShiny: SHINY_PINK_IDS.includes(p[0]),
+            isGoldShiny: SHINY_GOLD_IDS.includes(p[0]),
+            isRedShiny: SHINY_RED_IDS.includes(p[0]),
+            isBaby: BABY_IDS.includes(p[0]),
+            isFossil: FOSSIL_IDS.includes(p[0]),
+            isParadox: PARADOX_IDS.includes(p[0]),
+            isUB: UB_IDS.includes(p[0]),
+            stage: STAGE3_IDS.includes(p[0]) ? 3 : STAGE2_IDS.includes(p[0]) ? 2 : 1,
             sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p[0]}.png`
         };
         if (existingIdx !== -1) allPokemon[existingIdx] = pokeObj;
@@ -601,10 +633,21 @@ async function loadPokemonData() {
         const pokeObj = {
             id: p[0], name: p[1], types: p[2], generation: 9,
             isLegendary: LEGENDARIES_IDS.includes(p[0]),
+            isMythical: MYTHICAL_IDS.includes(p[0]),
             isStarter: STARTERS_IDS.some(sid => p[0] >= sid && p[0] <= sid + 2),
             isMega: MEGAS_IDS.includes(p[0]),
             isGym: GYM_POKES.includes(p[0]),
             isBlackShiny: BLACK_SHINIES.includes(p[0]),
+            isGreenShiny: SHINY_GREEN_IDS.includes(p[0]),
+            isBlueShiny: SHINY_BLUE_IDS.includes(p[0]),
+            isPinkShiny: SHINY_PINK_IDS.includes(p[0]),
+            isGoldShiny: SHINY_GOLD_IDS.includes(p[0]),
+            isRedShiny: SHINY_RED_IDS.includes(p[0]),
+            isBaby: BABY_IDS.includes(p[0]),
+            isFossil: FOSSIL_IDS.includes(p[0]),
+            isParadox: PARADOX_IDS.includes(p[0]),
+            isUB: UB_IDS.includes(p[0]),
+            stage: STAGE3_IDS.includes(p[0]) ? 3 : STAGE2_IDS.includes(p[0]) ? 2 : 1,
             sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p[0]}.png`
         };
         if (existingIdx !== -1) allPokemon[existingIdx] = pokeObj;
@@ -779,13 +822,25 @@ function generateGridHeaders() {
     const types = ['Feu', 'Eau', 'Plante', 'Électrik', 'Dragon', 'Spectre', 'Combat', 'Fée', 'Acier', 'Normal', 'Vol', 'Sol', 'Poison', 'Psy', 'Roche', 'Glace', 'Insecte', 'Ténèbres'];
     const specials = [
         { type: 'legend', label: 'Légendaire', sub: 'STATUT' },
+        { type: 'mythical', label: 'Fabuleux', sub: 'STATUT' },
         { type: 'mega', label: 'Méga-Évolution', sub: 'CAPACITÉ' },
         { type: 'shiny_noir', label: 'Shiny Noir', sub: 'COULEUR' },
+        { type: 'shiny_vert', label: 'Shiny Vert', sub: 'COULEUR' },
+        { type: 'shiny_bleu', label: 'Shiny Bleu', sub: 'COULEUR' },
+        { type: 'shiny_rose', label: 'Shiny Rose', sub: 'COULEUR' },
+        { type: 'shiny_gold', label: 'Shiny Or', sub: 'COULEUR' },
+        { type: 'shiny_rouge', label: 'Shiny Rouge', sub: 'COULEUR' },
         { type: 'starter', label: 'Starter', sub: 'DÉBUT' },
         { type: 'dual', label: 'Double Type', sub: 'ATTRIBUT' },
         { type: 'gym', label: 'Champion', sub: 'ARÈNE' },
-        { type: 'shiny_vert', label: 'Shiny Vert', sub: 'COULEUR' },
-        { type: 'needs_item', label: 'Objet Évolutif', sub: 'ÉVOLUTION' }
+        { type: 'needs_item', label: 'Objet Évolutif', sub: 'ÉVOLUTION' },
+        { type: 'baby', label: 'Bébé Pokémon', sub: 'STADE' },
+        { type: 'fossil', label: 'Fossile', sub: 'PRÉHISTOIRE' },
+        { type: 'paradox', label: 'Paradoxe', sub: 'TEMPS' },
+        { type: 'ub', label: 'Ultra-Chimère', sub: 'DIMENSION' },
+        { type: 'stage1', label: '1er Stade', sub: 'ÉVOLUTION' },
+        { type: 'stage2', label: '2ème Stade', sub: 'ÉVOLUTION' },
+        { type: 'stage3', label: '3ème Stade', sub: 'ÉVOLUTION' }
     ];
 
     const pool = [
@@ -837,13 +892,25 @@ function checkCriteria(p, c, rowH, colH) {
     if (c.type === 'type') return p.types.includes(c.value);
     if (c.type === 'gen') return p.generation === c.value;
     if (c.type === 'legend') return p.isLegendary;
+    if (c.type === 'mythical') return p.isMythical;
     if (c.type === 'mega') return p.isMega;
     if (c.type === 'shiny_noir') return p.isBlackShiny;
+    if (c.type === 'shiny_vert') return p.isGreenShiny;
+    if (c.type === 'shiny_bleu') return p.isBlueShiny;
+    if (c.type === 'shiny_rose') return p.isPinkShiny;
+    if (c.type === 'shiny_gold') return p.isGoldShiny;
+    if (c.type === 'shiny_rouge') return p.isRedShiny;
     if (c.type === 'starter') return p.isStarter;
     if (c.type === 'dual') return p.types.length === 2;
     if (c.type === 'gym') return p.isGym;
-    if (c.type === 'shiny_vert') return p.isGreenShiny;
     if (c.type === 'needs_item') return p.needsItem;
+    if (c.type === 'baby') return p.isBaby;
+    if (c.type === 'fossil') return p.isFossil;
+    if (c.type === 'paradox') return p.isParadox;
+    if (c.type === 'ub') return p.isUB;
+    if (c.type === 'stage1') return p.stage === 1 && !p.isBaby;
+    if (c.type === 'stage2') return p.stage === 2;
+    if (c.type === 'stage3') return p.stage === 3;
     return false;
 }
 
