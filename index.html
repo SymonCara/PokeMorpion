@@ -304,6 +304,18 @@
   </div>
 </div>
 
+<!-- MODALE CONTESTATION MULTI -->
+<div id="dispute-modal" class="modal-overlay hidden" style="background: rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index: 3000; position:fixed; inset:0;">
+    <div class="modal" style="text-align:center; max-width:400px; border-color:var(--accent3);">
+        <h3 style="color:var(--accent3); margin-bottom:15px;">⚖️ CONTESTATION</h3>
+        <p id="dispute-text" style="font-size:14px; margin-bottom:20px;"></p>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button class="btn btn-primary" onclick="respondToDispute(true)">ACCEPTER</button>
+            <button class="btn" style="background:var(--accent); color:white;" onclick="respondToDispute(false)">REFUSER</button>
+        </div>
+    </div>
+</div>
+
 <script type="module">
 // --- SDK FIREBASE MODULAIRE (v11) ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -764,7 +776,22 @@ function listenToRoom(code) {
         
         currentGame.p1Ready = data.p1Ready || false;
         currentGame.p2Ready = data.p2Ready || false;
+        currentGame.pendingDispute = data.pendingDispute || null;
         
+        // Notification de contestation pour l'adversaire
+        if (currentGame.pendingDispute && currentGame.pendingDispute.requester !== currentGame.role) {
+            const disp = currentGame.pendingDispute;
+            const p = allPokemon.find(x => x.id === disp.pokeId);
+            const rH = currentGame.headers.rows[disp.rowIdx];
+            const cH = currentGame.headers.cols[disp.colIdx];
+            
+            const modal = document.getElementById('dispute-modal');
+            modal.classList.remove('hidden');
+            document.getElementById('dispute-text').innerHTML = `L'adversaire conteste la case <b>${rH.label} × ${cH.label}</b> avec <b>${p.name}</b>.<br><br>Acceptez-vous cette réponse ?`;
+        } else {
+            document.getElementById('dispute-modal').classList.add('hidden');
+        }
+
         // Update phase display
         const phaseLabel = data.maxPhases === 999 ? "∞" : data.maxPhases;
         document.getElementById('stat-round').innerText = `${data.phase}/${phaseLabel}`;
@@ -1255,10 +1282,44 @@ function calculateFinal() {
 window.handleDispute = async function(pokeId, rowIdx, colIdx) {
     const rowH = currentGame.headers.rows[rowIdx];
     const colH = currentGame.headers.cols[colIdx];
+    const p = allPokemon.find(x => x.id === pokeId);
+    if (!p) return;
 
+    if (currentGame.mode === 'multi' && currentGame.roomCode) {
+        // --- MODE MULTIJOUEUR : Demande à l'adversaire ---
+        window.showToast("Demande de contestation envoyée à l'adversaire...");
+        const roomRef = doc(db, 'games', appId, 'rooms', currentGame.roomCode);
+        await updateDoc(roomRef, {
+            pendingDispute: {
+                requester: currentGame.role,
+                pokeId: pokeId,
+                cellIdx: rowIdx * 3 + colIdx,
+                rowIdx: rowIdx,
+                colIdx: colIdx,
+                timestamp: Date.now()
+            }
+        });
+        return;
+    }
+
+    // --- MODE SOLO : Vérification par IA ---
+    window.showToast(`Vérification par l'IA...`);
+    const isVerifiedRow = await verifyWithAI(p.name, rowH.type, rowH.value, rowH.label);
+    const isVerifiedCol = isVerifiedRow ? await verifyWithAI(p.name, colH.type, colH.value, colH.label) : false;
+
+    if (!isVerifiedRow || !isVerifiedCol) {
+        window.showToast("Contestation rejetée ou annulée.", true);
+        return;
+    }
+    // ----------------------------
+
+    applyDispute(pokeId, rowH.type, rowH.value, colH.type, colH.value);
+}
+
+async function applyDispute(pokeId, rType, rVal, cType, cVal) {
     const newExceptions = [
-        { pokeId, criteriaType: rowH.type, criteriaValue: rowH.value },
-        { pokeId, criteriaType: colH.type, criteriaValue: colH.value }
+        { pokeId, criteriaType: rType, criteriaValue: rVal },
+        { pokeId, criteriaType: cType, criteriaValue: cVal }
     ];
 
     disputesMemory.push(...newExceptions);
@@ -1270,59 +1331,130 @@ window.handleDispute = async function(pokeId, rowIdx, colIdx) {
             window.showToast("Contestation enregistrée !");
         } catch(e) { 
             console.error(e);
-            window.showToast("Erreur lors de la sauvegarde.", true);
         }
 
-        // Si on est en Multi, il faut aussi mettre à jour les correctCells de la room pour que l'adversaire voit le changement
+        // Mise à jour de la grille actuelle (Multi ou Solo)
+        const myData = currentGame.role === 'p1' ? currentGame.p1 : currentGame.p2;
+        const newCorrectCells = [];
+        myData.grid.forEach((pId, i) => {
+            if (!pId) return;
+            const r = Math.floor(i/3);
+            const c = i%3;
+            const rH = currentGame.headers.rows[r];
+            const cH = currentGame.headers.cols[c];
+            const px = allPokemon.find(x => x.id === pId);
+            if (px && checkCriteria(px, rH, rH, cH) && checkCriteria(px, cH, rH, cH)) {
+                newCorrectCells.push(i);
+            }
+        });
+        myData.correctCells = newCorrectCells;
+
         if (currentGame.mode === 'multi' && currentGame.roomCode) {
             const roomRef = doc(db, 'games', appId, 'rooms', currentGame.roomCode);
-            const myData = currentGame.role === 'p1' ? currentGame.p1 : currentGame.p2;
-            
-            // Recalculer les cellules correctes
-            const newCorrectCells = [];
-            myData.grid.forEach((pId, i) => {
-                if (!pId) return;
-                const r = Math.floor(i/3);
-                const c = i%3;
-                const rH = currentGame.headers.rows[r];
-                const cH = currentGame.headers.cols[c];
-                const p = allPokemon.find(x => x.id === pId);
-                if (p && checkCriteria(p, rH, rH, cH) && checkCriteria(p, cH, rH, cH)) {
-                    newCorrectCells.push(i);
-                }
-            });
-            myData.correctCells = newCorrectCells;
-            
             const update = {};
             update[currentGame.role] = myData;
             await updateDoc(roomRef, update);
         }
-    } else {
-        window.showToast("Exception ajoutée pour cette session !");
     }
 
     renderGrids();
     if (document.getElementById('result-screen').classList.contains('active')) {
-        calculateFinal(); // Rafraîchir l'écran de fin si ouvert
+        calculateFinal();
     }
 }
 
-async function verifyWithAI(pokemonName) {
-    window.showToast(`Recherche approfondie pour ${pokemonName}...`, false);
+window.respondToDispute = async function(accepted) {
+    if (!currentGame.pendingDispute) return;
+    const disp = currentGame.pendingDispute;
+    const roomRef = doc(db, 'games', appId, 'rooms', currentGame.roomCode);
+    const p = allPokemon.find(x => x.id === disp.pokeId);
+    const rH = currentGame.headers.rows[disp.rowIdx];
+    const cH = currentGame.headers.cols[disp.colIdx];
+
+    if (accepted) {
+        window.showToast("Vous avez accepté la contestation.");
+        // Appliquer l'exception globalement (via applyDispute détourné ou direct)
+        const newExceptions = [
+            { pokeId: disp.pokeId, criteriaType: rH.type, criteriaValue: rH.value },
+            { pokeId: disp.pokeId, criteriaType: cH.type, criteriaValue: cH.value }
+        ];
+        disputesMemory.push(...newExceptions);
+        
+        const memRef = doc(db, 'games', appId, 'config', 'memory_disputes');
+        await setDoc(memRef, { list: disputesMemory }, { merge: true });
+
+        // Mettre à jour les correctCells du demandeur
+        const requesterRole = disp.requester;
+        const reqData = currentGame[requesterRole];
+        const newCorrectCells = [];
+        reqData.grid.forEach((pId, i) => {
+            if (!pId) return;
+            const r = Math.floor(i/3);
+            const c = i%3;
+            const rowHeader = currentGame.headers.rows[r];
+            const colHeader = currentGame.headers.cols[c];
+            const px = allPokemon.find(x => x.id === pId);
+            if (px && checkCriteria(px, rowHeader, rowHeader, colHeader) && checkCriteria(px, colHeader, rowHeader, colHeader)) {
+                newCorrectCells.push(i);
+            }
+        });
+        reqData.correctCells = newCorrectCells;
+
+        const update = { pendingDispute: null };
+        update[requesterRole] = reqData;
+        await updateDoc(roomRef, update);
+    } else {
+        window.showToast("Vous avez refusé la contestation.", true);
+        await updateDoc(roomRef, { pendingDispute: null });
+    }
+    
+    document.getElementById('dispute-modal').classList.add('hidden');
+}
+
+async function verifyWithAI(pokemonName, type, value, label) {
+    let specificQuestion = "";
+    
+    switch(type) {
+        case 'type': specificQuestion = `Est-ce que le Pokémon ${pokemonName} possède le type ${value} ?`; break;
+        case 'gen': specificQuestion = `Est-ce que le Pokémon ${pokemonName} appartient à la génération ${value} ?`; break;
+        case 'legend': specificQuestion = `Est-ce que le Pokémon ${pokemonName} est un Pokémon Légendaire ?`; break;
+        case 'mythical': specificQuestion = `Est-ce que le Pokémon ${pokemonName} est un Pokémon Fabuleux (Mythique) ?`; break;
+        case 'mega': specificQuestion = `Est-ce que ${pokemonName} est une Méga-Évolution ?`; break;
+        case 'shiny_noir': 
+        case 'shiny_vert': 
+        case 'shiny_bleu': 
+        case 'shiny_rose': 
+        case 'shiny_gold': 
+        case 'shiny_rouge': 
+            specificQuestion = `Est-ce que la forme SHINY du Pokémon ${pokemonName} est majoritairement de couleur ${label.split(' ')[1]} ?`; break;
+        case 'starter': specificQuestion = `Est-ce que ${pokemonName} est un Pokémon de départ (Starter) ou une de ses évolutions ?`; break;
+        case 'dual': specificQuestion = `Est-ce que ${pokemonName} possède exactement deux types ?`; break;
+        case 'gym': specificQuestion = `Est-ce que le Pokémon ${pokemonName} est utilisé par un dresseur important (Champion, Conseil 4, Maître) dans les jeux ?`; break;
+        case 'needs_item': specificQuestion = `Est-ce que ${pokemonName} a besoin d'un objet spécifique pour évoluer (Pierre, objet tenu, etc.) ?`; break;
+        case 'baby': specificQuestion = `Est-ce que ${pokemonName} est un Bébé Pokémon ?`; break;
+        case 'fossil': specificQuestion = `Est-ce que ${pokemonName} est un Pokémon issu d'un fossile ?`; break;
+        case 'paradox': specificQuestion = `Est-ce que ${pokemonName} est un Pokémon Paradoxe ?`; break;
+        case 'ub': specificQuestion = `Est-ce que ${pokemonName} est une Ultra-Chimère ?`; break;
+        case 'stage1': specificQuestion = `Est-ce que ${pokemonName} est au premier stade de son évolution (non évolué) ?`; break;
+        case 'stage2': specificQuestion = `Est-ce que ${pokemonName} est au deuxième stade de son évolution (1ère évolution) ?`; break;
+        case 'stage3': specificQuestion = `Est-ce que ${pokemonName} est au troisième stade de son évolution (2ème évolution) ?`; break;
+        default: specificQuestion = `Est-ce que le Pokémon ${pokemonName} correspond au critère "${label}" ?`;
+    }
+
     try {
         const response = await fetch('http://localhost:11434/api/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 model: 'gemma4:e4b',
-                prompt: `Tu es un expert Pokémon. Analyse la requête suivante : "Le Pokémon ${pokemonName} est-il utilisé par un dresseur important (Champion, Conseil 4, Maître) dans les jeux officiels ?"
+                prompt: `Tu es un expert Pokémon omniscient. Analyse cette question technique : "${specificQuestion}"
                 
-                CONSIGNES :
-                1. Si c'est VRAI, réponds par "OUI" suivi du nom du dresseur, du jeu et de la ville/lieu.
-                2. Si c'est FAUX, réponds par "NON".
-                3. Ne réponds que par OUI ou NON si tu as un doute.
+                CONSIGNES STRICTES :
+                1. Réponds par "OUI" si c'est vrai, "NON" si c'est faux.
+                2. Ajoute une courte justification de maximum 15 mots.
+                3. Ne réponds que "OUI" ou "NON" si tu as un doute sérieux.
                 
-                Exemple attendu : "OUI - Ondine, Pokémon Bleu/Rouge, Azuria" ou "NON".`,
+                Format : "OUI - [Justification]" ou "NON - [Justification]"`,
                 stream: false
             })
         });
@@ -1330,21 +1462,19 @@ async function verifyWithAI(pokemonName) {
         if (!response.ok) throw new Error("Ollama non joignable");
         
         const data = await response.json();
-        const res = data.response;
+        const res = data.response.trim().toUpperCase();
         console.log("Analyse IA :", res);
 
-        if (res.toUpperCase().startsWith("OUI")) {
-            // Afficher la preuve à l'utilisateur
-            const evidence = res.split("-")[1] || res.substring(3);
-            const confirmAI = confirm(`L'IA a trouvé une correspondance :\n\n"${res}"\n\nSouhaites-tu valider cet ajout à la base de données ?`);
-            return confirmAI;
+        if (res.startsWith("OUI")) {
+            const evidence = data.response;
+            return confirm(`L'IA a VALIDÉ votre contestation :\n\n"${evidence}"\n\nAppliquer le changement ?`);
+        } else {
+            alert(`L'IA a REJETÉ votre contestation :\n\n"${data.response}"`);
+            return false;
         }
-        
-        return false;
     } catch (e) {
-        console.warn("Échec recherche IA locale.", e);
-        const bulbapediaUrl = `https://bulbapedia.bulbagarden.net/wiki/Special:Search?search=${encodeURIComponent(pokemonName)}+trainer`;
-        return confirm(`L'IA locale n'a pas pu vérifier. Peux-tu vérifier sur Bulbapedia ?\n\n${bulbapediaUrl}\n\nConfirmes-tu manuellement ?`);
+        console.warn("Échec IA, recours manuel.", e);
+        return confirm(`Impossible de contacter l'IA de vérification.\n\nCritère : ${label}\nPokémon : ${pokemonName}\n\nConfirmez-vous manuellement que c'est correct ?`);
     }
 }
 
