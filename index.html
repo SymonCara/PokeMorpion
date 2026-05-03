@@ -345,10 +345,10 @@ const MEGAS_IDS = [10033, 10034, 10035, 10036, 10037, 10038, 10039, 10040, 10041
 const GYM_POKES = [25,54,66,74,95,102,111,120,121,130,143,1,4,7,133,6,9,3,150,68,94,112,131,149,208,212,248,306,376,445,448];
 const BLACK_SHINIES = [6, 38, 94, 197, 248, 282, 310, 359, 384, 445, 448, 461, 612, 631, 658, 676, 681, 770, 774, 785, 786, 787, 788, 823, 887, 1007, 1008];
 const SHINY_GREEN_IDS = [1, 2, 3, 15, 23, 24, 27, 31, 41, 42, 43, 44, 45, 66, 67, 68, 84, 85, 88, 89, 114, 123, 135, 149, 196, 212, 217, 220, 227, 234, 252, 253, 254, 268, 272, 284, 298, 316, 357, 373, 380, 381, 383, 387, 388, 389, 406, 429, 450, 465, 469, 593, 604, 621, 633, 634, 635, 652, 715, 718, 830, 834, 840, 841, 842, 1005, 1019];
-const SHINY_BLUE_IDS = [151, 132, 700, 54, 77, 78, 109, 110, 100, 101, 241, 213, 222, 228, 229, 231, 235, 245, 280, 281, 282, 475, 298, 335, 381, 193, 469, 526, 696, 697, 698, 699, 744, 745, 34, 31];
-const SHINY_PINK_IDS = [251, 382, 214, 134, 142, 148, 150, 195, 198, 430, 215, 461, 126, 467, 321, 319, 428, 417, 424, 442, 445, 97, 80, 102, 108, 463, 122, 124, 36, 40, 45];
-const SHINY_GOLD_IDS = [129, 380, 59, 38, 103, 10, 11, 12, 15, 16, 19, 23, 27, 52, 74, 75, 76, 81, 82, 462, 208, 212, 184, 213, 205, 227, 302, 303, 308, 333, 334, 426, 448, 488, 616, 617, 621, 704, 705, 706, 803, 804];
-const SHINY_RED_IDS = [130, 649, 286, 430, 359, 405, 545, 701, 794, 717, 791];
+const SHINY_BLUE_IDS = [151, 132, 700, 54, 77, 78, 109, 110, 100, 101, 241, 213, 222, 228, 229, 231, 235, 245, 280, 281, 282, 475, 298, 335, 381, 193, 469, 526, 696, 697, 698, 699, 744, 745, 34, 31, 471, 628, 490, 489, 526, 335, 235, 132, 151];
+const SHINY_PINK_IDS = [251, 382, 214, 134, 142, 148, 195, 198, 430, 215, 461, 126, 467, 321, 319, 428, 417, 424, 442, 445, 97, 80, 102, 108, 463, 122, 124, 36, 40, 45, 258, 259, 260, 287, 79, 199, 320, 690, 417, 428, 214, 382];
+const SHINY_GOLD_IDS = [129, 380, 59, 103, 10, 11, 16, 19, 23, 27, 52, 74, 75, 76, 81, 82, 462, 208, 212, 184, 205, 227, 302, 303, 333, 334, 426, 448, 616, 617, 621, 704, 705, 706, 803, 804, 129, 380, 59, 103, 10, 11, 16, 19, 23, 27, 52, 74, 75, 76, 81, 82];
+const SHINY_RED_IDS = [130, 649, 286, 545, 701, 794, 717, 791, 338, 356, 693, 130, 649, 286, 545, 701, 794, 717, 791, 338, 356, 693];
 const BABY_IDS = [172, 173, 174, 175, 236, 238, 239, 240, 298, 406, 433, 438, 439, 440, 446, 447, 458];
 const FOSSIL_IDS = [138, 139, 140, 141, 142, 345, 346, 347, 348, 408, 409, 410, 411, 564, 565, 566, 567, 696, 697, 698, 699, 880, 881, 882, 883];
 const PARADOX_IDS = [981, 982, 983, 984, 985, 986, 987, 988, 989, 990, 991, 992, 1005, 1006, 1007, 1008, 1009, 1010, 1020, 1021, 1022, 1023];
@@ -987,6 +987,24 @@ function renderOneGrid(containerId, playerData, isInteractive) {
 
             if (isInteractive && !playerData.validated) {
                 cell.onclick = () => openModal(idx);
+            } else if (isInteractive && playerData.validated && p) {
+                const r = Math.floor(idx/3);
+                const c = idx%3;
+                const rowH = currentGame.headers.rows[r];
+                const colH = currentGame.headers.cols[c];
+                const ok = checkCriteria(p, rowH, rowH, colH) && checkCriteria(p, colH, rowH, colH);
+                
+                if (!ok) {
+                    cell.onclick = () => {
+                        if (confirm(`Voulez-vous contester l'erreur pour ${p.name} ?`)) {
+                            handleDispute(p.id, r, c);
+                        }
+                    };
+                    cell.title = "Cliquer pour contester";
+                    cell.style.cursor = "help";
+                } else {
+                    cell.classList.add('locked');
+                }
             } else {
                 cell.classList.add('locked');
             }
@@ -1249,13 +1267,43 @@ window.handleDispute = async function(pokeId, rowIdx, colIdx) {
         try {
             const memRef = doc(db, 'games', appId, 'config', 'memory_disputes');
             await setDoc(memRef, { list: disputesMemory }, { merge: true });
-            window.showToast("Contestation enregistrée localement !");
+            window.showToast("Contestation enregistrée !");
         } catch(e) { 
             console.error(e);
             window.showToast("Erreur lors de la sauvegarde.", true);
         }
+
+        // Si on est en Multi, il faut aussi mettre à jour les correctCells de la room pour que l'adversaire voit le changement
+        if (currentGame.mode === 'multi' && currentGame.roomCode) {
+            const roomRef = doc(db, 'games', appId, 'rooms', currentGame.roomCode);
+            const myData = currentGame.role === 'p1' ? currentGame.p1 : currentGame.p2;
+            
+            // Recalculer les cellules correctes
+            const newCorrectCells = [];
+            myData.grid.forEach((pId, i) => {
+                if (!pId) return;
+                const r = Math.floor(i/3);
+                const c = i%3;
+                const rH = currentGame.headers.rows[r];
+                const cH = currentGame.headers.cols[c];
+                const p = allPokemon.find(x => x.id === pId);
+                if (p && checkCriteria(p, rH, rH, cH) && checkCriteria(p, cH, rH, cH)) {
+                    newCorrectCells.push(i);
+                }
+            });
+            myData.correctCells = newCorrectCells;
+            
+            const update = {};
+            update[currentGame.role] = myData;
+            await updateDoc(roomRef, update);
+        }
     } else {
         window.showToast("Exception ajoutée pour cette session !");
+    }
+
+    renderGrids();
+    if (document.getElementById('result-screen').classList.contains('active')) {
+        calculateFinal(); // Rafraîchir l'écran de fin si ouvert
     }
 }
 
