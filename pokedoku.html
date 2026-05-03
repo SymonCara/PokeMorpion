@@ -365,13 +365,19 @@
 
         window.startMulti = async (type) => {
             if (allPokemon.length === 0) return alert("Le Pokédex est encore en cours de chargement...");
-            const room = document.getElementById(type === 'create' ? 'create-room-id' : 'join-room-id').value.trim();
-            if (!room) return alert("Entrez un nom de salle !");
-            roomName = room;
-            await joinRoom();
-            document.getElementById('setup-menu').style.display = 'none';
-            document.getElementById('main-game').style.display = 'block';
-            updateUI();
+            if (type === 'create') {
+                roomName = Math.floor(100000 + Math.random() * 900000).toString();
+            } else {
+                const room = document.getElementById('join-room-id').value.trim();
+                if (!room) return alert("Entrez un code de salle !");
+                roomName = room;
+            }
+            const success = await joinRoom();
+            if (success) {
+                document.getElementById('setup-menu').style.display = 'none';
+                document.getElementById('main-game').style.display = 'block';
+                updateUI();
+            }
         };
 
         window.startGameSolo = () => {
@@ -446,14 +452,20 @@
                     p1_grid: myGrid, p2_grid: Array(9).fill(null),
                     p1_done: false, p2_done: false,
                     p1_next: false, p2_next: false,
-                    maxPhases: maxPhases, currentPhase: 1
+                    maxPhases: maxPhases, currentPhase: 1,
+                    players_count: 1
                 });
             } else {
-                myPlayerId = 'p2';
                 const d = snap.data();
+                if (d.players_count >= 2) {
+                    alert("La salle est pleine (Max 2 joueurs) !");
+                    return false;
+                }
+                myPlayerId = 'p2';
                 gridHeaders = d.headers;
                 maxPhases = d.maxPhases;
                 currentPhase = d.currentPhase;
+                await updateDoc(roomRef, { players_count: 2 });
             }
 
             onSnapshot(roomRef, (doc) => {
@@ -471,7 +483,6 @@
                     document.getElementById('waiting-status').style.visibility = 'hidden';
                 }
 
-                // Transition phase
                 if (d.p1_next && d.p2_next) {
                     currentPhase = d.currentPhase;
                     resetForNextPhase();
@@ -483,6 +494,7 @@
                 document.getElementById('opp-score').innerText = `${oppGrid.filter(x => x).length}/9`;
                 updateUI();
             });
+            return true;
         }
 
         function generateHeaders() {
@@ -612,11 +624,30 @@
             updateUI();
         }
 
+        async function incrementUserScore() {
+            const userStr = localStorage.getItem('poke_user');
+            if (!userStr) return;
+            const user = JSON.parse(userStr);
+            try {
+                const userRef = doc(db, "users", user.pseudo);
+                const snap = await getDoc(userRef);
+                if (snap.exists()) {
+                    const newScore = (snap.data().score || 0) + 1;
+                    await updateDoc(userRef, { score: newScore });
+                    // Update local storage too
+                    user.score = newScore;
+                    localStorage.setItem('poke_user', JSON.stringify(user));
+                }
+            } catch (e) { console.error("Score increment error:", e); }
+        }
+
         function endGame(victory = false) {
             document.getElementById('btn-next').style.display = 'none';
             document.getElementById('btn-restart').style.display = 'block';
-            if (victory) alert("BRAVO ! Vous avez complété la grille !");
-            else {
+            if (victory) {
+                alert("BRAVO ! Vous avez complété la grille ! (+1 point)");
+                incrementUserScore();
+            } else {
                 isValidated = true;
                 renderGrid('me');
                 alert("Fin des phases. Voici la correction.");
