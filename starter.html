@@ -182,10 +182,15 @@
         document.getElementById('loading-pool').style.display = 'block';
         document.getElementById('empty-state').style.display = 'none';
 
+        let data = null;
         try {
             const res = await fetch('https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json');
-            let data = res.ok ? await res.json() : null;
+            if (res.ok) data = await res.json();
+        } catch (e) {
+            console.warn("Fetch failed, using local backup", e);
+        }
 
+        try {
             const rawData = data || offlineBackup.map(p => ({id:p[0], name:{french:p[1]}, type:p[3]}));
             
             allPokemon = rawData.map(p => {
@@ -195,7 +200,7 @@
                 return { id, name, types };
             });
 
-            // Fusionner Gen 8 & 9 & Megas (pour filter ensuite)
+            // Fusionner Gen 8 & 9 (si pas déjà présents)
             [...GEN8_DATA, ...GEN9_DATA].forEach(p => {
                 if (!allPokemon.find(x => x.id === p[0])) {
                     allPokemon.push({ id: p[0], name: p[1], types: p[2] });
@@ -206,8 +211,9 @@
             allPokemon = allPokemon.filter(p => p.id < 10000);
             
             allPokemon.sort((a,b) => a.id - b.id);
+            console.log(`Pool chargé: ${allPokemon.length} Pokémon.`);
         } catch (e) {
-            console.error("Erreur pool:", e);
+            console.error("Erreur critique initialisation pool:", e);
         } finally {
             document.getElementById('loading-pool').style.display = 'none';
             document.getElementById('empty-state').style.display = 'block';
@@ -219,6 +225,10 @@
     }
 
     async function generateStarters() {
+        if (allPokemon.length === 0) {
+            return showToast("Le Pokédex est encore en cours de chargement... Veuillez patienter.");
+        }
+        
         const count = parseInt(document.getElementById('poke-count').value) || 3;
         const selectedGens = Array.from(document.querySelectorAll('.gen-checkbox input:checked')).map(cb => parseInt(cb.value));
         
