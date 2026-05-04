@@ -1,0 +1,2766 @@
+{
+  "unsolvable": [
+    "Feu + Eau",
+    "Feu + Électrik",
+    "Feu + Fée",
+    "Feu + Glace",
+    "Feu + Ultra-Chimère",
+    "Feu + Fossile",
+    "Eau + Plante",
+    "Eau + Normal",
+    "Eau + Fabuleux",
+    "Eau + Ultra-Chimère",
+    "Eau + Bébé",
+    "Plante + Électrik",
+    "Plante + Acier",
+    "Plante + Roche",
+    "Plante + Ultra-Chimère",
+    "Plante + Fossile",
+    "Plante + Bébé",
+    "Plante + Shiny Noir",
+    "Électrik + Spectre",
+    "Électrik + Normal",
+    "Électrik + Insecte",
+    "Électrik + Gen 3",
+    "Électrik + Gen 4",
+    "Électrik + Gen 6",
+    "Électrik + Fabuleux",
+    "Électrik + Starter",
+    "Électrik + Ultra-Chimère",
+    "Dragon + Roche",
+    "Dragon + Insecte",
+    "Dragon + Fabuleux",
+    "Dragon + Starter",
+    "Dragon + Ultra-Chimère",
+    "Dragon + Bébé",
+    "Spectre + Normal",
+    "Spectre + Vol",
+    "Spectre + Roche",
+    "Spectre + Insecte",
+    "Spectre + Gen 3",
+    "Spectre + Gen 5",
+    "Spectre + Gen 6",
+    "Spectre + Ultra-Chimère",
+    "Spectre + Fossile",
+    "Spectre + Bébé",
+    "Combat + Roche",
+    "Combat + Gen 5",
+    "Combat + Gen 6",
+    "Combat + Gen 7",
+    "Combat + Fabuleux",
+    "Combat + Ultra-Chimère",
+    "Combat + Fossile",
+    "Fée + Sol",
+    "Fée + Glace",
+    "Fée + Insecte",
+    "Fée + Gen 4",
+    "Fée + Gen 5",
+    "Fée + Starter",
+    "Fée + Ultra-Chimère",
+    "Fée + Fossile",
+    "Acier + Normal",
+    "Acier + Glace",
+    "Acier + Gen 5",
+    "Acier + Gen 6",
+    "Acier + Ultra-Chimère",
+    "Acier + Fossile",
+    "Acier + Bébé",
+    "Normal + Roche",
+    "Normal + Glace",
+    "Normal + Insecte",
+    "Normal + Gen 3",
+    "Normal + Gen 5",
+    "Normal + Gen 6",
+    "Normal + Gen 7",
+    "Normal + Starter",
+    "Normal + Paradoxe",
+    "Normal + Ultra-Chimère",
+    "Normal + Fossile",
+    "Normal + Shiny Noir",
+    "Vol + Gen 4",
+    "Vol + Gen 5",
+    "Vol + Fabuleux",
+    "Vol + Ultra-Chimère",
+    "Vol + Bébé",
+    "Sol + Psy",
+    "Sol + Insecte",
+    "Sol + Gen 5",
+    "Sol + Gen 7",
+    "Sol + Fabuleux",
+    "Sol + Ultra-Chimère",
+    "Sol + Fossile",
+    "Sol + Bébé",
+    "Poison + Glace",
+    "Poison + Gen 3",
+    "Poison + Gen 4",
+    "Poison + Gen 5",
+    "Poison + Gen 6",
+    "Poison + Gen 7",
+    "Poison + Ultra-Chimère",
+    "Poison + Fossile",
+    "Poison + Bébé",
+    "Psy + Gen 6",
+    "Psy + Starter",
+    "Psy + Ultra-Chimère",
+    "Psy + Fossile",
+    "Roche + Glace",
+    "Roche + Gen 4",
+    "Roche + Gen 5",
+    "Roche + Gen 6",
+    "Roche + Légendaire",
+    "Roche + Fabuleux",
+    "Roche + Starter",
+    "Roche + Ultra-Chimère",
+    "Roche + Bébé",
+    "Glace + Gen 3",
+    "Glace + Gen 4",
+    "Glace + Gen 5",
+    "Glace + Gen 6",
+    "Glace + Gen 7",
+    "Glace + Fabuleux",
+    "Glace + Starter",
+    "Glace + Ultra-Chimère",
+    "Glace + Shiny Noir",
+    "Insecte + Ténèbres",
+    "Insecte + Gen 3",
+    "Insecte + Gen 4",
+    "Insecte + Gen 5",
+    "Insecte + Gen 6",
+    "Insecte + Gen 7",
+    "Insecte + Légendaire",
+    "Insecte + Fabuleux",
+    "Insecte + Starter",
+    "Insecte + Ultra-Chimère",
+    "Insecte + Fossile",
+    "Insecte + Bébé",
+    "Insecte + Shiny Noir",
+    "Ténèbres + Gen 1",
+    "Ténèbres + Gen 3",
+    "Ténèbres + Gen 4",
+    "Ténèbres + Gen 7",
+    "Ténèbres + Ultra-Chimère",
+    "Ténèbres + Fossile",
+    "Ténèbres + Bébé",
+    "Ténèbres + Stade 2",
+    "Gen 1 + Paradoxe",
+    "Gen 1 + Ultra-Chimère",
+    "Gen 1 + Bébé",
+    "Gen 1 + Méga-Évo",
+    "Gen 2 + Paradoxe",
+    "Gen 2 + Ultra-Chimère",
+    "Gen 2 + Fossile",
+    "Gen 2 + Méga-Évo",
+    "Gen 3 + Fabuleux",
+    "Gen 3 + Paradoxe",
+    "Gen 3 + Ultra-Chimère",
+    "Gen 3 + Fossile",
+    "Gen 3 + Bébé",
+    "Gen 3 + Méga-Évo",
+    "Gen 4 + Paradoxe",
+    "Gen 4 + Ultra-Chimère",
+    "Gen 4 + Fossile",
+    "Gen 4 + Bébé",
+    "Gen 4 + Méga-Évo",
+    "Gen 5 + Paradoxe",
+    "Gen 5 + Ultra-Chimère",
+    "Gen 5 + Fossile",
+    "Gen 5 + Bébé",
+    "Gen 5 + Shiny Noir",
+    "Gen 5 + Méga-Évo",
+    "Gen 5 + Stade 2",
+    "Gen 6 + Fabuleux",
+    "Gen 6 + Paradoxe",
+    "Gen 6 + Ultra-Chimère",
+    "Gen 6 + Fossile",
+    "Gen 6 + Bébé",
+    "Gen 6 + Méga-Évo",
+    "Gen 6 + Stade 2",
+    "Gen 7 + Paradoxe",
+    "Gen 7 + Ultra-Chimère",
+    "Gen 7 + Fossile",
+    "Gen 7 + Bébé",
+    "Gen 7 + Méga-Évo",
+    "Gen 7 + Stade 2",
+    "Gen 7 + Stade 3",
+    "Gen 8 + Paradoxe",
+    "Gen 8 + Ultra-Chimère",
+    "Gen 8 + Bébé",
+    "Gen 8 + Méga-Évo",
+    "Gen 9 + Ultra-Chimère",
+    "Gen 9 + Fossile",
+    "Gen 9 + Bébé",
+    "Légendaire + Starter",
+    "Légendaire + Ultra-Chimère",
+    "Légendaire + Fossile",
+    "Légendaire + Bébé",
+    "Légendaire + Méga-Évo",
+    "Légendaire + Stade 2",
+    "Légendaire + Stade 3",
+    "Fabuleux + Starter",
+    "Fabuleux + Paradoxe",
+    "Fabuleux + Ultra-Chimère",
+    "Fabuleux + Fossile",
+    "Fabuleux + Bébé",
+    "Fabuleux + Shiny Noir",
+    "Fabuleux + Méga-Évo",
+    "Fabuleux + Stade 2",
+    "Fabuleux + Stade 3",
+    "Starter + Paradoxe",
+    "Starter + Ultra-Chimère",
+    "Starter + Fossile",
+    "Starter + Bébé",
+    "Starter + Méga-Évo",
+    "Paradoxe + Ultra-Chimère",
+    "Paradoxe + Fossile",
+    "Paradoxe + Bébé",
+    "Paradoxe + Méga-Évo",
+    "Paradoxe + Stade 2",
+    "Paradoxe + Stade 3",
+    "Ultra-Chimère + Fossile",
+    "Ultra-Chimère + Bébé",
+    "Ultra-Chimère + Shiny Noir",
+    "Ultra-Chimère + Méga-Évo",
+    "Ultra-Chimère + Double Type",
+    "Ultra-Chimère + Stade 1",
+    "Ultra-Chimère + Stade 2",
+    "Ultra-Chimère + Stade 3",
+    "Fossile + Bébé",
+    "Fossile + Shiny Noir",
+    "Fossile + Méga-Évo",
+    "Fossile + Stade 2",
+    "Fossile + Stade 3",
+    "Bébé + Shiny Noir",
+    "Bébé + Méga-Évo",
+    "Bébé + Stade 2",
+    "Bébé + Stade 3",
+    "Shiny Noir + Méga-Évo",
+    "Shiny Noir + Stade 2",
+    "Méga-Évo + Stade 2",
+    "Méga-Évo + Stade 3",
+    "Stade 1 + Stade 2",
+    "Stade 1 + Stade 3",
+    "Stade 2 + Stade 3"
+  ],
+  "solvable": [
+    {
+      "combination": "Feu + Plante",
+      "count": 2,
+      "pokemon": "Scovillain, Méga-Pimito"
+    },
+    {
+      "combination": "Feu + Dragon",
+      "count": 4,
+      "pokemon": "Reshiram, Boumata, Feu-Perçant, Méga-Dracaufeu X"
+    },
+    {
+      "combination": "Feu + Spectre",
+      "count": 3,
+      "pokemon": "Flâmigator, Malvalame, Méga-Lugulabre"
+    },
+    {
+      "combination": "Feu + Combat",
+      "count": 5,
+      "pokemon": "Galifeu, Braségali, Chimpenfeu, Simiabraz, Méga-Braségali"
+    },
+    {
+      "combination": "Feu + Acier",
+      "count": 1,
+      "pokemon": "Méga-Heatran"
+    },
+    {
+      "combination": "Feu + Normal",
+      "count": 1,
+      "pokemon": "Méga-Némélios"
+    },
+    {
+      "combination": "Feu + Vol",
+      "count": 4,
+      "pokemon": "Dracaufeu, Sulfura, Ho-Oh, Méga-Dracaufeu Y"
+    },
+    {
+      "combination": "Feu + Sol",
+      "count": 1,
+      "pokemon": "Méga-Camérupt"
+    },
+    {
+      "combination": "Feu + Poison",
+      "count": 1,
+      "pokemon": "Mite-de-Fer"
+    },
+    {
+      "combination": "Feu + Psy",
+      "count": 3,
+      "pokemon": "Victini, Carmadura, Méga-Goupelin"
+    },
+    {
+      "combination": "Feu + Roche",
+      "count": 3,
+      "pokemon": "Volcaropod, Wagomine, Monthracite"
+    },
+    {
+      "combination": "Feu + Insecte",
+      "count": 3,
+      "pokemon": "Grillepattes, Scolocendre, Méga-Scolocendre"
+    },
+    {
+      "combination": "Feu + Ténèbres",
+      "count": 4,
+      "pokemon": "Malosse, Démolosse, Yuyu, Méga-Démolosse"
+    },
+    {
+      "combination": "Feu + Gen 1",
+      "count": 12,
+      "pokemon": "Salamèche, Reptincel, Dracaufeu, Goupix, Feunard..."
+    },
+    {
+      "combination": "Feu + Gen 2",
+      "count": 10,
+      "pokemon": "Héricendre, Feurisson, Typhlosion, Limagma, Volcaropod..."
+    },
+    {
+      "combination": "Feu + Gen 3",
+      "count": 3,
+      "pokemon": "Poussifeu, Galifeu, Braségali"
+    },
+    {
+      "combination": "Feu + Gen 4",
+      "count": 3,
+      "pokemon": "Ouisticram, Chimpenfeu, Simiabraz"
+    },
+    {
+      "combination": "Feu + Gen 5",
+      "count": 3,
+      "pokemon": "Victini, Gruikui, Reshiram"
+    },
+    {
+      "combination": "Feu + Gen 6",
+      "count": 1,
+      "pokemon": "Feunnec"
+    },
+    {
+      "combination": "Feu + Gen 7",
+      "count": 2,
+      "pokemon": "Flamiaou, Boumata"
+    },
+    {
+      "combination": "Feu + Gen 8",
+      "count": 7,
+      "pokemon": "Flambino, Lapyro, Pyrobut, Wagomine, Monthracite..."
+    },
+    {
+      "combination": "Feu + Gen 9",
+      "count": 21,
+      "pokemon": "Chochodile, Crocogril, Flâmigator, Charbambin, Carmadura..."
+    },
+    {
+      "combination": "Feu + Légendaire",
+      "count": 6,
+      "pokemon": "Sulfura, Entei, Ho-Oh, Victini, Reshiram..."
+    },
+    {
+      "combination": "Feu + Fabuleux",
+      "count": 1,
+      "pokemon": "Victini"
+    },
+    {
+      "combination": "Feu + Starter",
+      "count": 21,
+      "pokemon": "Salamèche, Reptincel, Dracaufeu, Héricendre, Feurisson..."
+    },
+    {
+      "combination": "Feu + Paradoxe",
+      "count": 2,
+      "pokemon": "Mite-de-Fer, Feu-Perçant"
+    },
+    {
+      "combination": "Feu + Bébé",
+      "count": 1,
+      "pokemon": "Magby"
+    },
+    {
+      "combination": "Feu + Shiny Noir",
+      "count": 2,
+      "pokemon": "Dracaufeu, Feunard"
+    },
+    {
+      "combination": "Feu + Méga-Évo",
+      "count": 11,
+      "pokemon": "Méga-Dracaufeu X, Méga-Dracaufeu Y, Méga-Démolosse, Méga-Braségali, Méga-Camérupt..."
+    },
+    {
+      "combination": "Feu + Double Type",
+      "count": 35,
+      "pokemon": "Dracaufeu, Sulfura, Volcaropod, Malosse, Démolosse..."
+    },
+    {
+      "combination": "Feu + Stade 1",
+      "count": 48,
+      "pokemon": "Salamèche, Goupix, Feunard, Caninos, Arcanin..."
+    },
+    {
+      "combination": "Feu + Stade 2",
+      "count": 7,
+      "pokemon": "Reptincel, Feurisson, Galifeu, Chimpenfeu, Lapyro..."
+    },
+    {
+      "combination": "Feu + Stade 3",
+      "count": 7,
+      "pokemon": "Dracaufeu, Typhlosion, Braségali, Simiabraz, Pyrobut..."
+    },
+    {
+      "combination": "Eau + Électrik",
+      "count": 2,
+      "pokemon": "Loupio, Lanturn"
+    },
+    {
+      "combination": "Eau + Dragon",
+      "count": 8,
+      "pokemon": "Hyporoi, Palkia, Hydragon, Nigirigon, Serpente-Eau..."
+    },
+    {
+      "combination": "Eau + Spectre",
+      "count": 1,
+      "pokemon": "Paragruel"
+    },
+    {
+      "combination": "Eau + Combat",
+      "count": 2,
+      "pokemon": "Tartard, Palmaval"
+    },
+    {
+      "combination": "Eau + Fée",
+      "count": 2,
+      "pokemon": "Marill, Azumarill"
+    },
+    {
+      "combination": "Eau + Acier",
+      "count": 1,
+      "pokemon": "Pingoléon"
+    },
+    {
+      "combination": "Eau + Vol",
+      "count": 3,
+      "pokemon": "Léviator, Mantine, Nigosier"
+    },
+    {
+      "combination": "Eau + Sol",
+      "count": 5,
+      "pokemon": "Axoloto, Maraiste, Flobio, Laggron, Méga-Laggron"
+    },
+    {
+      "combination": "Eau + Poison",
+      "count": 3,
+      "pokemon": "Tentacool, Tentacruel, Qwilfish"
+    },
+    {
+      "combination": "Eau + Psy",
+      "count": 8,
+      "pokemon": "Ramoloss, Flagadoss, Staross, Roigada, Délestin..."
+    },
+    {
+      "combination": "Eau + Roche",
+      "count": 7,
+      "pokemon": "Amonita, Amonistar, Kabuto, Kabutops, Corayon..."
+    },
+    {
+      "combination": "Eau + Glace",
+      "count": 5,
+      "pokemon": "Lamantine, Crustabri, Lokhlass, Hydragla, Hotte-de-Fer"
+    },
+    {
+      "combination": "Eau + Insecte",
+      "count": 1,
+      "pokemon": "Méga-Sarmuraï"
+    },
+    {
+      "combination": "Eau + Ténèbres",
+      "count": 5,
+      "pokemon": "Amphinobi, Méga-Léviator, Méga-Sharpedo, Méga-Aligatueur, Méga-Amphinobi"
+    },
+    {
+      "combination": "Eau + Gen 1",
+      "count": 32,
+      "pokemon": "Carapuce, Carabaffe, Tortank, Psykokwak, Akwakwak..."
+    },
+    {
+      "combination": "Eau + Gen 2",
+      "count": 18,
+      "pokemon": "Kaiminus, Crocrodil, Aligatueur, Loupio, Lanturn..."
+    },
+    {
+      "combination": "Eau + Gen 3",
+      "count": 4,
+      "pokemon": "Gobou, Flobio, Laggron, Kyogre"
+    },
+    {
+      "combination": "Eau + Gen 4",
+      "count": 4,
+      "pokemon": "Tiplouf, Prinplouf, Pingoléon, Palkia"
+    },
+    {
+      "combination": "Eau + Gen 5",
+      "count": 1,
+      "pokemon": "Moustillon"
+    },
+    {
+      "combination": "Eau + Gen 6",
+      "count": 2,
+      "pokemon": "Grenousse, Amphinobi"
+    },
+    {
+      "combination": "Eau + Gen 7",
+      "count": 1,
+      "pokemon": "Otaquin"
+    },
+    {
+      "combination": "Eau + Gen 8",
+      "count": 11,
+      "pokemon": "Larméléon, Arrozard, Lézargus, Khélocrok, Torgamord..."
+    },
+    {
+      "combination": "Eau + Gen 9",
+      "count": 26,
+      "pokemon": "Coiffeton, Canarbello, Palmaval, Taupikeau, Triopikeau..."
+    },
+    {
+      "combination": "Eau + Légendaire",
+      "count": 3,
+      "pokemon": "Suicune, Kyogre, Palkia"
+    },
+    {
+      "combination": "Eau + Starter",
+      "count": 22,
+      "pokemon": "Carapuce, Carabaffe, Tortank, Kaiminus, Crocrodil..."
+    },
+    {
+      "combination": "Eau + Paradoxe",
+      "count": 2,
+      "pokemon": "Hotte-de-Fer, Serpente-Eau"
+    },
+    {
+      "combination": "Eau + Fossile",
+      "count": 6,
+      "pokemon": "Amonita, Amonistar, Kabuto, Kabutops, Hydragon..."
+    },
+    {
+      "combination": "Eau + Shiny Noir",
+      "count": 1,
+      "pokemon": "Amphinobi"
+    },
+    {
+      "combination": "Eau + Méga-Évo",
+      "count": 14,
+      "pokemon": "Méga-Tortank, Méga-Léviator, Méga-Laggron, Méga-Sharpedo, Méga-Flagadoss..."
+    },
+    {
+      "combination": "Eau + Double Type",
+      "count": 53,
+      "pokemon": "Tartard, Tentacool, Tentacruel, Ramoloss, Flagadoss..."
+    },
+    {
+      "combination": "Eau + Stade 1",
+      "count": 81,
+      "pokemon": "Carapuce, Psykokwak, Akwakwak, Ptitard, Tentacool..."
+    },
+    {
+      "combination": "Eau + Stade 2",
+      "count": 8,
+      "pokemon": "Carabaffe, Tétarte, Crocrodil, Marill, Flobio..."
+    },
+    {
+      "combination": "Eau + Stade 3",
+      "count": 10,
+      "pokemon": "Tortank, Tartard, Aligatueur, Azumarill, Tarpaud..."
+    },
+    {
+      "combination": "Plante + Dragon",
+      "count": 6,
+      "pokemon": "Verpom, Pomdrapi, Dratatin, Pomdramour, Pomdorochi..."
+    },
+    {
+      "combination": "Plante + Spectre",
+      "count": 3,
+      "pokemon": "Virevorreur, Poltchageist, Théffroyable"
+    },
+    {
+      "combination": "Plante + Combat",
+      "count": 1,
+      "pokemon": "Méga-Blindépique"
+    },
+    {
+      "combination": "Plante + Fée",
+      "count": 1,
+      "pokemon": "Méga-Méganium"
+    },
+    {
+      "combination": "Plante + Normal",
+      "count": 3,
+      "pokemon": "Olivini, Olivado, Arboliva"
+    },
+    {
+      "combination": "Plante + Vol",
+      "count": 4,
+      "pokemon": "Graniville, Floravol, Cotovol, Brindibou"
+    },
+    {
+      "combination": "Plante + Sol",
+      "count": 3,
+      "pokemon": "Torterra, Terracool, Terracruel"
+    },
+    {
+      "combination": "Plante + Poison",
+      "count": 11,
+      "pokemon": "Bulbizarre, Herbizarre, Florizarre, Mystherbe, Ortide..."
+    },
+    {
+      "combination": "Plante + Psy",
+      "count": 5,
+      "pokemon": "Noeunoeuf, Noadkoko, Celebi, Sylveroy, Vert-de-Fer"
+    },
+    {
+      "combination": "Plante + Glace",
+      "count": 1,
+      "pokemon": "Méga-Blizzaroi"
+    },
+    {
+      "combination": "Plante + Insecte",
+      "count": 2,
+      "pokemon": "Paras, Parasect"
+    },
+    {
+      "combination": "Plante + Ténèbres",
+      "count": 4,
+      "pokemon": "Zarude, Miascarade, Fongus-Furie, Chongjian"
+    },
+    {
+      "combination": "Plante + Gen 1",
+      "count": 14,
+      "pokemon": "Bulbizarre, Herbizarre, Florizarre, Mystherbe, Ortide..."
+    },
+    {
+      "combination": "Plante + Gen 2",
+      "count": 10,
+      "pokemon": "Germignon, Macronium, Méganium, Joliflor, Graniville..."
+    },
+    {
+      "combination": "Plante + Gen 3",
+      "count": 3,
+      "pokemon": "Arcko, Massko, Jungko"
+    },
+    {
+      "combination": "Plante + Gen 4",
+      "count": 3,
+      "pokemon": "Tortipouss, Boskara, Torterra"
+    },
+    {
+      "combination": "Plante + Gen 5",
+      "count": 1,
+      "pokemon": "Vipélierre"
+    },
+    {
+      "combination": "Plante + Gen 6",
+      "count": 1,
+      "pokemon": "Marisson"
+    },
+    {
+      "combination": "Plante + Gen 7",
+      "count": 1,
+      "pokemon": "Brindibou"
+    },
+    {
+      "combination": "Plante + Gen 8",
+      "count": 10,
+      "pokemon": "Ouistempo, Badabouin, Gorythmic, Tournicoton, Blancoton..."
+    },
+    {
+      "combination": "Plante + Gen 9",
+      "count": 26,
+      "pokemon": "Poussacha, Matourgeon, Miascarade, Olivini, Olivado..."
+    },
+    {
+      "combination": "Plante + Légendaire",
+      "count": 5,
+      "pokemon": "Celebi, Zarude, Sylveroy, Chongjian, Ogerpon"
+    },
+    {
+      "combination": "Plante + Fabuleux",
+      "count": 2,
+      "pokemon": "Celebi, Zarude"
+    },
+    {
+      "combination": "Plante + Starter",
+      "count": 21,
+      "pokemon": "Bulbizarre, Herbizarre, Florizarre, Germignon, Macronium..."
+    },
+    {
+      "combination": "Plante + Paradoxe",
+      "count": 2,
+      "pokemon": "Fongus-Furie, Vert-de-Fer"
+    },
+    {
+      "combination": "Plante + Méga-Évo",
+      "count": 7,
+      "pokemon": "Méga-Florizarre, Méga-Blizzaroi, Méga-Jungko, Méga-Empiflor, Méga-Méganium..."
+    },
+    {
+      "combination": "Plante + Double Type",
+      "count": 46,
+      "pokemon": "Bulbizarre, Herbizarre, Florizarre, Mystherbe, Ortide..."
+    },
+    {
+      "combination": "Plante + Stade 1",
+      "count": 48,
+      "pokemon": "Bulbizarre, Mystherbe, Paras, Parasect, Chétiflor..."
+    },
+    {
+      "combination": "Plante + Stade 2",
+      "count": 10,
+      "pokemon": "Herbizarre, Ortide, Boustiflor, Macronium, Floravol..."
+    },
+    {
+      "combination": "Plante + Stade 3",
+      "count": 11,
+      "pokemon": "Florizarre, Rafflesia, Empiflor, Méganium, Joliflor..."
+    },
+    {
+      "combination": "Électrik + Dragon",
+      "count": 5,
+      "pokemon": "Zekrom, Galvagon, Miraidon, Ire-Foudre, Méga-Pharamp"
+    },
+    {
+      "combination": "Électrik + Combat",
+      "count": 5,
+      "pokemon": "Pohmotte, Pawmot, Paume-de-Fer, Méga-Raichu X, Méga-Zeraora"
+    },
+    {
+      "combination": "Électrik + Fée",
+      "count": 1,
+      "pokemon": "Tokorico"
+    },
+    {
+      "combination": "Électrik + Acier",
+      "count": 3,
+      "pokemon": "Magnéti, Magnéton, Togedemaru"
+    },
+    {
+      "combination": "Électrik + Vol",
+      "count": 3,
+      "pokemon": "Électhor, Zapétrel, Fulguliro"
+    },
+    {
+      "combination": "Électrik + Sol",
+      "count": 1,
+      "pokemon": "Pelage-Sablé"
+    },
+    {
+      "combination": "Électrik + Poison",
+      "count": 2,
+      "pokemon": "Toxizap, Salarsen"
+    },
+    {
+      "combination": "Électrik + Psy",
+      "count": 1,
+      "pokemon": "Méga-Raichu Y"
+    },
+    {
+      "combination": "Électrik + Roche",
+      "count": 1,
+      "pokemon": "Épine-de-Fer"
+    },
+    {
+      "combination": "Électrik + Glace",
+      "count": 1,
+      "pokemon": "Galvagla"
+    },
+    {
+      "combination": "Électrik + Ténèbres",
+      "count": 1,
+      "pokemon": "Morpeko"
+    },
+    {
+      "combination": "Électrik + Gen 1",
+      "count": 9,
+      "pokemon": "Pikachu, Raichu, Magnéti, Magnéton, Voltorbe..."
+    },
+    {
+      "combination": "Électrik + Gen 2",
+      "count": 8,
+      "pokemon": "Loupio, Lanturn, Pichu, Wattouat, Lainergie..."
+    },
+    {
+      "combination": "Électrik + Gen 5",
+      "count": 1,
+      "pokemon": "Zekrom"
+    },
+    {
+      "combination": "Électrik + Gen 7",
+      "count": 2,
+      "pokemon": "Togedemaru, Tokorico"
+    },
+    {
+      "combination": "Électrik + Gen 8",
+      "count": 9,
+      "pokemon": "Voltoutou, Fulgudog, Toxizap, Salarsen, Wattapik..."
+    },
+    {
+      "combination": "Électrik + Gen 9",
+      "count": 18,
+      "pokemon": "Pohm, Pohmotte, Pawmot, Têtampoule, Ampibidou..."
+    },
+    {
+      "combination": "Électrik + Légendaire",
+      "count": 6,
+      "pokemon": "Électhor, Raikou, Zekrom, Tokorico, Regieleki..."
+    },
+    {
+      "combination": "Électrik + Paradoxe",
+      "count": 5,
+      "pokemon": "Pelage-Sablé, Paume-de-Fer, Épine-de-Fer, Miraidon, Ire-Foudre"
+    },
+    {
+      "combination": "Électrik + Fossile",
+      "count": 2,
+      "pokemon": "Galvagon, Galvagla"
+    },
+    {
+      "combination": "Électrik + Bébé",
+      "count": 2,
+      "pokemon": "Pichu, Élekid"
+    },
+    {
+      "combination": "Électrik + Shiny Noir",
+      "count": 2,
+      "pokemon": "Tokorico, Miraidon"
+    },
+    {
+      "combination": "Électrik + Méga-Évo",
+      "count": 6,
+      "pokemon": "Méga-Pharamp, Méga-Elecsprint, Méga-Ohmassacre, Méga-Raichu X, Méga-Raichu Y..."
+    },
+    {
+      "combination": "Électrik + Double Type",
+      "count": 26,
+      "pokemon": "Magnéti, Magnéton, Électhor, Loupio, Lanturn..."
+    },
+    {
+      "combination": "Électrik + Stade 1",
+      "count": 40,
+      "pokemon": "Magnéti, Voltorbe, Électrode, Élektek, Voltali..."
+    },
+    {
+      "combination": "Électrik + Stade 2",
+      "count": 4,
+      "pokemon": "Pikachu, Magnéton, Lainergie, Pohmotte"
+    },
+    {
+      "combination": "Électrik + Stade 3",
+      "count": 3,
+      "pokemon": "Raichu, Pharamp, Pawmot"
+    },
+    {
+      "combination": "Dragon + Spectre",
+      "count": 4,
+      "pokemon": "Giratina, Fantyrm, Dispareptil, Lanssorien"
+    },
+    {
+      "combination": "Dragon + Combat",
+      "count": 1,
+      "pokemon": "Koraidon"
+    },
+    {
+      "combination": "Dragon + Fée",
+      "count": 2,
+      "pokemon": "Méga-Altaria, Méga-Dracolosse"
+    },
+    {
+      "combination": "Dragon + Acier",
+      "count": 3,
+      "pokemon": "Dialga, Duralugon, Pondralugon"
+    },
+    {
+      "combination": "Dragon + Normal",
+      "count": 2,
+      "pokemon": "Motorizard, Méga-Draïeul"
+    },
+    {
+      "combination": "Dragon + Vol",
+      "count": 5,
+      "pokemon": "Dracolosse, Drattak, Rayquaza, Méga-Rayquaza, Méga-Drattak"
+    },
+    {
+      "combination": "Dragon + Sol",
+      "count": 6,
+      "pokemon": "Libégon, Carchacrok, Zygarde, Méga-Carchacrok, Méga-Zygarde..."
+    },
+    {
+      "combination": "Dragon + Poison",
+      "count": 2,
+      "pokemon": "Éthernatos, Méga-Kravarech"
+    },
+    {
+      "combination": "Dragon + Psy",
+      "count": 4,
+      "pokemon": "Latias, Latios, Méga-Latias, Méga-Latios"
+    },
+    {
+      "combination": "Dragon + Glace",
+      "count": 4,
+      "pokemon": "Frigodo, Cryodo, Glaivodo, Méga-Glaivodo"
+    },
+    {
+      "combination": "Dragon + Ténèbres",
+      "count": 2,
+      "pokemon": "Trioxhydre, Rugit-Lune"
+    },
+    {
+      "combination": "Dragon + Gen 1",
+      "count": 3,
+      "pokemon": "Minidraco, Draco, Dracolosse"
+    },
+    {
+      "combination": "Dragon + Gen 2",
+      "count": 1,
+      "pokemon": "Hyporoi"
+    },
+    {
+      "combination": "Dragon + Gen 3",
+      "count": 5,
+      "pokemon": "Libégon, Drattak, Latias, Latios, Rayquaza"
+    },
+    {
+      "combination": "Dragon + Gen 4",
+      "count": 4,
+      "pokemon": "Carchacrok, Dialga, Palkia, Giratina"
+    },
+    {
+      "combination": "Dragon + Gen 5",
+      "count": 3,
+      "pokemon": "Trioxhydre, Reshiram, Zekrom"
+    },
+    {
+      "combination": "Dragon + Gen 6",
+      "count": 1,
+      "pokemon": "Zygarde"
+    },
+    {
+      "combination": "Dragon + Gen 7",
+      "count": 1,
+      "pokemon": "Boumata"
+    },
+    {
+      "combination": "Dragon + Gen 8",
+      "count": 11,
+      "pokemon": "Verpom, Pomdrapi, Dratatin, Galvagon, Hydragon..."
+    },
+    {
+      "combination": "Dragon + Gen 9",
+      "count": 32,
+      "pokemon": "Motorizard, Nigirigon, Frigodo, Cryodo, Glaivodo..."
+    },
+    {
+      "combination": "Dragon + Légendaire",
+      "count": 13,
+      "pokemon": "Latias, Latios, Rayquaza, Dialga, Palkia..."
+    },
+    {
+      "combination": "Dragon + Paradoxe",
+      "count": 6,
+      "pokemon": "Rugit-Lune, Koraidon, Miraidon, Serpente-Eau, Feu-Perçant..."
+    },
+    {
+      "combination": "Dragon + Fossile",
+      "count": 2,
+      "pokemon": "Galvagon, Hydragon"
+    },
+    {
+      "combination": "Dragon + Shiny Noir",
+      "count": 5,
+      "pokemon": "Rayquaza, Carchacrok, Lanssorien, Koraidon, Miraidon"
+    },
+    {
+      "combination": "Dragon + Méga-Évo",
+      "count": 18,
+      "pokemon": "Méga-Dracaufeu X, Méga-Pharamp, Méga-Carchacrok, Méga-Latias, Méga-Latios..."
+    },
+    {
+      "combination": "Dragon + Double Type",
+      "count": 58,
+      "pokemon": "Dracolosse, Hyporoi, Libégon, Drattak, Latias..."
+    },
+    {
+      "combination": "Dragon + Stade 1",
+      "count": 51,
+      "pokemon": "Minidraco, Hyporoi, Latias, Latios, Rayquaza..."
+    },
+    {
+      "combination": "Dragon + Stade 2",
+      "count": 3,
+      "pokemon": "Draco, Dispareptil, Cryodo"
+    },
+    {
+      "combination": "Dragon + Stade 3",
+      "count": 7,
+      "pokemon": "Dracolosse, Libégon, Drattak, Carchacrok, Trioxhydre..."
+    },
+    {
+      "combination": "Spectre + Combat",
+      "count": 1,
+      "pokemon": "Courrousinge"
+    },
+    {
+      "combination": "Spectre + Fée",
+      "count": 2,
+      "pokemon": "Mimiqui, Flotte-Mèche"
+    },
+    {
+      "combination": "Spectre + Acier",
+      "count": 1,
+      "pokemon": "Gromago"
+    },
+    {
+      "combination": "Spectre + Sol",
+      "count": 2,
+      "pokemon": "Tutétékri, Méga-Golemastoc"
+    },
+    {
+      "combination": "Spectre + Poison",
+      "count": 5,
+      "pokemon": "Fantominus, Spectrum, Ectoplasma, Pêchaminus, Méga-Ectoplasma"
+    },
+    {
+      "combination": "Spectre + Psy",
+      "count": 2,
+      "pokemon": "Lunala, Méga-Ëoko"
+    },
+    {
+      "combination": "Spectre + Glace",
+      "count": 1,
+      "pokemon": "Méga-Momartik"
+    },
+    {
+      "combination": "Spectre + Ténèbres",
+      "count": 2,
+      "pokemon": "Méga-Ténéfix, Méga-Darkrai"
+    },
+    {
+      "combination": "Spectre + Gen 1",
+      "count": 3,
+      "pokemon": "Fantominus, Spectrum, Ectoplasma"
+    },
+    {
+      "combination": "Spectre + Gen 2",
+      "count": 1,
+      "pokemon": "Feuforêve"
+    },
+    {
+      "combination": "Spectre + Gen 4",
+      "count": 1,
+      "pokemon": "Giratina"
+    },
+    {
+      "combination": "Spectre + Gen 7",
+      "count": 2,
+      "pokemon": "Mimiqui, Lunala"
+    },
+    {
+      "combination": "Spectre + Gen 8",
+      "count": 9,
+      "pokemon": "Théffroi, Polthégeist, Corayôme, Tutétékri, Fantyrm..."
+    },
+    {
+      "combination": "Spectre + Gen 9",
+      "count": 20,
+      "pokemon": "Flâmigator, Malvalame, Virevorreur, Toutombe, Tomberro..."
+    },
+    {
+      "combination": "Spectre + Légendaire",
+      "count": 3,
+      "pokemon": "Giratina, Lunala, Spectreval"
+    },
+    {
+      "combination": "Spectre + Fabuleux",
+      "count": 1,
+      "pokemon": "Pêchaminus"
+    },
+    {
+      "combination": "Spectre + Starter",
+      "count": 1,
+      "pokemon": "Flâmigator"
+    },
+    {
+      "combination": "Spectre + Paradoxe",
+      "count": 1,
+      "pokemon": "Flotte-Mèche"
+    },
+    {
+      "combination": "Spectre + Shiny Noir",
+      "count": 2,
+      "pokemon": "Ectoplasma, Lanssorien"
+    },
+    {
+      "combination": "Spectre + Méga-Évo",
+      "count": 8,
+      "pokemon": "Méga-Ectoplasma, Méga-Branette, Méga-Ténéfix, Méga-Momartik, Méga-Lugulabre..."
+    },
+    {
+      "combination": "Spectre + Double Type",
+      "count": 27,
+      "pokemon": "Fantominus, Spectrum, Ectoplasma, Giratina, Mimiqui..."
+    },
+    {
+      "combination": "Spectre + Stade 1",
+      "count": 31,
+      "pokemon": "Fantominus, Feuforêve, Giratina, Mimiqui, Lunala..."
+    },
+    {
+      "combination": "Spectre + Stade 2",
+      "count": 2,
+      "pokemon": "Spectrum, Dispareptil"
+    },
+    {
+      "combination": "Spectre + Stade 3",
+      "count": 3,
+      "pokemon": "Ectoplasma, Lanssorien, Flâmigator"
+    },
+    {
+      "combination": "Combat + Fée",
+      "count": 1,
+      "pokemon": "Garde-de-Fer"
+    },
+    {
+      "combination": "Combat + Acier",
+      "count": 4,
+      "pokemon": "Lucario, Zamazenta, Méga-Lucario, Méga-Lucario Z"
+    },
+    {
+      "combination": "Combat + Normal",
+      "count": 2,
+      "pokemon": "Méga-Lockpin, Méga-Étouraptor"
+    },
+    {
+      "combination": "Combat + Vol",
+      "count": 2,
+      "pokemon": "Flamenroule, Méga-Brutalibré"
+    },
+    {
+      "combination": "Combat + Sol",
+      "count": 1,
+      "pokemon": "Fort-Ivoire"
+    },
+    {
+      "combination": "Combat + Poison",
+      "count": 2,
+      "pokemon": "Farfurex, Félicanis"
+    },
+    {
+      "combination": "Combat + Psy",
+      "count": 4,
+      "pokemon": "Gallame, Méga-Mewtwo X, Méga-Charmina, Méga-Gallade"
+    },
+    {
+      "combination": "Combat + Glace",
+      "count": 1,
+      "pokemon": "Méga-Crabominable"
+    },
+    {
+      "combination": "Combat + Insecte",
+      "count": 4,
+      "pokemon": "Scarhino, Gambex, Rampe-Ailes, Méga-Scarhino"
+    },
+    {
+      "combination": "Combat + Ténèbres",
+      "count": 2,
+      "pokemon": "Shifours, Méga-Baggiguane"
+    },
+    {
+      "combination": "Combat + Gen 1",
+      "count": 8,
+      "pokemon": "Férosinge, Colossinge, Tartard, Machoc, Machopeur..."
+    },
+    {
+      "combination": "Combat + Gen 2",
+      "count": 3,
+      "pokemon": "Scarhino, Debugant, Kapoera"
+    },
+    {
+      "combination": "Combat + Gen 3",
+      "count": 2,
+      "pokemon": "Galifeu, Braségali"
+    },
+    {
+      "combination": "Combat + Gen 4",
+      "count": 4,
+      "pokemon": "Chimpenfeu, Simiabraz, Lucario, Gallame"
+    },
+    {
+      "combination": "Combat + Gen 8",
+      "count": 8,
+      "pokemon": "Poulpaf, Krakos, Palarticho, Hexadron, Zamazenta..."
+    },
+    {
+      "combination": "Combat + Gen 9",
+      "count": 28,
+      "pokemon": "Palmaval, Gambex, Pohmotte, Pawmot, Flamenroule..."
+    },
+    {
+      "combination": "Combat + Légendaire",
+      "count": 5,
+      "pokemon": "Zamazenta, Wushours, Shifours, Koraidon, Félicanis"
+    },
+    {
+      "combination": "Combat + Starter",
+      "count": 5,
+      "pokemon": "Galifeu, Braségali, Chimpenfeu, Simiabraz, Palmaval"
+    },
+    {
+      "combination": "Combat + Paradoxe",
+      "count": 5,
+      "pokemon": "Fort-Ivoire, Rampe-Ailes, Paume-de-Fer, Garde-de-Fer, Koraidon"
+    },
+    {
+      "combination": "Combat + Bébé",
+      "count": 1,
+      "pokemon": "Debugant"
+    },
+    {
+      "combination": "Combat + Shiny Noir",
+      "count": 2,
+      "pokemon": "Lucario, Koraidon"
+    },
+    {
+      "combination": "Combat + Méga-Évo",
+      "count": 16,
+      "pokemon": "Méga-Mewtwo X, Méga-Scarhino, Méga-Braségali, Méga-Charmina, Méga-Lucario..."
+    },
+    {
+      "combination": "Combat + Double Type",
+      "count": 38,
+      "pokemon": "Tartard, Scarhino, Galifeu, Braségali, Chimpenfeu..."
+    },
+    {
+      "combination": "Combat + Stade 1",
+      "count": 42,
+      "pokemon": "Férosinge, Colossinge, Machoc, Kicklee, Tygnon..."
+    },
+    {
+      "combination": "Combat + Stade 2",
+      "count": 4,
+      "pokemon": "Machopeur, Galifeu, Chimpenfeu, Pohmotte"
+    },
+    {
+      "combination": "Combat + Stade 3",
+      "count": 7,
+      "pokemon": "Tartard, Mackogneur, Braségali, Simiabraz, Gallame..."
+    },
+    {
+      "combination": "Fée + Acier",
+      "count": 8,
+      "pokemon": "Magearna, Zacian, Forgerette, Forgella, Forgelina..."
+    },
+    {
+      "combination": "Fée + Normal",
+      "count": 4,
+      "pokemon": "Rondoudou, Grodoudou, Toudoudou, Méga-Audino"
+    },
+    {
+      "combination": "Fée + Vol",
+      "count": 2,
+      "pokemon": "Togetic, Amovénus"
+    },
+    {
+      "combination": "Fée + Poison",
+      "count": 1,
+      "pokemon": "Favianos"
+    },
+    {
+      "combination": "Fée + Psy",
+      "count": 6,
+      "pokemon": "M. Mime, Gardevoir, Sorcilence, Hurle-Queue, Méga-Gardevoir..."
+    },
+    {
+      "combination": "Fée + Roche",
+      "count": 1,
+      "pokemon": "Méga-Diancie"
+    },
+    {
+      "combination": "Fée + Ténèbres",
+      "count": 4,
+      "pokemon": "Grimalin, Fourbelin, Angoliath, Méga-Absol Z"
+    },
+    {
+      "combination": "Fée + Gen 1",
+      "count": 5,
+      "pokemon": "Mélofée, Mélodelfe, Rondoudou, Grodoudou, M. Mime"
+    },
+    {
+      "combination": "Fée + Gen 2",
+      "count": 8,
+      "pokemon": "Mélo, Toudoudou, Togepi, Togetic, Marill..."
+    },
+    {
+      "combination": "Fée + Gen 3",
+      "count": 1,
+      "pokemon": "Gardevoir"
+    },
+    {
+      "combination": "Fée + Gen 6",
+      "count": 2,
+      "pokemon": "Nymphali, Xerneas"
+    },
+    {
+      "combination": "Fée + Gen 7",
+      "count": 3,
+      "pokemon": "Mimiqui, Tokorico, Magearna"
+    },
+    {
+      "combination": "Fée + Gen 8",
+      "count": 8,
+      "pokemon": "Sorcilence, Grimalin, Fourbelin, Angoliath, Crémy..."
+    },
+    {
+      "combination": "Fée + Gen 9",
+      "count": 21,
+      "pokemon": "Patauchi, Briochien, Forgerette, Forgella, Forgelina..."
+    },
+    {
+      "combination": "Fée + Légendaire",
+      "count": 6,
+      "pokemon": "Xerneas, Tokorico, Magearna, Zacian, Amovénus..."
+    },
+    {
+      "combination": "Fée + Fabuleux",
+      "count": 1,
+      "pokemon": "Magearna"
+    },
+    {
+      "combination": "Fée + Paradoxe",
+      "count": 3,
+      "pokemon": "Hurle-Queue, Flotte-Mèche, Garde-de-Fer"
+    },
+    {
+      "combination": "Fée + Bébé",
+      "count": 3,
+      "pokemon": "Mélo, Toudoudou, Togepi"
+    },
+    {
+      "combination": "Fée + Shiny Noir",
+      "count": 2,
+      "pokemon": "Gardevoir, Tokorico"
+    },
+    {
+      "combination": "Fée + Méga-Évo",
+      "count": 12,
+      "pokemon": "Méga-Gardevoir, Méga-Mysdibule, Méga-Altaria, Méga-Audino, Méga-Diancie..."
+    },
+    {
+      "combination": "Fée + Double Type",
+      "count": 35,
+      "pokemon": "Rondoudou, Grodoudou, M. Mime, Toudoudou, Togetic..."
+    },
+    {
+      "combination": "Fée + Stade 1",
+      "count": 39,
+      "pokemon": "M. Mime, Mélo, Toudoudou, Togepi, Togetic..."
+    },
+    {
+      "combination": "Fée + Stade 2",
+      "count": 4,
+      "pokemon": "Mélofée, Rondoudou, Marill, Forgella"
+    },
+    {
+      "combination": "Fée + Stade 3",
+      "count": 5,
+      "pokemon": "Mélodelfe, Grodoudou, Azumarill, Gardevoir, Forgelina"
+    },
+    {
+      "combination": "Acier + Vol",
+      "count": 3,
+      "pokemon": "Airmure, Corvaillus, Méga-Airmure"
+    },
+    {
+      "combination": "Acier + Sol",
+      "count": 4,
+      "pokemon": "Steelix, Roue-de-Fer, Méga-Steelix, Méga-Minotaupe"
+    },
+    {
+      "combination": "Acier + Poison",
+      "count": 2,
+      "pokemon": "Vrombi, Vrombotor"
+    },
+    {
+      "combination": "Acier + Psy",
+      "count": 4,
+      "pokemon": "Métalosse, Solgaleo, Chef-de-Fer, Méga-Métalosse"
+    },
+    {
+      "combination": "Acier + Roche",
+      "count": 1,
+      "pokemon": "Galeking"
+    },
+    {
+      "combination": "Acier + Insecte",
+      "count": 3,
+      "pokemon": "Forretress, Cizayox, Méga-Cizayox"
+    },
+    {
+      "combination": "Acier + Ténèbres",
+      "count": 1,
+      "pokemon": "Scalpereur"
+    },
+    {
+      "combination": "Acier + Gen 1",
+      "count": 2,
+      "pokemon": "Magnéti, Magnéton"
+    },
+    {
+      "combination": "Acier + Gen 2",
+      "count": 4,
+      "pokemon": "Forretress, Steelix, Cizayox, Airmure"
+    },
+    {
+      "combination": "Acier + Gen 3",
+      "count": 2,
+      "pokemon": "Galeking, Métalosse"
+    },
+    {
+      "combination": "Acier + Gen 4",
+      "count": 3,
+      "pokemon": "Pingoléon, Lucario, Dialga"
+    },
+    {
+      "combination": "Acier + Gen 7",
+      "count": 3,
+      "pokemon": "Togedemaru, Solgaleo, Magearna"
+    },
+    {
+      "combination": "Acier + Gen 8",
+      "count": 7,
+      "pokemon": "Corvaillus, Berserkatt, Charibari, Pachyradjah, Duralugon..."
+    },
+    {
+      "combination": "Acier + Gen 9",
+      "count": 23,
+      "pokemon": "Forgerette, Forgella, Forgelina, Vrombi, Vrombotor..."
+    },
+    {
+      "combination": "Acier + Légendaire",
+      "count": 5,
+      "pokemon": "Dialga, Solgaleo, Magearna, Zacian, Zamazenta"
+    },
+    {
+      "combination": "Acier + Fabuleux",
+      "count": 1,
+      "pokemon": "Magearna"
+    },
+    {
+      "combination": "Acier + Starter",
+      "count": 1,
+      "pokemon": "Pingoléon"
+    },
+    {
+      "combination": "Acier + Paradoxe",
+      "count": 2,
+      "pokemon": "Roue-de-Fer, Chef-de-Fer"
+    },
+    {
+      "combination": "Acier + Shiny Noir",
+      "count": 2,
+      "pokemon": "Lucario, Corvaillus"
+    },
+    {
+      "combination": "Acier + Méga-Évo",
+      "count": 12,
+      "pokemon": "Méga-Cizayox, Méga-Mysdibule, Méga-Galeking, Méga-Lucario, Méga-Steelix..."
+    },
+    {
+      "combination": "Acier + Double Type",
+      "count": 39,
+      "pokemon": "Magnéti, Magnéton, Forretress, Steelix, Cizayox..."
+    },
+    {
+      "combination": "Acier + Stade 1",
+      "count": 36,
+      "pokemon": "Magnéti, Forretress, Steelix, Cizayox, Airmure..."
+    },
+    {
+      "combination": "Acier + Stade 2",
+      "count": 2,
+      "pokemon": "Magnéton, Forgella"
+    },
+    {
+      "combination": "Acier + Stade 3",
+      "count": 6,
+      "pokemon": "Galeking, Métalosse, Pingoléon, Corvaillus, Forgelina..."
+    },
+    {
+      "combination": "Normal + Vol",
+      "count": 12,
+      "pokemon": "Roucool, Roucoups, Roucarnage, Piafabec, Rapasdepic..."
+    },
+    {
+      "combination": "Normal + Sol",
+      "count": 1,
+      "pokemon": "Ursaking"
+    },
+    {
+      "combination": "Normal + Poison",
+      "count": 2,
+      "pokemon": "Gribouraigne, Tag-Tag"
+    },
+    {
+      "combination": "Normal + Psy",
+      "count": 2,
+      "pokemon": "Girafarig, Cerbyllin"
+    },
+    {
+      "combination": "Normal + Ténèbres",
+      "count": 1,
+      "pokemon": "Ixon"
+    },
+    {
+      "combination": "Normal + Gen 1",
+      "count": 22,
+      "pokemon": "Roucool, Roucoups, Roucarnage, Rattata, Rattatac..."
+    },
+    {
+      "combination": "Normal + Gen 2",
+      "count": 15,
+      "pokemon": "Fouinette, Fouinar, Hoothoot, Noarfang, Toudoudou..."
+    },
+    {
+      "combination": "Normal + Gen 4",
+      "count": 1,
+      "pokemon": "Arceus"
+    },
+    {
+      "combination": "Normal + Gen 8",
+      "count": 7,
+      "pokemon": "Rongourmand, Rongrigou, Moumouton, Moumouflon, Ixon..."
+    },
+    {
+      "combination": "Normal + Gen 9",
+      "count": 23,
+      "pokemon": "Gourmelet, Fragroin, Compagnol, Famignol, Olivini..."
+    },
+    {
+      "combination": "Normal + Légendaire",
+      "count": 2,
+      "pokemon": "Arceus, Terapagos"
+    },
+    {
+      "combination": "Normal + Fabuleux",
+      "count": 1,
+      "pokemon": "Arceus"
+    },
+    {
+      "combination": "Normal + Bébé",
+      "count": 1,
+      "pokemon": "Toudoudou"
+    },
+    {
+      "combination": "Normal + Méga-Évo",
+      "count": 7,
+      "pokemon": "Méga-Kangourex, Méga-Audino, Méga-Roucarnage, Méga-Lockpin, Méga-Némélios..."
+    },
+    {
+      "combination": "Normal + Double Type",
+      "count": 30,
+      "pokemon": "Roucool, Roucoups, Roucarnage, Piafabec, Rapasdepic..."
+    },
+    {
+      "combination": "Normal + Stade 1",
+      "count": 61,
+      "pokemon": "Roucool, Rattata, Rattatac, Piafabec, Rapasdepic..."
+    },
+    {
+      "combination": "Normal + Stade 2",
+      "count": 4,
+      "pokemon": "Roucoups, Rondoudou, Olivado, Bérubarbe"
+    },
+    {
+      "combination": "Normal + Stade 3",
+      "count": 3,
+      "pokemon": "Roucarnage, Grodoudou, Arboliva"
+    },
+    {
+      "combination": "Vol + Sol",
+      "count": 1,
+      "pokemon": "Scorplane"
+    },
+    {
+      "combination": "Vol + Poison",
+      "count": 3,
+      "pokemon": "Nosferapti, Nosferalto, Nostenfer"
+    },
+    {
+      "combination": "Vol + Psy",
+      "count": 3,
+      "pokemon": "Natu, Xatu, Lugia"
+    },
+    {
+      "combination": "Vol + Roche",
+      "count": 2,
+      "pokemon": "Ptéra, Méga-Ptéra"
+    },
+    {
+      "combination": "Vol + Glace",
+      "count": 2,
+      "pokemon": "Artikodin, Cadoizo"
+    },
+    {
+      "combination": "Vol + Insecte",
+      "count": 6,
+      "pokemon": "Papilusion, Insécateur, Coxy, Coxyclaque, Yanma..."
+    },
+    {
+      "combination": "Vol + Ténèbres",
+      "count": 4,
+      "pokemon": "Cornèbre, Yveltal, Lestombaile, Têtes-de-Fer"
+    },
+    {
+      "combination": "Vol + Gen 1",
+      "count": 19,
+      "pokemon": "Dracaufeu, Papilusion, Roucool, Roucoups, Roucarnage..."
+    },
+    {
+      "combination": "Vol + Gen 2",
+      "count": 19,
+      "pokemon": "Hoothoot, Noarfang, Coxy, Coxyclaque, Nostenfer..."
+    },
+    {
+      "combination": "Vol + Gen 3",
+      "count": 2,
+      "pokemon": "Drattak, Rayquaza"
+    },
+    {
+      "combination": "Vol + Gen 6",
+      "count": 1,
+      "pokemon": "Yveltal"
+    },
+    {
+      "combination": "Vol + Gen 7",
+      "count": 1,
+      "pokemon": "Brindibou"
+    },
+    {
+      "combination": "Vol + Gen 8",
+      "count": 5,
+      "pokemon": "Minisange, Bleuseille, Corvaillus, Nigosier, Amovénus"
+    },
+    {
+      "combination": "Vol + Gen 9",
+      "count": 14,
+      "pokemon": "Tapatoès, Zapétrel, Fulguliro, Lestombaile, Flamenroule..."
+    },
+    {
+      "combination": "Vol + Légendaire",
+      "count": 8,
+      "pokemon": "Artikodin, Électhor, Sulfura, Lugia, Ho-Oh..."
+    },
+    {
+      "combination": "Vol + Starter",
+      "count": 2,
+      "pokemon": "Dracaufeu, Brindibou"
+    },
+    {
+      "combination": "Vol + Paradoxe",
+      "count": 1,
+      "pokemon": "Têtes-de-Fer"
+    },
+    {
+      "combination": "Vol + Fossile",
+      "count": 1,
+      "pokemon": "Ptéra"
+    },
+    {
+      "combination": "Vol + Shiny Noir",
+      "count": 3,
+      "pokemon": "Dracaufeu, Rayquaza, Corvaillus"
+    },
+    {
+      "combination": "Vol + Méga-Évo",
+      "count": 8,
+      "pokemon": "Méga-Dracaufeu Y, Méga-Scarabrute, Méga-Ptéra, Méga-Roucarnage, Méga-Rayquaza..."
+    },
+    {
+      "combination": "Vol + Double Type",
+      "count": 59,
+      "pokemon": "Dracaufeu, Papilusion, Roucool, Roucoups, Roucarnage..."
+    },
+    {
+      "combination": "Vol + Stade 1",
+      "count": 49,
+      "pokemon": "Roucool, Piafabec, Rapasdepic, Nosferapti, Canarticho..."
+    },
+    {
+      "combination": "Vol + Stade 2",
+      "count": 4,
+      "pokemon": "Roucoups, Nosferalto, Floravol, Bleuseille"
+    },
+    {
+      "combination": "Vol + Stade 3",
+      "count": 8,
+      "pokemon": "Dracaufeu, Papilusion, Roucarnage, Dracolosse, Nostenfer..."
+    },
+    {
+      "combination": "Sol + Poison",
+      "count": 3,
+      "pokemon": "Nidoqueen, Nidoking, Terraiste"
+    },
+    {
+      "combination": "Sol + Roche",
+      "count": 8,
+      "pokemon": "Racaillou, Gravalanch, Grolem, Onix, Rhinocorne..."
+    },
+    {
+      "combination": "Sol + Glace",
+      "count": 2,
+      "pokemon": "Marcacrin, Cochignon"
+    },
+    {
+      "combination": "Sol + Ténèbres",
+      "count": 1,
+      "pokemon": "Dinglu"
+    },
+    {
+      "combination": "Sol + Gen 1",
+      "count": 14,
+      "pokemon": "Sabelette, Sablaireau, Nidoqueen, Nidoking, Taupiqueur..."
+    },
+    {
+      "combination": "Sol + Gen 2",
+      "count": 10,
+      "pokemon": "Axoloto, Maraiste, Scorplane, Steelix, Marcacrin..."
+    },
+    {
+      "combination": "Sol + Gen 3",
+      "count": 4,
+      "pokemon": "Flobio, Laggron, Libégon, Groudon"
+    },
+    {
+      "combination": "Sol + Gen 4",
+      "count": 2,
+      "pokemon": "Torterra, Carchacrok"
+    },
+    {
+      "combination": "Sol + Gen 6",
+      "count": 1,
+      "pokemon": "Zygarde"
+    },
+    {
+      "combination": "Sol + Gen 8",
+      "count": 4,
+      "pokemon": "Dunaja, Dunaconda, Tutétékri, Ursaking"
+    },
+    {
+      "combination": "Sol + Gen 9",
+      "count": 15,
+      "pokemon": "Terracool, Terracruel, Terraiste, Fort-Ivoire, Pelage-Sablé..."
+    },
+    {
+      "combination": "Sol + Légendaire",
+      "count": 3,
+      "pokemon": "Groudon, Zygarde, Dinglu"
+    },
+    {
+      "combination": "Sol + Starter",
+      "count": 3,
+      "pokemon": "Flobio, Laggron, Torterra"
+    },
+    {
+      "combination": "Sol + Paradoxe",
+      "count": 3,
+      "pokemon": "Fort-Ivoire, Pelage-Sablé, Roue-de-Fer"
+    },
+    {
+      "combination": "Sol + Shiny Noir",
+      "count": 1,
+      "pokemon": "Carchacrok"
+    },
+    {
+      "combination": "Sol + Méga-Évo",
+      "count": 8,
+      "pokemon": "Méga-Carchacrok, Méga-Laggron, Méga-Steelix, Méga-Camérupt, Méga-Minotaupe..."
+    },
+    {
+      "combination": "Sol + Double Type",
+      "count": 39,
+      "pokemon": "Nidoqueen, Nidoking, Racaillou, Gravalanch, Grolem..."
+    },
+    {
+      "combination": "Sol + Stade 1",
+      "count": 39,
+      "pokemon": "Sabelette, Sablaireau, Taupiqueur, Triopikeur, Racaillou..."
+    },
+    {
+      "combination": "Sol + Stade 2",
+      "count": 4,
+      "pokemon": "Gravalanch, Cochignon, Ymphect, Flobio"
+    },
+    {
+      "combination": "Sol + Stade 3",
+      "count": 7,
+      "pokemon": "Nidoqueen, Nidoking, Grolem, Laggron, Libégon..."
+    },
+    {
+      "combination": "Poison + Psy",
+      "count": 1,
+      "pokemon": "Fortusimia"
+    },
+    {
+      "combination": "Poison + Roche",
+      "count": 3,
+      "pokemon": "Germéclat, Floréclat, Méga-Glimmora"
+    },
+    {
+      "combination": "Poison + Insecte",
+      "count": 8,
+      "pokemon": "Aspicot, Coconfort, Dardargnan, Mimitoss, Aéromite..."
+    },
+    {
+      "combination": "Poison + Ténèbres",
+      "count": 1,
+      "pokemon": "Qwilpik"
+    },
+    {
+      "combination": "Poison + Gen 1",
+      "count": 33,
+      "pokemon": "Bulbizarre, Herbizarre, Florizarre, Aspicot, Coconfort..."
+    },
+    {
+      "combination": "Poison + Gen 2",
+      "count": 4,
+      "pokemon": "Mimigal, Migalos, Nostenfer, Qwilfish"
+    },
+    {
+      "combination": "Poison + Gen 8",
+      "count": 5,
+      "pokemon": "Toxizap, Salarsen, Éthernatos, Farfurex, Qwilpik"
+    },
+    {
+      "combination": "Poison + Gen 9",
+      "count": 18,
+      "pokemon": "Gribouraigne, Tag-Tag, Vrombi, Vrombotor, Germéclat..."
+    },
+    {
+      "combination": "Poison + Légendaire",
+      "count": 4,
+      "pokemon": "Éthernatos, Félicanis, Fortusimia, Favianos"
+    },
+    {
+      "combination": "Poison + Fabuleux",
+      "count": 1,
+      "pokemon": "Pêchaminus"
+    },
+    {
+      "combination": "Poison + Starter",
+      "count": 3,
+      "pokemon": "Bulbizarre, Herbizarre, Florizarre"
+    },
+    {
+      "combination": "Poison + Paradoxe",
+      "count": 1,
+      "pokemon": "Mite-de-Fer"
+    },
+    {
+      "combination": "Poison + Shiny Noir",
+      "count": 1,
+      "pokemon": "Ectoplasma"
+    },
+    {
+      "combination": "Poison + Méga-Évo",
+      "count": 6,
+      "pokemon": "Méga-Florizarre, Méga-Ectoplasma, Méga-Dardargnan, Méga-Empiflor, Méga-Kravarech..."
+    },
+    {
+      "combination": "Poison + Double Type",
+      "count": 50,
+      "pokemon": "Bulbizarre, Herbizarre, Florizarre, Aspicot, Coconfort..."
+    },
+    {
+      "combination": "Poison + Stade 1",
+      "count": 44,
+      "pokemon": "Bulbizarre, Aspicot, Abo, Arbok, Nidoran♀..."
+    },
+    {
+      "combination": "Poison + Stade 2",
+      "count": 8,
+      "pokemon": "Herbizarre, Coconfort, Nidorina, Nidorino, Nosferalto..."
+    },
+    {
+      "combination": "Poison + Stade 3",
+      "count": 8,
+      "pokemon": "Florizarre, Dardargnan, Nidoqueen, Nidoking, Rafflesia..."
+    },
+    {
+      "combination": "Psy + Roche",
+      "count": 1,
+      "pokemon": "Roc-de-Fer"
+    },
+    {
+      "combination": "Psy + Glace",
+      "count": 3,
+      "pokemon": "Lippoutou, Lippouti, M. Glaquette"
+    },
+    {
+      "combination": "Psy + Insecte",
+      "count": 3,
+      "pokemon": "Coléodôme, Astronelle, Bérasca"
+    },
+    {
+      "combination": "Psy + Ténèbres",
+      "count": 1,
+      "pokemon": "Méga-Sepiatroce"
+    },
+    {
+      "combination": "Psy + Gen 1",
+      "count": 14,
+      "pokemon": "Abra, Kadabra, Alakazam, Ramoloss, Flagadoss..."
+    },
+    {
+      "combination": "Psy + Gen 2",
+      "count": 10,
+      "pokemon": "Natu, Xatu, Mentali, Roigada, Zarbi..."
+    },
+    {
+      "combination": "Psy + Gen 3",
+      "count": 4,
+      "pokemon": "Gardevoir, Métalosse, Latias, Latios"
+    },
+    {
+      "combination": "Psy + Gen 4",
+      "count": 1,
+      "pokemon": "Gallame"
+    },
+    {
+      "combination": "Psy + Gen 5",
+      "count": 1,
+      "pokemon": "Victini"
+    },
+    {
+      "combination": "Psy + Gen 7",
+      "count": 3,
+      "pokemon": "Solgaleo, Lunala, Necrozma"
+    },
+    {
+      "combination": "Psy + Gen 8",
+      "count": 9,
+      "pokemon": "Coléodôme, Astronelle, Bibichut, Chapotus, Sorcilence..."
+    },
+    {
+      "combination": "Psy + Gen 9",
+      "count": 28,
+      "pokemon": "Carmadura, Bérasca, Flotillon, Cléopsytra, Délestin..."
+    },
+    {
+      "combination": "Psy + Légendaire",
+      "count": 12,
+      "pokemon": "Mewtwo, Mew, Lugia, Celebi, Latias..."
+    },
+    {
+      "combination": "Psy + Fabuleux",
+      "count": 3,
+      "pokemon": "Mew, Celebi, Victini"
+    },
+    {
+      "combination": "Psy + Paradoxe",
+      "count": 4,
+      "pokemon": "Hurle-Queue, Vert-de-Fer, Roc-de-Fer, Chef-de-Fer"
+    },
+    {
+      "combination": "Psy + Bébé",
+      "count": 1,
+      "pokemon": "Lippouti"
+    },
+    {
+      "combination": "Psy + Shiny Noir",
+      "count": 1,
+      "pokemon": "Gardevoir"
+    },
+    {
+      "combination": "Psy + Méga-Évo",
+      "count": 18,
+      "pokemon": "Méga-Alakazam, Méga-Mewtwo X, Méga-Mewtwo Y, Méga-Gardevoir, Méga-Charmina..."
+    },
+    {
+      "combination": "Psy + Double Type",
+      "count": 51,
+      "pokemon": "Ramoloss, Flagadoss, Noeunoeuf, Noadkoko, Staross..."
+    },
+    {
+      "combination": "Psy + Stade 1",
+      "count": 63,
+      "pokemon": "Abra, Ramoloss, Flagadoss, Soporifik, Hypnomade..."
+    },
+    {
+      "combination": "Psy + Stade 2",
+      "count": 2,
+      "pokemon": "Kadabra, Coléodôme"
+    },
+    {
+      "combination": "Psy + Stade 3",
+      "count": 5,
+      "pokemon": "Alakazam, Gardevoir, Métalosse, Gallame, Astronelle"
+    },
+    {
+      "combination": "Roche + Insecte",
+      "count": 2,
+      "pokemon": "Caratroc, Hachécateur"
+    },
+    {
+      "combination": "Roche + Ténèbres",
+      "count": 2,
+      "pokemon": "Tyranocif, Méga-Tyranocif"
+    },
+    {
+      "combination": "Roche + Gen 1",
+      "count": 11,
+      "pokemon": "Racaillou, Gravalanch, Grolem, Onix, Rhinocorne..."
+    },
+    {
+      "combination": "Roche + Gen 2",
+      "count": 7,
+      "pokemon": "Simularbre, Caratroc, Volcaropod, Corayon, Embrylex..."
+    },
+    {
+      "combination": "Roche + Gen 3",
+      "count": 1,
+      "pokemon": "Galeking"
+    },
+    {
+      "combination": "Roche + Gen 7",
+      "count": 2,
+      "pokemon": "Rocabot, Lougaroc"
+    },
+    {
+      "combination": "Roche + Gen 8",
+      "count": 6,
+      "pokemon": "Torgamord, Charbi, Wagomine, Monthracite, Dolman..."
+    },
+    {
+      "combination": "Roche + Gen 9",
+      "count": 14,
+      "pokemon": "Selutin, Selsel, Gigansel, Crabaupique, Craparoi..."
+    },
+    {
+      "combination": "Roche + Paradoxe",
+      "count": 2,
+      "pokemon": "Épine-de-Fer, Roc-de-Fer"
+    },
+    {
+      "combination": "Roche + Fossile",
+      "count": 5,
+      "pokemon": "Amonita, Amonistar, Kabuto, Kabutops, Ptéra"
+    },
+    {
+      "combination": "Roche + Shiny Noir",
+      "count": 1,
+      "pokemon": "Tyranocif"
+    },
+    {
+      "combination": "Roche + Méga-Évo",
+      "count": 5,
+      "pokemon": "Méga-Ptéra, Méga-Tyranocif, Méga-Diancie, Méga-Golgopathe, Méga-Glimmora"
+    },
+    {
+      "combination": "Roche + Double Type",
+      "count": 31,
+      "pokemon": "Racaillou, Gravalanch, Grolem, Onix, Rhinocorne..."
+    },
+    {
+      "combination": "Roche + Stade 1",
+      "count": 32,
+      "pokemon": "Racaillou, Onix, Rhinocorne, Rhinoféros, Amonita..."
+    },
+    {
+      "combination": "Roche + Stade 2",
+      "count": 4,
+      "pokemon": "Gravalanch, Ymphect, Wagomine, Selsel"
+    },
+    {
+      "combination": "Roche + Stade 3",
+      "count": 5,
+      "pokemon": "Grolem, Tyranocif, Galeking, Monthracite, Gigansel"
+    },
+    {
+      "combination": "Glace + Insecte",
+      "count": 2,
+      "pokemon": "Frissonille, Beldeneige"
+    },
+    {
+      "combination": "Glace + Ténèbres",
+      "count": 2,
+      "pokemon": "Farfuret, Baojian"
+    },
+    {
+      "combination": "Glace + Gen 1",
+      "count": 5,
+      "pokemon": "Lamantine, Crustabri, Lippoutou, Lokhlass, Artikodin"
+    },
+    {
+      "combination": "Glace + Gen 2",
+      "count": 5,
+      "pokemon": "Farfuret, Marcacrin, Cochignon, Cadoizo, Lippouti"
+    },
+    {
+      "combination": "Glace + Gen 8",
+      "count": 7,
+      "pokemon": "M. Glaquette, Frissonille, Beldeneige, Bekaglaçon, Galvagla..."
+    },
+    {
+      "combination": "Glace + Gen 9",
+      "count": 12,
+      "pokemon": "Piétacé, Balbalèze, Hotte-de-Fer, Frigodo, Cryodo..."
+    },
+    {
+      "combination": "Glace + Légendaire",
+      "count": 3,
+      "pokemon": "Artikodin, Blizzeval, Baojian"
+    },
+    {
+      "combination": "Glace + Paradoxe",
+      "count": 1,
+      "pokemon": "Hotte-de-Fer"
+    },
+    {
+      "combination": "Glace + Fossile",
+      "count": 2,
+      "pokemon": "Galvagla, Hydragla"
+    },
+    {
+      "combination": "Glace + Bébé",
+      "count": 1,
+      "pokemon": "Lippouti"
+    },
+    {
+      "combination": "Glace + Méga-Évo",
+      "count": 5,
+      "pokemon": "Méga-Blizzaroi, Méga-Oniglali, Méga-Momartik, Méga-Crabominable, Méga-Glaivodo"
+    },
+    {
+      "combination": "Glace + Double Type",
+      "count": 24,
+      "pokemon": "Lamantine, Crustabri, Lippoutou, Lokhlass, Artikodin..."
+    },
+    {
+      "combination": "Glace + Stade 1",
+      "count": 26,
+      "pokemon": "Lamantine, Crustabri, Lippoutou, Lokhlass, Artikodin..."
+    },
+    {
+      "combination": "Glace + Stade 2",
+      "count": 2,
+      "pokemon": "Cochignon, Cryodo"
+    },
+    {
+      "combination": "Glace + Stade 3",
+      "count": 1,
+      "pokemon": "Glaivodo"
+    },
+    {
+      "combination": "Insecte + Gen 1",
+      "count": 12,
+      "pokemon": "Chenipan, Chrysacier, Papilusion, Aspicot, Coconfort..."
+    },
+    {
+      "combination": "Insecte + Gen 2",
+      "count": 10,
+      "pokemon": "Coxy, Coxyclaque, Mimigal, Migalos, Yanma..."
+    },
+    {
+      "combination": "Insecte + Gen 8",
+      "count": 8,
+      "pokemon": "Larvadar, Coléodôme, Astronelle, Grillepattes, Scolocendre..."
+    },
+    {
+      "combination": "Insecte + Gen 9",
+      "count": 13,
+      "pokemon": "Tissenlune, Filentrappe, Lilliterre, Gambex, Léboulere..."
+    },
+    {
+      "combination": "Insecte + Paradoxe",
+      "count": 1,
+      "pokemon": "Rampe-Ailes"
+    },
+    {
+      "combination": "Insecte + Méga-Évo",
+      "count": 6,
+      "pokemon": "Méga-Scarabrute, Méga-Cizayox, Méga-Scarhino, Méga-Dardargnan, Méga-Scolocendre..."
+    },
+    {
+      "combination": "Insecte + Double Type",
+      "count": 34,
+      "pokemon": "Papilusion, Aspicot, Coconfort, Dardargnan, Paras..."
+    },
+    {
+      "combination": "Insecte + Stade 1",
+      "count": 37,
+      "pokemon": "Chenipan, Aspicot, Paras, Parasect, Mimitoss..."
+    },
+    {
+      "combination": "Insecte + Stade 2",
+      "count": 3,
+      "pokemon": "Chrysacier, Coconfort, Coléodôme"
+    },
+    {
+      "combination": "Insecte + Stade 3",
+      "count": 3,
+      "pokemon": "Papilusion, Dardargnan, Astronelle"
+    },
+    {
+      "combination": "Ténèbres + Gen 2",
+      "count": 6,
+      "pokemon": "Noctali, Cornèbre, Farfuret, Malosse, Démolosse..."
+    },
+    {
+      "combination": "Ténèbres + Gen 5",
+      "count": 3,
+      "pokemon": "Zorua, Zoroark, Trioxhydre"
+    },
+    {
+      "combination": "Ténèbres + Gen 6",
+      "count": 2,
+      "pokemon": "Amphinobi, Yveltal"
+    },
+    {
+      "combination": "Ténèbres + Gen 8",
+      "count": 10,
+      "pokemon": "Goupilou, Roublenard, Grimalin, Fourbelin, Angoliath..."
+    },
+    {
+      "combination": "Ténèbres + Gen 9",
+      "count": 22,
+      "pokemon": "Miascarade, Lestombaile, Scalpereur, Fongus-Furie, Têtes-de-Fer..."
+    },
+    {
+      "combination": "Ténèbres + Légendaire",
+      "count": 7,
+      "pokemon": "Yveltal, Shifours, Zarude, Chongjian, Baojian..."
+    },
+    {
+      "combination": "Ténèbres + Fabuleux",
+      "count": 1,
+      "pokemon": "Zarude"
+    },
+    {
+      "combination": "Ténèbres + Starter",
+      "count": 2,
+      "pokemon": "Amphinobi, Miascarade"
+    },
+    {
+      "combination": "Ténèbres + Paradoxe",
+      "count": 3,
+      "pokemon": "Fongus-Furie, Têtes-de-Fer, Rugit-Lune"
+    },
+    {
+      "combination": "Ténèbres + Shiny Noir",
+      "count": 3,
+      "pokemon": "Noctali, Tyranocif, Amphinobi"
+    },
+    {
+      "combination": "Ténèbres + Méga-Évo",
+      "count": 12,
+      "pokemon": "Méga-Léviator, Méga-Démolosse, Méga-Tyranocif, Méga-Absol, Méga-Ténéfix..."
+    },
+    {
+      "combination": "Ténèbres + Double Type",
+      "count": 37,
+      "pokemon": "Cornèbre, Farfuret, Malosse, Démolosse, Tyranocif..."
+    },
+    {
+      "combination": "Ténèbres + Stade 1",
+      "count": 38,
+      "pokemon": "Noctali, Cornèbre, Farfuret, Malosse, Démolosse..."
+    },
+    {
+      "combination": "Ténèbres + Stade 3",
+      "count": 5,
+      "pokemon": "Tyranocif, Trioxhydre, Amphinobi, Miascarade, Scalpereur"
+    },
+    {
+      "combination": "Gen 1 + Légendaire",
+      "count": 5,
+      "pokemon": "Artikodin, Électhor, Sulfura, Mewtwo, Mew"
+    },
+    {
+      "combination": "Gen 1 + Fabuleux",
+      "count": 1,
+      "pokemon": "Mew"
+    },
+    {
+      "combination": "Gen 1 + Starter",
+      "count": 9,
+      "pokemon": "Bulbizarre, Herbizarre, Florizarre, Salamèche, Reptincel..."
+    },
+    {
+      "combination": "Gen 1 + Fossile",
+      "count": 5,
+      "pokemon": "Amonita, Amonistar, Kabuto, Kabutops, Ptéra"
+    },
+    {
+      "combination": "Gen 1 + Shiny Noir",
+      "count": 3,
+      "pokemon": "Dracaufeu, Feunard, Ectoplasma"
+    },
+    {
+      "combination": "Gen 1 + Double Type",
+      "count": 67,
+      "pokemon": "Bulbizarre, Herbizarre, Florizarre, Dracaufeu, Papilusion..."
+    },
+    {
+      "combination": "Gen 1 + Stade 1",
+      "count": 111,
+      "pokemon": "Bulbizarre, Salamèche, Carapuce, Chenipan, Aspicot..."
+    },
+    {
+      "combination": "Gen 1 + Stade 2",
+      "count": 21,
+      "pokemon": "Herbizarre, Reptincel, Carabaffe, Chrysacier, Coconfort..."
+    },
+    {
+      "combination": "Gen 1 + Stade 3",
+      "count": 19,
+      "pokemon": "Florizarre, Dracaufeu, Tortank, Papilusion, Dardargnan..."
+    },
+    {
+      "combination": "Gen 2 + Légendaire",
+      "count": 6,
+      "pokemon": "Raikou, Entei, Suicune, Lugia, Ho-Oh..."
+    },
+    {
+      "combination": "Gen 2 + Fabuleux",
+      "count": 1,
+      "pokemon": "Celebi"
+    },
+    {
+      "combination": "Gen 2 + Starter",
+      "count": 9,
+      "pokemon": "Germignon, Macronium, Méganium, Héricendre, Feurisson..."
+    },
+    {
+      "combination": "Gen 2 + Bébé",
+      "count": 8,
+      "pokemon": "Pichu, Mélo, Toudoudou, Togepi, Debugant..."
+    },
+    {
+      "combination": "Gen 2 + Shiny Noir",
+      "count": 2,
+      "pokemon": "Noctali, Tyranocif"
+    },
+    {
+      "combination": "Gen 2 + Double Type",
+      "count": 49,
+      "pokemon": "Hoothoot, Noarfang, Coxy, Coxyclaque, Mimigal..."
+    },
+    {
+      "combination": "Gen 2 + Stade 1",
+      "count": 82,
+      "pokemon": "Germignon, Héricendre, Kaiminus, Fouinette, Fouinar..."
+    },
+    {
+      "combination": "Gen 2 + Stade 2",
+      "count": 8,
+      "pokemon": "Macronium, Feurisson, Crocrodil, Lainergie, Marill..."
+    },
+    {
+      "combination": "Gen 2 + Stade 3",
+      "count": 10,
+      "pokemon": "Méganium, Typhlosion, Aligatueur, Nostenfer, Pharamp..."
+    },
+    {
+      "combination": "Gen 3 + Légendaire",
+      "count": 5,
+      "pokemon": "Latias, Latios, Kyogre, Groudon, Rayquaza"
+    },
+    {
+      "combination": "Gen 3 + Starter",
+      "count": 9,
+      "pokemon": "Arcko, Massko, Jungko, Poussifeu, Galifeu..."
+    },
+    {
+      "combination": "Gen 3 + Shiny Noir",
+      "count": 2,
+      "pokemon": "Gardevoir, Rayquaza"
+    },
+    {
+      "combination": "Gen 3 + Double Type",
+      "count": 12,
+      "pokemon": "Galifeu, Braségali, Flobio, Laggron, Gardevoir..."
+    },
+    {
+      "combination": "Gen 3 + Stade 1",
+      "count": 8,
+      "pokemon": "Arcko, Poussifeu, Gobou, Latias, Latios..."
+    },
+    {
+      "combination": "Gen 3 + Stade 2",
+      "count": 3,
+      "pokemon": "Massko, Galifeu, Flobio"
+    },
+    {
+      "combination": "Gen 3 + Stade 3",
+      "count": 8,
+      "pokemon": "Jungko, Braségali, Laggron, Gardevoir, Galeking..."
+    },
+    {
+      "combination": "Gen 4 + Légendaire",
+      "count": 4,
+      "pokemon": "Dialga, Palkia, Giratina, Arceus"
+    },
+    {
+      "combination": "Gen 4 + Fabuleux",
+      "count": 1,
+      "pokemon": "Arceus"
+    },
+    {
+      "combination": "Gen 4 + Starter",
+      "count": 9,
+      "pokemon": "Tortipouss, Boskara, Torterra, Ouisticram, Chimpenfeu..."
+    },
+    {
+      "combination": "Gen 4 + Shiny Noir",
+      "count": 2,
+      "pokemon": "Carchacrok, Lucario"
+    },
+    {
+      "combination": "Gen 4 + Double Type",
+      "count": 10,
+      "pokemon": "Torterra, Chimpenfeu, Simiabraz, Pingoléon, Carchacrok..."
+    },
+    {
+      "combination": "Gen 4 + Stade 1",
+      "count": 8,
+      "pokemon": "Tortipouss, Ouisticram, Tiplouf, Lucario, Dialga..."
+    },
+    {
+      "combination": "Gen 4 + Stade 2",
+      "count": 3,
+      "pokemon": "Boskara, Chimpenfeu, Prinplouf"
+    },
+    {
+      "combination": "Gen 4 + Stade 3",
+      "count": 5,
+      "pokemon": "Torterra, Simiabraz, Pingoléon, Carchacrok, Gallame"
+    },
+    {
+      "combination": "Gen 5 + Légendaire",
+      "count": 3,
+      "pokemon": "Victini, Reshiram, Zekrom"
+    },
+    {
+      "combination": "Gen 5 + Fabuleux",
+      "count": 1,
+      "pokemon": "Victini"
+    },
+    {
+      "combination": "Gen 5 + Starter",
+      "count": 3,
+      "pokemon": "Vipélierre, Gruikui, Moustillon"
+    },
+    {
+      "combination": "Gen 5 + Double Type",
+      "count": 4,
+      "pokemon": "Victini, Trioxhydre, Reshiram, Zekrom"
+    },
+    {
+      "combination": "Gen 5 + Stade 1",
+      "count": 8,
+      "pokemon": "Victini, Vipélierre, Gruikui, Moustillon, Zorua..."
+    },
+    {
+      "combination": "Gen 5 + Stade 3",
+      "count": 1,
+      "pokemon": "Trioxhydre"
+    },
+    {
+      "combination": "Gen 6 + Légendaire",
+      "count": 3,
+      "pokemon": "Xerneas, Yveltal, Zygarde"
+    },
+    {
+      "combination": "Gen 6 + Starter",
+      "count": 4,
+      "pokemon": "Marisson, Feunnec, Grenousse, Amphinobi"
+    },
+    {
+      "combination": "Gen 6 + Shiny Noir",
+      "count": 1,
+      "pokemon": "Amphinobi"
+    },
+    {
+      "combination": "Gen 6 + Double Type",
+      "count": 3,
+      "pokemon": "Amphinobi, Yveltal, Zygarde"
+    },
+    {
+      "combination": "Gen 6 + Stade 1",
+      "count": 7,
+      "pokemon": "Marisson, Feunnec, Grenousse, Nymphali, Xerneas..."
+    },
+    {
+      "combination": "Gen 6 + Stade 3",
+      "count": 1,
+      "pokemon": "Amphinobi"
+    },
+    {
+      "combination": "Gen 7 + Légendaire",
+      "count": 5,
+      "pokemon": "Tokorico, Solgaleo, Lunala, Necrozma, Magearna"
+    },
+    {
+      "combination": "Gen 7 + Fabuleux",
+      "count": 1,
+      "pokemon": "Magearna"
+    },
+    {
+      "combination": "Gen 7 + Starter",
+      "count": 3,
+      "pokemon": "Brindibou, Flamiaou, Otaquin"
+    },
+    {
+      "combination": "Gen 7 + Shiny Noir",
+      "count": 1,
+      "pokemon": "Tokorico"
+    },
+    {
+      "combination": "Gen 7 + Double Type",
+      "count": 8,
+      "pokemon": "Brindibou, Boumata, Togedemaru, Mimiqui, Tokorico..."
+    },
+    {
+      "combination": "Gen 7 + Stade 1",
+      "count": 13,
+      "pokemon": "Brindibou, Flamiaou, Otaquin, Rocabot, Lougaroc..."
+    },
+    {
+      "combination": "Gen 8 + Légendaire",
+      "count": 12,
+      "pokemon": "Zacian, Zamazenta, Éthernatos, Wushours, Shifours..."
+    },
+    {
+      "combination": "Gen 8 + Fabuleux",
+      "count": 1,
+      "pokemon": "Zarude"
+    },
+    {
+      "combination": "Gen 8 + Starter",
+      "count": 9,
+      "pokemon": "Ouistempo, Badabouin, Gorythmic, Flambino, Lapyro..."
+    },
+    {
+      "combination": "Gen 8 + Fossile",
+      "count": 4,
+      "pokemon": "Galvagon, Galvagla, Hydragon, Hydragla"
+    },
+    {
+      "combination": "Gen 8 + Shiny Noir",
+      "count": 2,
+      "pokemon": "Corvaillus, Lanssorien"
+    },
+    {
+      "combination": "Gen 8 + Double Type",
+      "count": 45,
+      "pokemon": "Corvaillus, Coléodôme, Astronelle, Torgamord, Wagomine..."
+    },
+    {
+      "combination": "Gen 8 + Stade 1",
+      "count": 82,
+      "pokemon": "Ouistempo, Flambino, Larméléon, Rongourmand, Rongrigou..."
+    },
+    {
+      "combination": "Gen 8 + Stade 2",
+      "count": 7,
+      "pokemon": "Badabouin, Lapyro, Arrozard, Bleuseille, Coléodôme..."
+    },
+    {
+      "combination": "Gen 8 + Stade 3",
+      "count": 7,
+      "pokemon": "Gorythmic, Pyrobut, Lézargus, Corvaillus, Astronelle..."
+    },
+    {
+      "combination": "Gen 9 + Légendaire",
+      "count": 11,
+      "pokemon": "Chongjian, Baojian, Dinglu, Yuyu, Koraidon..."
+    },
+    {
+      "combination": "Gen 9 + Fabuleux",
+      "count": 1,
+      "pokemon": "Pêchaminus"
+    },
+    {
+      "combination": "Gen 9 + Starter",
+      "count": 9,
+      "pokemon": "Poussacha, Matourgeon, Miascarade, Chochodile, Crocogril..."
+    },
+    {
+      "combination": "Gen 9 + Paradoxe",
+      "count": 22,
+      "pokemon": "Fort-Ivoire, Hurle-Queue, Fongus-Furie, Flotte-Mèche, Rampe-Ailes..."
+    },
+    {
+      "combination": "Gen 9 + Shiny Noir",
+      "count": 2,
+      "pokemon": "Koraidon, Miraidon"
+    },
+    {
+      "combination": "Gen 9 + Méga-Évo",
+      "count": 96,
+      "pokemon": "Méga-Florizarre, Méga-Dracaufeu X, Méga-Dracaufeu Y, Méga-Tortank, Méga-Alakazam..."
+    },
+    {
+      "combination": "Gen 9 + Double Type",
+      "count": 158,
+      "pokemon": "Miascarade, Flâmigator, Palmaval, Gambex, Pohmotte..."
+    },
+    {
+      "combination": "Gen 9 + Stade 1",
+      "count": 198,
+      "pokemon": "Poussacha, Chochodile, Coiffeton, Gourmelet, Fragroin..."
+    },
+    {
+      "combination": "Gen 9 + Stade 2",
+      "count": 9,
+      "pokemon": "Matourgeon, Crocogril, Canarbello, Pohmotte, Olivado..."
+    },
+    {
+      "combination": "Gen 9 + Stade 3",
+      "count": 9,
+      "pokemon": "Miascarade, Flâmigator, Palmaval, Pawmot, Arboliva..."
+    },
+    {
+      "combination": "Légendaire + Fabuleux",
+      "count": 6,
+      "pokemon": "Mew, Celebi, Arceus, Victini, Magearna..."
+    },
+    {
+      "combination": "Légendaire + Paradoxe",
+      "count": 2,
+      "pokemon": "Koraidon, Miraidon"
+    },
+    {
+      "combination": "Légendaire + Shiny Noir",
+      "count": 4,
+      "pokemon": "Rayquaza, Tokorico, Koraidon, Miraidon"
+    },
+    {
+      "combination": "Légendaire + Double Type",
+      "count": 37,
+      "pokemon": "Artikodin, Électhor, Sulfura, Lugia, Ho-Oh..."
+    },
+    {
+      "combination": "Légendaire + Stade 1",
+      "count": 54,
+      "pokemon": "Artikodin, Électhor, Sulfura, Mewtwo, Mew..."
+    },
+    {
+      "combination": "Fabuleux + Double Type",
+      "count": 5,
+      "pokemon": "Celebi, Victini, Magearna, Zarude, Pêchaminus"
+    },
+    {
+      "combination": "Fabuleux + Stade 1",
+      "count": 7,
+      "pokemon": "Mew, Celebi, Arceus, Victini, Magearna..."
+    },
+    {
+      "combination": "Starter + Shiny Noir",
+      "count": 2,
+      "pokemon": "Dracaufeu, Amphinobi"
+    },
+    {
+      "combination": "Starter + Double Type",
+      "count": 17,
+      "pokemon": "Bulbizarre, Herbizarre, Florizarre, Dracaufeu, Galifeu..."
+    },
+    {
+      "combination": "Starter + Stade 1",
+      "count": 27,
+      "pokemon": "Bulbizarre, Salamèche, Carapuce, Germignon, Héricendre..."
+    },
+    {
+      "combination": "Starter + Stade 2",
+      "count": 18,
+      "pokemon": "Herbizarre, Reptincel, Carabaffe, Macronium, Feurisson..."
+    },
+    {
+      "combination": "Starter + Stade 3",
+      "count": 19,
+      "pokemon": "Florizarre, Dracaufeu, Tortank, Méganium, Typhlosion..."
+    },
+    {
+      "combination": "Paradoxe + Shiny Noir",
+      "count": 2,
+      "pokemon": "Koraidon, Miraidon"
+    },
+    {
+      "combination": "Paradoxe + Double Type",
+      "count": 22,
+      "pokemon": "Fort-Ivoire, Hurle-Queue, Fongus-Furie, Flotte-Mèche, Rampe-Ailes..."
+    },
+    {
+      "combination": "Paradoxe + Stade 1",
+      "count": 22,
+      "pokemon": "Fort-Ivoire, Hurle-Queue, Fongus-Furie, Flotte-Mèche, Rampe-Ailes..."
+    },
+    {
+      "combination": "Fossile + Double Type",
+      "count": 9,
+      "pokemon": "Amonita, Amonistar, Kabuto, Kabutops, Ptéra..."
+    },
+    {
+      "combination": "Fossile + Stade 1",
+      "count": 9,
+      "pokemon": "Amonita, Amonistar, Kabuto, Kabutops, Ptéra..."
+    },
+    {
+      "combination": "Bébé + Double Type",
+      "count": 2,
+      "pokemon": "Toudoudou, Lippouti"
+    },
+    {
+      "combination": "Bébé + Stade 1",
+      "count": 8,
+      "pokemon": "Pichu, Mélo, Toudoudou, Togepi, Debugant..."
+    },
+    {
+      "combination": "Shiny Noir + Double Type",
+      "count": 13,
+      "pokemon": "Dracaufeu, Ectoplasma, Tyranocif, Gardevoir, Rayquaza..."
+    },
+    {
+      "combination": "Shiny Noir + Stade 1",
+      "count": 7,
+      "pokemon": "Feunard, Noctali, Rayquaza, Lucario, Tokorico..."
+    },
+    {
+      "combination": "Shiny Noir + Stade 3",
+      "count": 8,
+      "pokemon": "Dracaufeu, Ectoplasma, Tyranocif, Gardevoir, Carchacrok..."
+    },
+    {
+      "combination": "Méga-Évo + Double Type",
+      "count": 83,
+      "pokemon": "Méga-Florizarre, Méga-Dracaufeu X, Méga-Dracaufeu Y, Méga-Ectoplasma, Méga-Scarabrute..."
+    },
+    {
+      "combination": "Méga-Évo + Stade 1",
+      "count": 96,
+      "pokemon": "Méga-Florizarre, Méga-Dracaufeu X, Méga-Dracaufeu Y, Méga-Tortank, Méga-Alakazam..."
+    },
+    {
+      "combination": "Double Type + Stade 1",
+      "count": 288,
+      "pokemon": "Bulbizarre, Aspicot, Roucool, Piafabec, Rapasdepic..."
+    },
+    {
+      "combination": "Double Type + Stade 2",
+      "count": 24,
+      "pokemon": "Herbizarre, Coconfort, Roucoups, Rondoudou, Nosferalto..."
+    },
+    {
+      "combination": "Double Type + Stade 3",
+      "count": 44,
+      "pokemon": "Florizarre, Dracaufeu, Papilusion, Dardargnan, Roucarnage..."
+    }
+  ]
+}
