@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -567,11 +567,11 @@
                 });
 
                 isPokedexReady = true;
-                document.getElementById('loading-screen').style.display = 'none';
             } catch (e) { 
                 console.error("Pokedex Init Error:", e);
+                isPokedexReady = true;
+            } finally {
                 document.getElementById('loading-screen').style.display = 'none';
-                isPokedexReady = true; // On tente quand même avec ce qu'on a
             }
         }
 
@@ -601,7 +601,9 @@
                 gridHeaders = d.headers;
                 maxPhases = d.maxPhases;
                 currentPhase = d.currentPhase;
-                await __updateDoc(roomRef, { players_count: 2 });
+                await _updateDoc(roomRef, { players_count: 2 });
+            }
+
             if (unsubscribeRoom) unsubscribeRoom();
             unsubscribeRoom = _onSnapshot(roomRef, (doc) => {
                 const d = doc.data();
@@ -686,6 +688,7 @@
                 renderGrid('opp');
                 updateUI();
             });
+
             return true;
         }
 
