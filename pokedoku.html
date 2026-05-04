@@ -258,6 +258,16 @@
         </div>
     </div>
 
+    <!-- Waiting Overlay -->
+    <div id="waiting-overlay" style="position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:1000; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
+        <div class="loader-ring" style="border-top-color:var(--accent2);"></div>
+        <h2 style="margin-top:30px; color:var(--accent2);">EN ATTENTE D'UN ADVERSAIRE...</h2>
+        <p style="color:var(--text-secondary); margin-top:10px;">Partagez le code de la salle :</p>
+        <div id="waiting-room-code" style="font-size:32px; font-weight:bold; letter-spacing:5px; margin:15px 0; color:white;">------</div>
+        <p style="font-size:12px; color:var(--text-dim);">La partie commencera automatiquement dès qu'un joueur rejoindra.</p>
+        <button class="btn-validate" style="width:auto; background:var(--bg-card); border:1px solid var(--border); margin-top:30px; font-size:12px;" onclick="location.reload()">ANNULER ET QUITTER</button>
+    </div>
+
     <style>
         .phase-btn { background:var(--bg-card); border:1px solid var(--border); color:white; padding:10px; border-radius:8px; cursor:pointer; width:45px; }
         .phase-btn.active { background:var(--accent); border-color:var(--accent); }
@@ -367,8 +377,15 @@
             // Multi: on prévient l'autre
             const roomRef = doc(db, "pokedoku_rooms", roomName);
             const p = allPokemon.find(x => x.id === myGrid[idx]);
+            const r = gridHeaders.rows[Math.floor(idx/3)];
+            const c = gridHeaders.cols[idx%3];
             const update = {};
-            update[`${myPlayerId}_dispute`] = { idx, pokemon: p.name, status: 'pending' };
+            update[`${myPlayerId}_dispute`] = { 
+                idx, 
+                pokemon: p.name, 
+                combination: `${r.label} × ${c.label}`,
+                status: 'pending' 
+            };
             await updateDoc(roomRef, update);
             alert("Contestation envoyée à l'adversaire...");
         };
@@ -430,9 +447,17 @@
             
             const success = await joinRoom();
             if (success) {
-                document.getElementById('setup-menu').style.display = 'none';
-                document.getElementById('main-game').style.display = 'block';
-                updateUI();
+                if (myPlayerId === 'p1') {
+                    // P1 attend P2
+                    document.getElementById('setup-menu').style.display = 'none';
+                    document.getElementById('waiting-overlay').style.display = 'flex';
+                    document.getElementById('waiting-room-code').innerText = roomName;
+                } else {
+                    // P2 rejoint, la partie commence pour lui
+                    document.getElementById('setup-menu').style.display = 'none';
+                    document.getElementById('main-game').style.display = 'block';
+                    updateUI();
+                }
             }
         };
 
@@ -480,12 +505,21 @@
                     };
                 });
 
-                [...GEN8_DATA, ...GEN9_DATA, ...ZA_MEGAS_DATA, ...OFFICIAL_MEGAS_DATA].forEach(p => {
+                [...GEN8_DATA, ...GEN9_DATA, ...ZA_MEGAS_DATA, ...OFFICIAL_MEGAS_DATA, ...REGIONAL_FORMS_DATA].forEach(p => {
                     if (!allPokemon.find(x => x.id === p[0])) {
                         const id = p[0];
+                        let gen = 9;
+                        if (id < 10000) {
+                            gen = id < 152 ? 1 : id < 252 ? 2 : id < 387 ? 3 : id < 494 ? 4 : id < 650 ? 5 : id < 722 ? 6 : id < 810 ? 7 : id < 906 ? 8 : 9;
+                        } else {
+                            if (id >= 10033 && id <= 10090) gen = 6;
+                            else if (id >= 10091 && id <= 10160) gen = 7;
+                            else if (id >= 10161 && id <= 10249) gen = 8;
+                            else if (id >= 10250) gen = 9;
+                        }
                         allPokemon.push({
                             id, name: p[1], types: p[2],
-                            generation: id < 810 ? (id > 721 ? 7 : 6) : (id < 906 ? 8 : 9),
+                            generation: gen,
                             isLegendary: LEGENDARIES_IDS.includes(id),
                             isMythical: MYTHICAL_IDS.includes(id),
                             isStarter: STARTERS_IDS.some(sid => id >= sid && id <= sid + 2),
@@ -493,7 +527,7 @@
                             isBlackShiny: BLACK_SHINIES.includes(id),
                             isParadox: PARADOX_IDS.includes(id),
                             isUB: UB_IDS.includes(id),
-                            isFossil: FOSSIL_IDS.includes(id),
+                            isFossil: Fossil_IDS && Fossil_IDS.includes(id) || (typeof FOSSIL_IDS !== 'undefined' && FOSSIL_IDS.includes(id)),
                             isBaby: BABY_IDS.includes(id),
                             stage: STAGE3_IDS.includes(id) ? 3 : STAGE2_IDS.includes(id) ? 2 : 1,
                             sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
@@ -545,7 +579,7 @@
                 const oppDispute = myPlayerId === 'p1' ? d.p2_dispute : d.p1_dispute;
                 if (oppDispute && oppDispute.status === 'pending') {
                     activeDispute = oppDispute;
-                    document.getElementById('dispute-msg').innerText = `L'adversaire conteste pour ${oppDispute.pokemon}. Accepter ?`;
+                    document.getElementById('dispute-msg').innerHTML = `L'adversaire conteste pour :<br><b>${oppDispute.pokemon}</b><br><span style="font-size:11px; color:var(--text-dim);">Combinaison : ${oppDispute.combination}</span><br><br>Accepter ?`;
                     document.getElementById('dispute-notif').style.display = 'block';
                 }
 
@@ -571,7 +605,19 @@
 
                 if (d.p1_next && d.p2_next) {
                     currentPhase = d.currentPhase;
+                    // Reset flags in Firebase for the new phase (only one player does it)
+                    if (myPlayerId === 'p1') {
+                        updateDoc(roomRef, { p1_next: false, p2_next: false, p1_done: false, p2_done: false });
+                    }
                     resetForNextPhase();
+                }
+
+                if (d.players_count >= 2) {
+                    if (document.getElementById('waiting-overlay').style.display === 'flex') {
+                        document.getElementById('waiting-overlay').style.display = 'none';
+                        document.getElementById('main-game').style.display = 'block';
+                        updateUI();
+                    }
                 }
 
                 renderGrid('me');
@@ -751,6 +797,7 @@
                 const roomRef = doc(db, "pokedoku_rooms", roomName);
                 const update = { currentPhase: currentPhase + 1 };
                 update[`${myPlayerId}_next`] = true;
+                update[`${myPlayerId}_done`] = false; 
                 await updateDoc(roomRef, update);
                 document.getElementById('btn-next').disabled = true;
                 document.getElementById('waiting-status').style.visibility = 'visible';
@@ -834,6 +881,10 @@
         }
 
         async function selectPokemon(pId) {
+            if (myGrid.includes(pId)) {
+                alert("Vous avez déjà utilisé ce Pokémon dans votre grille !");
+                return;
+            }
             myGrid[currentCell] = pId; renderGrid('me');
             document.getElementById('modal-overlay').classList.remove('active');
             if (roomName) {
