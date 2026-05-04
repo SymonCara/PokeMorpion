@@ -527,7 +527,7 @@
                             isBlackShiny: BLACK_SHINIES.includes(id),
                             isParadox: PARADOX_IDS.includes(id),
                             isUB: UB_IDS.includes(id),
-                            isFossil: Fossil_IDS && Fossil_IDS.includes(id) || (typeof FOSSIL_IDS !== 'undefined' && FOSSIL_IDS.includes(id)),
+                            isFossil: FOSSIL_IDS.includes(id),
                             isBaby: BABY_IDS.includes(id),
                             stage: STAGE3_IDS.includes(id) ? 3 : STAGE2_IDS.includes(id) ? 2 : 1,
                             sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
