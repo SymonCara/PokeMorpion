@@ -333,9 +333,8 @@
 
     <script src="data.js"></script>
     <script type="module">
-        // Import Firebase components if needed for disputes
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDKi9ExC0q1FtMF-vYaqklmntYldgWIfDc",
@@ -347,8 +346,6 @@
         };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
-        import { onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         let allPokemon = [];
         let gridHeaders = { rows: [], cols: [] };
@@ -403,39 +400,7 @@
             return false;
         }
 
-        window.handleContest = async (idx) => {
-            if (gameMode === 'solo') {
-                forcedCorrectCells[idx] = true;
-                renderGrid('me');
-                return;
-            }
-            
-            // Multi: on prévient l'autre
-            const roomRef = doc(db, "pokedoku_rooms", roomName);
-            const p = allPokemon.find(x => x.id === myGrid[idx]);
-            const r = gridHeaders.rows[Math.floor(idx/3)];
-            const c = gridHeaders.cols[idx%3];
-            const update = {};
-            update[`${myPlayerId}_dispute`] = { 
-                idx, 
-                pokemon: p.name, 
-                combination: `${r.label} × ${c.label}`,
-                status: 'pending' 
-            };
-            await updateDoc(roomRef, update);
-            alert("Contestation envoyée à l'adversaire...");
-        };
 
-        window.resolveDispute = async (accepted) => {
-            const roomRef = doc(db, "pokedoku_rooms", roomName);
-            const oppId = myPlayerId === 'p1' ? 'p2' : 'p1';
-            const dispute = activeDispute; // On récupère celui qu'on est en train d'afficher
-            
-            const update = {};
-            update[`${oppId}_dispute`] = { ...dispute, status: accepted ? 'accepted' : 'rejected' };
-            await updateDoc(roomRef, update);
-            document.getElementById('dispute-notif').style.display = 'none';
-        };
 
         window.selectMode = (m) => {
             gameMode = m;
