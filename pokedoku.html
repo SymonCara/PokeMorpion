@@ -596,7 +596,7 @@
             const roomRef = _doc("pokedoku_rooms", roomName);
             const snap = await _getDoc(roomRef);
 
-            if (!snap.exists()) {
+            if (!snap.exists) {
                 myPlayerId = 'p1';
                 generateHeaders();
                 await _setDoc(roomRef, {
@@ -936,7 +936,7 @@
             try {
                 const userRef = _doc("users", user.pseudo);
                 const snap = await _getDoc(userRef);
-                if (snap.exists()) {
+                if (snap.exists) {
                     const newScore = (snap.data().score || 0) + 1;
                     await _updateDoc(userRef, { score: newScore });
                     // Update local storage too
