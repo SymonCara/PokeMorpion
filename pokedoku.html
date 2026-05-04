@@ -367,6 +367,8 @@
 
         let isPokedexReady = false;
         let poolMatches = [];
+        let forcedCorrectCells = Array(9).fill(false);
+        let activeDispute = null;
 
         function resetGameState() {
             myGrid = Array(9).fill(null);
@@ -984,6 +986,7 @@
         window.filterPokemon = (v) => showResults(v);
         function showResults(query) {
             const container = document.getElementById('results-grid');
+            if (!container) return;
             const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             const filtered = allPokemon.filter(p => p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q));
             container.innerHTML = '';
@@ -999,14 +1002,70 @@
                 alert("Vous avez déjà utilisé ce Pokémon dans votre grille !");
                 return;
             }
-            myGrid[currentCell] = pId; renderGrid('me');
-            document.getElementById('modal-overlay').classList.remove('active');
-            if (roomName) {
+            myGrid[currentCell] = pId;
+            renderGrid('me');
+            closeModal();
+            
+            if (gameMode === 'multi') {
                 const roomRef = doc(db, "pokedoku_rooms", roomName);
                 const update = {}; update[`${myPlayerId}_grid`] = myGrid;
                 await updateDoc(roomRef, update);
             }
+            checkGridWinner();
         }
+
+        window.closeModal = () => {
+            document.getElementById('modal-overlay').classList.remove('active');
+        };
+
+        window.handleContest = async (idx) => {
+            if (gameMode === 'solo') {
+                alert("La contestation est réservée au mode multijoueur.");
+                return;
+            }
+            const pId = myGrid[idx];
+            const p = allPokemon.find(x => x.id === pId);
+            const r = gridHeaders.rows[Math.floor(idx/3)];
+            const c = gridHeaders.cols[idx%3];
+            
+            if (confirm(`Voulez-vous contester l'erreur sur ${p.name} ? Cela enverra une notification à l'adversaire.`)) {
+                const roomRef = doc(db, "pokedoku_rooms", roomName);
+                const dispute = {
+                    idx: idx,
+                    pId: pId,
+                    pName: p.name,
+                    criteria: `${r.label} / ${c.label}`,
+                    status: 'pending'
+                };
+                const update = {}; update[`${myPlayerId}_dispute`] = dispute;
+                await updateDoc(roomRef, update);
+                alert("Contestation envoyée. En attente de la réponse de l'adversaire...");
+            }
+        };
+
+        window.resolveDispute = async (accepted) => {
+            if (!activeDispute) return;
+            const roomRef = doc(db, "pokedoku_rooms", roomName);
+            const oppId = myPlayerId === 'p1' ? 'p2' : 'p1';
+            
+            if (accepted) {
+                // On force la cellule comme correcte
+                const update = { status: 'resolved' };
+                // On notifie l'adversaire qu'on a accepté
+                const field = `${oppId}_dispute`;
+                const finalUpdate = {}; 
+                finalUpdate[`${field}.status`] = 'accepted';
+                finalUpdate[`${oppId}_grid_forced`] = activeDispute.idx; // Signal pour forcer
+                await updateDoc(roomRef, finalUpdate);
+            } else {
+                const field = `${oppId}_dispute`;
+                const finalUpdate = {}; 
+                finalUpdate[`${field}.status`] = 'refused';
+                await updateDoc(roomRef, finalUpdate);
+            }
+            document.getElementById('dispute-notif').style.display = 'none';
+            activeDispute = null;
+        };
 
         init();
         selectMode('solo');
