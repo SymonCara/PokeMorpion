@@ -199,6 +199,9 @@
             animation: slideUp 0.3s ease;
         }
         @keyframes slideUp { from { transform: translateY(100px); } to { transform: translateY(0); } }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity:0; } 80% { transform: scale(1.08); } 100% { transform: scale(1); opacity:1; } }
+        .endgame-cell { border-radius:10px; padding:8px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:3px; }
+        .endgame-header-cell { background:#1a1a20; border-radius:8px; padding:8px; text-align:center; font-size:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
     </style>
 </head>
 <body>
@@ -266,6 +269,22 @@
         <div id="waiting-room-code" style="font-size:32px; font-weight:bold; letter-spacing:5px; margin:15px 0; color:white;">------</div>
         <p style="font-size:12px; color:var(--text-dim);">La partie commencera automatiquement dès qu'un joueur rejoindra.</p>
         <button class="btn-validate" style="width:auto; background:var(--bg-card); border:1px solid var(--border); margin-top:30px; font-size:12px;" onclick="location.reload()">ANNULER ET QUITTER</button>
+    </div>
+
+    <!-- End Game Screen -->
+    <div id="endgame-overlay" style="position:fixed; inset:0; background:rgba(5,5,10,0.98); z-index:3000; display:none; flex-direction:column; align-items:center; justify-content:flex-start; padding:30px 20px; overflow-y:auto;">
+        <div style="max-width:580px; width:100%; text-align:center; margin:auto; padding:20px 0;">
+            <div id="endgame-icon" style="font-size:72px; line-height:1; margin-bottom:12px; animation:popIn 0.6s cubic-bezier(0.175,0.885,0.32,1.275);"></div>
+            <h2 id="endgame-title" style="font-size:34px; font-weight:900; letter-spacing:4px; margin-bottom:8px;"></h2>
+            <p id="endgame-subtitle" style="color:var(--text-secondary); margin-bottom:6px; font-size:15px;"></p>
+            <p id="endgame-score" style="font-size:28px; font-weight:bold; margin-bottom:22px;"></p>
+            <p style="font-size:11px; color:var(--text-dim); margin-bottom:10px; text-transform:uppercase; letter-spacing:2px;">— Correction —</p>
+            <div id="endgame-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:28px;"></div>
+            <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+                <button onclick="playAgain()" style="background:linear-gradient(135deg,var(--accent),#ff6b35); color:white; border:none; padding:16px 40px; border-radius:14px; font-weight:900; cursor:pointer; font-size:16px; letter-spacing:2px; width:100%; max-width:320px; box-shadow:0 4px 20px rgba(255,62,62,0.4);">🔄 REJOUER</button>
+                <a href="index.html" style="color:var(--text-dim); text-decoration:none; font-size:12px; padding:10px;">RETOUR AU MENU</a>
+            </div>
+        </div>
     </div>
 
     <style>
@@ -656,11 +675,13 @@
                     const isGameOver = (currentPhase >= maxPhases) || (myScore === 9) || (oppScore === 9);
                     
                     if (isGameOver) {
-                        const winnerMsg = myScore > oppScore ? "VICTOIRE ! Vous avez gagné !" : (myScore < oppScore ? "DÉFAITE... L'adversaire a gagné." : "ÉGALITÉ !");
-                        alert(`${winnerMsg}\nScore final : ${myScore} - ${oppScore}`);
                         document.getElementById('btn-next').style.display = 'none';
-                        document.getElementById('btn-restart').style.display = 'block';
-                        if (myScore === 9 && myPlayerId === 'p1') incrementUserScore(); 
+                        document.getElementById('btn-validate').style.display = 'none';
+                        isValidated = true;
+                        renderGrid('me');
+                        const victory = myScore > oppScore;
+                        if (victory) incrementUserScore();
+                        showEndScreen(victory, myScore, oppScore);
                     } else {
                         document.getElementById('btn-next').style.display = 'block';
                     }
@@ -930,16 +951,94 @@
 
         function endGame(victory = false) {
             document.getElementById('btn-next').style.display = 'none';
-            document.getElementById('btn-restart').style.display = 'block';
-            if (victory) {
-                alert("BRAVO ! Vous avez complété la grille ! (+1 point)");
-                incrementUserScore();
+            document.getElementById('btn-validate').style.display = 'none';
+            document.getElementById('btn-restart').style.display = 'none';
+            isValidated = true;
+            renderGrid('me');
+            const myScore = myGrid.filter((pId, i) => {
+                if (!pId) return false;
+                const p = allPokemon.find(x => x.id === pId);
+                return (checkCriteria(p, gridHeaders.rows[Math.floor(i/3)]) && checkCriteria(p, gridHeaders.cols[i%3])) || forcedCorrectCells[i];
+            }).length;
+            if (victory) incrementUserScore();
+            showEndScreen(victory, myScore);
+        }
+
+        function showEndScreen(victory, myScore, oppScore = null) {
+            const icon = document.getElementById('endgame-icon');
+            const title = document.getElementById('endgame-title');
+            const subtitle = document.getElementById('endgame-subtitle');
+            const scoreEl = document.getElementById('endgame-score');
+            if (gameMode === 'multi' && oppScore !== null) {
+                if (victory) {
+                    icon.textContent = '🏆'; title.textContent = 'VICTOIRE !'; title.style.color = 'var(--accent3)';
+                } else if (myScore < oppScore) {
+                    icon.textContent = '💔'; title.textContent = 'DÉFAITE'; title.style.color = 'var(--accent)';
+                } else {
+                    icon.textContent = '🤝'; title.textContent = 'ÉGALITÉ !'; title.style.color = 'var(--accent2)';
+                }
+                subtitle.textContent = 'Score final';
+                scoreEl.textContent = `${myScore} — ${oppScore}`;
             } else {
-                isValidated = true;
-                renderGrid('me');
-                alert("Fin des phases. Voici la correction.");
+                if (victory) {
+                    icon.textContent = '🏆'; title.textContent = 'BRAVO !'; title.style.color = 'var(--accent3)';
+                    subtitle.textContent = '+1 point gagné 🎉';
+                } else {
+                    icon.textContent = '😔'; title.textContent = 'FIN DE PARTIE'; title.style.color = 'var(--accent)';
+                    subtitle.textContent = 'Voici la correction';
+                }
+                scoreEl.textContent = `${myScore} / 9`;
+            }
+            buildCorrectionGrid();
+            document.getElementById('endgame-overlay').style.display = 'flex';
+        }
+
+        function buildCorrectionGrid() {
+            const container = document.getElementById('endgame-grid');
+            container.innerHTML = '';
+            const corner = document.createElement('div');
+            corner.className = 'endgame-header-cell';
+            corner.textContent = '🧩';
+            container.appendChild(corner);
+            gridHeaders.cols.forEach(h => {
+                const c = document.createElement('div');
+                c.className = 'endgame-header-cell';
+                c.innerHTML = `<div style="font-weight:bold;color:white;font-size:11px;">${h.label}</div><div style="color:var(--text-dim);font-size:9px;">${h.sub}</div>`;
+                container.appendChild(c);
+            });
+            for (let r = 0; r < 3; r++) {
+                const rh = document.createElement('div');
+                rh.className = 'endgame-header-cell';
+                rh.innerHTML = `<div style="font-weight:bold;color:white;font-size:11px;">${gridHeaders.rows[r].label}</div><div style="color:var(--text-dim);font-size:9px;">${gridHeaders.rows[r].sub}</div>`;
+                container.appendChild(rh);
+                for (let c = 0; c < 3; c++) {
+                    const idx = r * 3 + c;
+                    const pId = myGrid[idx];
+                    const p = pId ? allPokemon.find(x => x.id === pId) : null;
+                    const cell = document.createElement('div');
+                    const isOk = p && ((checkCriteria(p, gridHeaders.rows[r]) && checkCriteria(p, gridHeaders.cols[c])) || forcedCorrectCells[idx]);
+                    if (p) {
+                        cell.className = 'endgame-cell';
+                        cell.style.cssText = `background:${isOk ? 'rgba(76,175,80,0.15)' : 'rgba(255,62,62,0.12)'}; border:2px solid ${isOk ? '#4CAF50' : 'var(--accent)'}; min-height:80px;`;
+                        cell.innerHTML = `<img src="${p.sprite}" style="width:48px;image-rendering:pixelated;"><div style="font-size:9px;font-weight:bold;line-height:1.2;">${p.name}</div><div style="font-size:13px;">${isOk ? '✅' : '❌'}</div>`;
+                    } else {
+                        cell.className = 'endgame-cell';
+                        cell.style.cssText = 'background:rgba(255,255,255,0.04); border:1px dashed var(--border); min-height:80px; justify-content:center;';
+                        cell.innerHTML = '<span style="color:var(--text-dim);font-size:22px;">—</span>';
+                    }
+                    container.appendChild(cell);
+                }
             }
         }
+
+        window.playAgain = () => {
+            if (gameMode === 'multi') { location.reload(); return; }
+            document.getElementById('endgame-overlay').style.display = 'none';
+            resetGameState();
+            generateHeaders();
+            renderGrid('me');
+            updateUI();
+        };
 
         function updateUI() {
             document.getElementById('phase-counter').innerText = `PHASE ${currentPhase}/${maxPhases === 999 ? '∞' : maxPhases}`;
@@ -984,7 +1083,7 @@
                 const update = {}; update[`${myPlayerId}_grid`] = myGrid;
                 await _updateDoc(roomRef, update);
             }
-            checkGridWinner();
+            // checkGridWinner() retiré : la validation se fait uniquement via le bouton Valider
         }
 
         window.closeModal = () => {
