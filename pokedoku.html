@@ -674,8 +674,6 @@
 
                 renderGrid('me');
                 renderGrid('opp');
-                document.getElementById('my-score').innerText = `${myGrid.filter(x => x).length}/9`;
-                document.getElementById('opp-score').innerText = `${oppGrid.filter(x => x).length}/9`;
                 updateUI();
             });
             return true;
@@ -811,6 +809,16 @@
                     container.appendChild(cell);
                 }
             }
+
+            // Update scores
+            const grid = target === 'me' ? myGrid : oppGrid;
+            const count = grid.filter((pId, i) => {
+                if (!pId) return false;
+                if (!isValidated) return true; // Before validation, count all filled
+                const p = allPokemon.find(x => x.id === pId);
+                return (checkCriteria(p, gridHeaders.rows[Math.floor(i/3)]) && checkCriteria(p, gridHeaders.cols[i%3])) || forcedCorrectCells[i];
+            }).length;
+            document.getElementById(`${target}-score`).innerText = `${count}/9`;
         }
 
         window.handleValidate = async () => {
