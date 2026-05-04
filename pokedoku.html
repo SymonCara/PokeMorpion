@@ -631,17 +631,16 @@
 
                 // Gestion disputes entrantes (quelqu'un conteste mon jugement)
                 const oppDispute = myPlayerId === 'p1' ? d.p2_dispute : d.p1_dispute;
-                if (oppDispute && oppDispute.status === 'pending') {
+                if (oppDispute && oppDispute.status === 'pending' && !activeDispute) {
                     activeDispute = oppDispute;
-                    document.getElementById('dispute-msg').innerHTML = `L'adversaire conteste pour :<br><b>${oppDispute.pokemon}</b><br><span style="font-size:11px; color:var(--text-dim);">Combinaison : ${oppDispute.combination}</span><br><br>Accepter ?`;
+                    document.getElementById('dispute-msg').innerHTML = `L'adversaire conteste pour :<br><b>${oppDispute.pName || oppDispute.pokemon || '?'}</b><br><span style="font-size:11px; color:var(--text-dim);">Combinaison : ${oppDispute.criteria || oppDispute.combination || ''}</span><br><br>Accepter ?`;
                     document.getElementById('dispute-notif').style.display = 'block';
                 }
 
                 // Gestion de MA dispute (l'adversaire a répondu)
                 const myDispute = myPlayerId === 'p1' ? d.p1_dispute : d.p2_dispute;
                 if (myDispute && myDispute.status === 'accepted') {
-                    forcedCorrectCells[myDispute.idx] = true;
-                    // On nettoie pour pas boucler
+                    if (myDispute.idx !== undefined) forcedCorrectCells[myDispute.idx] = true;
                     const cleanUpdate = {}; cleanUpdate[`${myPlayerId}_dispute`] = null;
                     _updateDoc(roomRef, cleanUpdate);
                 } else if (myDispute && myDispute.status === 'rejected') {
@@ -650,7 +649,7 @@
                     _updateDoc(roomRef, cleanUpdate);
                 }
 
-                if (oppDone && myDone) {
+                if (oppDone && myDone && !document.getElementById('endgame-overlay').style.display.includes('flex')) {
                     isValidated = true;
                     document.getElementById('opp-zone').style.display = 'block';
                     document.getElementById('waiting-status').style.visibility = 'hidden';
@@ -764,18 +763,21 @@
                 }
                 
                 if (possible) {
+                    // value ?? null : Firestore n'accepte pas undefined
+                    const clean = x => ({type: x.type, value: x.value ?? null, label: x.label, sub: x.sub});
                     gridHeaders = { 
-                        rows: rows.map(r => ({type: r.type, value: r.value, label: r.label, sub: r.sub})), 
-                        cols: cols.map(c => ({type: c.type, value: c.value, label: c.label, sub: c.sub})) 
+                        rows: rows.map(clean), 
+                        cols: cols.map(clean)
                     };
                     ok = true;
                 }
             }
             if (!ok) {
                 const pool = generatePool();
+                const clean = x => ({type: x.type, value: x.value ?? null, label: x.label, sub: x.sub});
                 gridHeaders = { 
-                    rows: pool.slice(0, 3), 
-                    cols: pool.slice(3, 6) 
+                    rows: pool.slice(0, 3).map(clean), 
+                    cols: pool.slice(3, 6).map(clean)
                 };
             }
         }
