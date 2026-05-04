@@ -367,6 +367,22 @@
         let forcedCorrectCells = Array(9).fill(false);
         let activeDispute = null;
 
+        function resetGameState() {
+            myGrid = Array(9).fill(null);
+            oppGrid = Array(9).fill(null);
+            gridAtPhaseStart = Array(9).fill(null);
+            forcedCorrectCells = Array(9).fill(false);
+            isValidated = false;
+            currentPhase = 1;
+            isWaitingForNext = false;
+            document.getElementById('btn-validate').style.display = 'block';
+            document.getElementById('btn-next').style.display = 'none';
+            document.getElementById('btn-restart').style.display = 'none';
+            document.getElementById('waiting-status').style.visibility = 'hidden';
+            if (document.getElementById('my-score')) document.getElementById('my-score').innerText = "0/9";
+            if (document.getElementById('opp-score')) document.getElementById('opp-score').innerText = "0/9";
+        }
+
         function checkGridWinner() {
             if (gameMode === 'multi') return false;
             let filledCells = myGrid.filter(x => x !== null).length;
@@ -481,8 +497,8 @@
         window.startGameSolo = () => {
             if (allPokemon.length === 0) return alert("Le Pokédex est encore en cours de chargement...");
             try {
+                resetGameState();
                 generateHeaders();
-                gridAtPhaseStart = Array(9).fill(null);
                 renderGrid('me');
                 document.getElementById('setup-menu').style.display = 'none';
                 document.getElementById('main-game').style.display = 'block';
@@ -566,6 +582,7 @@
         }
 
         async function joinRoom() {
+            resetGameState();
             const roomRef = doc(db, "pokedoku_rooms", roomName);
             const snap = await getDoc(roomRef);
 
@@ -703,19 +720,31 @@
                 ...specials.map(s => ({...s, sub: 'STATUT'}))
             ];
 
+            // Optimisation : Pré-filtrage par catégorie
+            const poolMatches = pool.map(c => {
+                const matches = allPokemon.filter(p => checkCriteria(p, c));
+                return { ...c, matches: new Set(matches.map(p => p.id)) };
+            });
+
             let ok = false;
             let attempts = 0;
             while(!ok && attempts < 1000) {
                 attempts++;
-                const shuf = [...pool].sort(() => Math.random() - 0.5);
-                const rows = shuf.slice(0, 3); const cols = shuf.slice(3, 6);
+                const shuf = [...poolMatches].sort(() => Math.random() - 0.5);
+                const rows = shuf.slice(0, 3);
+                const cols = shuf.slice(3, 6);
                 
-                // Vérification de compatibilité croisée (9 cases)
                 let possible = true;
                 for(let r of rows) {
                     for(let c of cols) {
-                        // On vérifie qu'AU MOINS UN Pokémon répond aux deux critères
-                        const hasMatch = allPokemon.some(p => checkCriteria(p, r) && checkCriteria(p, c));
+                        // Intersection check using Sets (very fast)
+                        let hasMatch = false;
+                        for (let pId of r.matches) {
+                            if (c.matches.has(pId)) {
+                                hasMatch = true;
+                                break;
+                            }
+                        }
                         if (!hasMatch) {
                             possible = false;
                             break;
@@ -725,12 +754,14 @@
                 }
                 
                 if (possible) {
-                    gridHeaders = { rows, cols };
+                    gridHeaders = { 
+                        rows: rows.map(r => ({type: r.type, value: r.value, label: r.label, sub: r.sub})), 
+                        cols: cols.map(c => ({type: c.type, value: c.value, label: c.label, sub: c.sub})) 
+                    };
                     ok = true;
                 }
             }
             if (!ok) {
-                // Fallback de sécurité au cas où (très improbable)
                 gridHeaders = { 
                     rows: pool.slice(0, 3), 
                     cols: pool.slice(3, 6) 
@@ -739,6 +770,7 @@
         }
 
         function checkCriteria(p, c) {
+            if (!p) return false;
             if (c.type === 'type') return p.types.includes(c.value);
             if (c.type === 'gen') return p.generation === c.value;
             if (c.type === 'legend') return p.isLegendary;
