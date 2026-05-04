@@ -430,7 +430,7 @@
                 code = Math.floor(100000 + Math.random() * 900000).toString();
                 const roomRef = _doc("pokedoku_rooms", code);
                 const snap = await _getDoc(roomRef);
-                if (!snap.exists) unique = true;
+                if (!snap.exists()) unique = true;
             }
             roomName = code;
             document.getElementById('generated-code-display').innerText = roomName;
@@ -580,7 +580,7 @@
             const roomRef = _doc("pokedoku_rooms", roomName);
             const snap = await _getDoc(roomRef);
 
-            if (!snap.exists) {
+            if (!snap.exists()) {
                 myPlayerId = 'p1';
                 generateHeaders();
                 await _setDoc(roomRef, {
@@ -843,7 +843,7 @@
                 const p = allPokemon.find(x => x.id === pId);
                 return (checkCriteria(p, gridHeaders.rows[Math.floor(i/3)]) && checkCriteria(p, gridHeaders.cols[i%3])) || forcedCorrectCells[i];
             }).length;
-            document.getElementById(`${target}-score`).innerText = `${count}/9`;
+            document.getElementById(target === 'me' ? 'my-score' : 'opp-score').innerText = `${count}/9`;
         }
 
         window.handleValidate = async () => {
@@ -859,7 +859,7 @@
             } else {
                 const roomRef = _doc("pokedoku_rooms", roomName);
                 const update = {}; update[`${myPlayerId}_done`] = true;
-                await __updateDoc(roomRef, update);
+                await _updateDoc(roomRef, update);
                 document.getElementById('waiting-status').style.visibility = 'visible';
                 document.getElementById('btn-validate').style.display = 'none';
             }
@@ -887,7 +887,7 @@
                 const update = { currentPhase: currentPhase + 1 };
                 update[`${myPlayerId}_next`] = true;
                 update[`${myPlayerId}_done`] = false; 
-                await __updateDoc(roomRef, update);
+                await _updateDoc(roomRef, update);
                 document.getElementById('btn-next').disabled = true;
                 document.getElementById('waiting-status').style.visibility = 'visible';
             }
@@ -918,7 +918,7 @@
             try {
                 const userRef = _doc("users", user.pseudo);
                 const snap = await _getDoc(userRef);
-                if (snap.exists) {
+                if (snap.exists()) {
                     const newScore = (snap.data().score || 0) + 1;
                     await _updateDoc(userRef, { score: newScore });
                     // Update local storage too
@@ -982,7 +982,7 @@
             if (gameMode === 'multi') {
                 const roomRef = _doc("pokedoku_rooms", roomName);
                 const update = {}; update[`${myPlayerId}_grid`] = myGrid;
-                await __updateDoc(roomRef, update);
+                await _updateDoc(roomRef, update);
             }
             checkGridWinner();
         }
@@ -1011,7 +1011,7 @@
                     status: 'pending'
                 };
                 const update = {}; update[`${myPlayerId}_dispute`] = dispute;
-                await __updateDoc(roomRef, update);
+                await _updateDoc(roomRef, update);
                 alert("Contestation envoyée. En attente de la réponse de l'adversaire...");
             }
         };
@@ -1029,12 +1029,12 @@
                 const finalUpdate = {}; 
                 finalUpdate[`${field}.status`] = 'accepted';
                 finalUpdate[`${oppId}_grid_forced`] = activeDispute.idx; // Signal pour forcer
-                await __updateDoc(roomRef, finalUpdate);
+                await _updateDoc(roomRef, finalUpdate);
             } else {
                 const field = `${oppId}_dispute`;
                 const finalUpdate = {}; 
-                finalUpdate[`${field}.status`] = 'refused';
-                await __updateDoc(roomRef, finalUpdate);
+                finalUpdate[`${field}.status`] = 'rejected';
+                await _updateDoc(roomRef, finalUpdate);
             }
             document.getElementById('dispute-notif').style.display = 'none';
             activeDispute = null;
