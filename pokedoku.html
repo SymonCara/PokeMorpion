@@ -363,6 +363,7 @@
         let maxPhases = 2;
         let currentPhase = 1;
         let isWaitingForNext = false;
+        let unsubscribeRoom = null;
 
         let isPokedexReady = false;
         let poolMatches = [];
@@ -478,19 +479,22 @@
                 roomName = room;
             }
             
-            const success = await joinRoom();
-            if (success) {
-                if (myPlayerId === 'p1') {
-                    // P1 attend P2
-                    document.getElementById('setup-menu').style.display = 'none';
-                    document.getElementById('waiting-overlay').style.display = 'flex';
-                    document.getElementById('waiting-room-code').innerText = roomName;
-                } else {
-                    // P2 rejoint, la partie commence pour lui
-                    document.getElementById('setup-menu').style.display = 'none';
-                    document.getElementById('main-game').style.display = 'block';
-                    updateUI();
+            try {
+                const success = await joinRoom();
+                if (success) {
+                    if (myPlayerId === 'p1') {
+                        document.getElementById('setup-menu').style.display = 'none';
+                        document.getElementById('waiting-overlay').style.display = 'flex';
+                        document.getElementById('waiting-room-code').innerText = roomName;
+                    } else {
+                        document.getElementById('setup-menu').style.display = 'none';
+                        document.getElementById('main-game').style.display = 'block';
+                        updateUI();
+                    }
                 }
+            } catch (e) {
+                console.error("Multi start error:", e);
+                alert("Erreur lors de la création de la partie multijoueur. Vérifiez votre connexion.");
             }
         };
 
@@ -536,7 +540,7 @@
                         isLegendary: LEGENDARIES_IDS.includes(id),
                         isMythical: MYTHICAL_IDS.includes(id),
                         isStarter: STARTERS_IDS.some(sid => id >= sid && id <= sid + 2),
-                        isMega: MEGAS_IDS.includes(id) || id > 10000,
+                        isMega: MEGAS_IDS.includes(id),
                         isBlackShiny: BLACK_SHINIES.includes(id),
                         isParadox: PARADOX_IDS.includes(id),
                         isUB: UB_IDS.includes(id),
@@ -565,7 +569,7 @@
                             isLegendary: LEGENDARIES_IDS.includes(id),
                             isMythical: MYTHICAL_IDS.includes(id),
                             isStarter: STARTERS_IDS.some(sid => id >= sid && id <= sid + 2),
-                            isMega: MEGAS_IDS.includes(id) || id > 10000,
+                            isMega: MEGAS_IDS.includes(id),
                             isBlackShiny: BLACK_SHINIES.includes(id),
                             isParadox: PARADOX_IDS.includes(id),
                             isUB: UB_IDS.includes(id),
@@ -620,9 +624,8 @@
                 maxPhases = d.maxPhases;
                 currentPhase = d.currentPhase;
                 await updateDoc(roomRef, { players_count: 2 });
-            }
-
-            onSnapshot(roomRef, (doc) => {
+            if (unsubscribeRoom) unsubscribeRoom();
+            unsubscribeRoom = onSnapshot(roomRef, (doc) => {
                 const d = doc.data();
                 if (!d) return;
                 oppGrid = myPlayerId === 'p1' ? d.p2_grid : d.p1_grid;
@@ -770,6 +773,7 @@
                 }
             }
             if (!ok) {
+                const pool = generatePool();
                 gridHeaders = { 
                     rows: pool.slice(0, 3), 
                     cols: pool.slice(3, 6) 
