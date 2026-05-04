@@ -367,6 +367,23 @@
         let forcedCorrectCells = Array(9).fill(false);
         let activeDispute = null;
 
+        function checkGridWinner() {
+            if (gameMode === 'multi') return false;
+            let filledCells = myGrid.filter(x => x !== null).length;
+            if (filledCells === 9) {
+                const score = myGrid.filter((pId, i) => {
+                     if (!pId) return false;
+                     const p = allPokemon.find(x => x.id === pId);
+                     return (checkCriteria(p, gridHeaders.rows[Math.floor(i/3)]) && checkCriteria(p, gridHeaders.cols[i%3])) || forcedCorrectCells[i];
+                }).length;
+                if (score === 9) {
+                    endGame(true);
+                    return true;
+                }
+            }
+            return false;
+        }
+
         window.handleContest = async (idx) => {
             if (gameMode === 'solo') {
                 forcedCorrectCells[idx] = true;
@@ -485,12 +502,21 @@
 
             try {
                 const rawData = data || offlineBackup.map(p => ({id:p[0], name:{french:p[1]}, type:p[2]}));
+                const FIX_FRENCH = {
+                    772:"Type: Nul",773:"Silvallié",774:"Météno",775:"Dodoala",776:"Boumata",777:"Togedemaru",
+                    778:"Mimiqui",779:"Denticrisse",780:"Draïeul",781:"Sinistrail",782:"Bébécaille",783:"Écaïd",
+                    784:"Ékaïser",785:"Tokorico",786:"Tokopiyon",787:"Tokotoro",788:"Tokopisco",789:"Cosmog",
+                    790:"Cosmovum",791:"Solgaleo",792:"Lunala",793:"Zéroïd",794:"Mouscoto",795:"Cancrelove",
+                    796:"Câblifère",797:"Bamboiselle",798:"Katagami",799:"Engloutyran",800:"Necrozma",
+                    801:"Magearna",802:"Marshadow",803:"Vémini",804:"Mandrillon",805:"Ama-Ama",
+                    806:"Pierroteknik",807:"Zeraora",808:"Meltan",809:"Melmetal"
+                };
                 allPokemon = rawData.map(p => {
                     const id = p.id;
                     const types = (p.type || []).map(t => TYPE_MAP[t] || t).filter(Boolean);
                     return {
-                        id, name: p.name.french || p.name.english, types,
-                        generation: id <= 151 ? 1 : id <= 251 ? 2 : id <= 386 ? 3 : id <= 493 ? 4 : id <= 649 ? 5 : id <= 721 ? 6 : id <= 809 ? 7 : id <= 905 ? 8 : 9,
+                        id, name: FIX_FRENCH[id] || p.name.french || p.name.english, types,
+                        generation: id >= 10250 ? 9 : (id >= 10161 ? 8 : (id >= 10091 ? 7 : (id > 10000 ? 6 : (id <= 151 ? 1 : id <= 251 ? 2 : id <= 386 ? 3 : id <= 493 ? 4 : id <= 649 ? 5 : id <= 721 ? 6 : id <= 809 ? 7 : id <= 905 ? 8 : 9)))),
                         isLegendary: LEGENDARIES_IDS.includes(id),
                         isMythical: MYTHICAL_IDS.includes(id),
                         isStarter: STARTERS_IDS.some(sid => id >= sid && id <= sid + 2),
@@ -599,8 +625,33 @@
                 if (oppDone && myDone) {
                     isValidated = true;
                     document.getElementById('opp-zone').style.display = 'block';
-                    document.getElementById('btn-next').style.display = 'block';
                     document.getElementById('waiting-status').style.visibility = 'hidden';
+                    
+                    const myScore = myGrid.filter((pId, i) => {
+                        if (!pId) return false;
+                        const p = allPokemon.find(x => x.id === pId);
+                        return (checkCriteria(p, gridHeaders.rows[Math.floor(i/3)]) && checkCriteria(p, gridHeaders.cols[i%3])) || forcedCorrectCells[i];
+                    }).length;
+                    
+                    const oppScore = oppGrid.filter((pId, i) => {
+                        if (!pId) return false;
+                        const p = allPokemon.find(x => x.id === pId);
+                        // Note: forcedCorrectCells are per-player, but we don't have opp's forced cells in this simple sync.
+                        // For now we just check the criteria.
+                        return checkCriteria(p, gridHeaders.rows[Math.floor(i/3)]) && checkCriteria(p, gridHeaders.cols[i%3]);
+                    }).length;
+
+                    const isGameOver = (currentPhase >= maxPhases) || (myScore === 9) || (oppScore === 9);
+                    
+                    if (isGameOver) {
+                        const winnerMsg = myScore > oppScore ? "VICTOIRE ! Vous avez gagné !" : (myScore < oppScore ? "DÉFAITE... L'adversaire a gagné." : "ÉGALITÉ !");
+                        alert(`${winnerMsg}\nScore final : ${myScore} - ${oppScore}`);
+                        document.getElementById('btn-next').style.display = 'none';
+                        document.getElementById('btn-restart').style.display = 'block';
+                        if (myScore === 9 && myPlayerId === 'p1') incrementUserScore(); 
+                    } else {
+                        document.getElementById('btn-next').style.display = 'block';
+                    }
                 }
 
                 if (d.p1_next && d.p2_next) {
@@ -610,6 +661,7 @@
                         updateDoc(roomRef, { p1_next: false, p2_next: false, p1_done: false, p2_done: false });
                     }
                     resetForNextPhase();
+                    return; // Avoid further processing in this tick
                 }
 
                 if (d.players_count >= 2) {
@@ -764,11 +816,13 @@
         window.handleValidate = async () => {
             isValidated = true;
             renderGrid('me');
-            // ...
             
             if (gameMode === 'solo') {
-                document.getElementById('btn-validate').style.display = 'none';
-                document.getElementById('btn-next').style.display = 'block';
+                const won = checkGridWinner();
+                if (!won) {
+                    document.getElementById('btn-validate').style.display = 'none';
+                    document.getElementById('btn-next').style.display = 'block';
+                }
             } else {
                 const roomRef = doc(db, "pokedoku_rooms", roomName);
                 const update = {}; update[`${myPlayerId}_done`] = true;
@@ -780,20 +834,22 @@
 
         window.handleNextPhase = async () => {
             if (gameMode === 'solo') {
+                const allCorrect = myGrid.every((pId, i) => {
+                    if (!pId) return false;
+                    const p = allPokemon.find(x => x.id === pId);
+                    return (checkCriteria(p, gridHeaders.rows[Math.floor(i/3)]) && checkCriteria(p, gridHeaders.cols[i%3])) || forcedCorrectCells[i];
+                });
+
+                if (allCorrect) return endGame(true);
+
                 if (currentPhase < maxPhases) {
-                    const allCorrect = myGrid.every((pId, i) => {
-                        if (!pId) return false;
-                        const p = allPokemon.find(x => x.id === pId);
-                        return checkCriteria(p, gridHeaders.rows[Math.floor(i/3)]) && checkCriteria(p, gridHeaders.cols[i%3]);
-                    });
-                    if (allCorrect) return endGame(true);
-                    
                     currentPhase++;
                     resetForNextPhase();
                 } else {
                     endGame();
                 }
             } else {
+                if (currentPhase >= maxPhases) return;
                 const roomRef = doc(db, "pokedoku_rooms", roomName);
                 const update = { currentPhase: currentPhase + 1 };
                 update[`${myPlayerId}_next`] = true;
