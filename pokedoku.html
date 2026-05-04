@@ -364,8 +364,8 @@
         let currentPhase = 1;
         let isWaitingForNext = false;
 
-        let forcedCorrectCells = Array(9).fill(false);
-        let activeDispute = null;
+        let isPokedexReady = false;
+        let poolMatches = [];
 
         function resetGameState() {
             myGrid = Array(9).fill(null);
@@ -470,7 +470,7 @@
         };
 
         window.startMulti = async (type) => {
-            if (allPokemon.length === 0) return alert("Le Pokédex est encore en cours de chargement...");
+            if (!isPokedexReady) return alert("Le Pokédex est encore en cours de chargement...");
             
             if (type === 'join') {
                 const room = document.getElementById('join-room-id').value.trim();
@@ -495,7 +495,7 @@
         };
 
         window.startGameSolo = () => {
-            if (allPokemon.length === 0) return alert("Le Pokédex est encore en cours de chargement...");
+            if (!isPokedexReady) return alert("Le Pokédex est encore en cours de chargement...");
             try {
                 resetGameState();
                 generateHeaders();
@@ -577,8 +577,20 @@
                     }
                 });
                 allPokemon.sort((a,b) => a.id - b.id);
+
+                // Pré-calculer les catégories pour la génération de grille
+                const pool = generatePool();
+                poolMatches = pool.map(c => {
+                    const matches = allPokemon.filter(p => checkCriteria(p, c));
+                    return { ...c, matches: new Set(matches.map(p => p.id)) };
+                });
+
+                isPokedexReady = true;
                 document.getElementById('loading-screen').style.display = 'none';
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                console.error("Pokedex Init Error:", e);
+                alert("Erreur lors du chargement des données.");
+            }
         }
 
         async function joinRoom() {
@@ -696,7 +708,7 @@
             return true;
         }
 
-        function generateHeaders() {
+        function generatePool() {
             const types = ['Feu', 'Eau', 'Plante', 'Électrik', 'Dragon', 'Spectre', 'Combat', 'Fée', 'Acier', 'Normal', 'Vol', 'Sol', 'Poison', 'Psy', 'Roche', 'Glace', 'Insecte', 'Ténèbres'];
             const gens = [1,2,3,4,5,6,7,8,9].map(g => ({ type: 'gen', value: g, label: `Gen ${g}`, sub: 'GÉNÉRATION' }));
             const specials = [
@@ -714,18 +726,14 @@
                 { type: 'stage2', label: 'Stade 2' },
                 { type: 'stage3', label: 'Stade 3' }
             ];
-            const pool = [
+            return [
                 ...types.map(t => ({ type: 'type', value: t, label: t, sub: 'TYPE' })),
                 ...gens,
                 ...specials.map(s => ({...s, sub: 'STATUT'}))
             ];
+        }
 
-            // Optimisation : Pré-filtrage par catégorie
-            const poolMatches = pool.map(c => {
-                const matches = allPokemon.filter(p => checkCriteria(p, c));
-                return { ...c, matches: new Set(matches.map(p => p.id)) };
-            });
-
+        function generateHeaders() {
             let ok = false;
             let attempts = 0;
             while(!ok && attempts < 1000) {
