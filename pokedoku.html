@@ -442,16 +442,9 @@
             if (type === 'create') generateNewRoomCode();
         };
 
-        window.generateNewRoomCode = async () => {
-            let unique = false;
-            let code = "";
-            while(!unique) {
-                code = Math.floor(100000 + Math.random() * 900000).toString();
-                const roomRef = _doc("pokedoku_rooms", code);
-                const snap = await _getDoc(roomRef);
-                if (!snap.exists()) unique = true;
-            }
-            roomName = code;
+        window.generateNewRoomCode = () => {
+            // Génération locale — pas besoin de Firebase pour l'unicité
+            roomName = Math.floor(100000 + Math.random() * 900000).toString();
             document.getElementById('generated-code-display').innerText = roomName;
         };
 
@@ -463,13 +456,17 @@
 
         window.startMulti = async (type) => {
             if (!isPokedexReady) return alert("Le Pokédex est encore en cours de chargement...");
-            
-            if (type === 'join') {
+
+            if (type === 'create') {
+                if (!roomName) generateNewRoomCode();
+            } else {
                 const room = document.getElementById('join-room-id').value.trim();
                 if (!room) return alert("Entrez un code de salle !");
                 roomName = room;
             }
-            
+
+            if (!roomName) return alert("Impossible de générer un code de salle. Réessayez.");
+
             try {
                 const success = await joinRoom();
                 if (success) {
@@ -485,7 +482,7 @@
                 }
             } catch (e) {
                 console.error("Multi start error:", e);
-                alert("Erreur lors de la création de la partie multijoueur. Vérifiez votre connexion.");
+                alert(`Erreur Firebase : ${e.message || 'Vérifiez votre connexion.'}`);
             }
         };
 
