@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -331,11 +331,10 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="data.js"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDKi9ExC0q1FtMF-vYaqklmntYldgWIfDc",
             authDomain: "pokemorpion.firebaseapp.com",
@@ -344,8 +343,14 @@
             messagingSenderId: "702634428380",
             appId: "1:702634428380:web:3cf2e1ca03d5d2cdc43119"
         };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function _doc(col, id) { return db.collection(col).doc(id); }
+        function _setDoc(ref, data) { return ref.set(data); }
+        function _getDoc(ref) { return ref.get(); }
+        function _updateDoc(ref, data) { return ref.update(data); }
+        function _onSnapshot(ref, cb) { return ref.onSnapshot(cb); }
 
         let allPokemon = [];
         let gridHeaders = { rows: [], cols: [] };
@@ -423,9 +428,9 @@
             let code = "";
             while(!unique) {
                 code = Math.floor(100000 + Math.random() * 900000).toString();
-                const roomRef = doc(db, "pokedoku_rooms", code);
-                const snap = await getDoc(roomRef);
-                if (!snap.exists()) unique = true;
+                const roomRef = _doc("pokedoku_rooms", code);
+                const snap = await _getDoc(roomRef);
+                if (!snap.exists) unique = true;
             }
             roomName = code;
             document.getElementById('generated-code-display').innerText = roomName;
@@ -572,13 +577,13 @@
 
         async function joinRoom() {
             resetGameState();
-            const roomRef = doc(db, "pokedoku_rooms", roomName);
-            const snap = await getDoc(roomRef);
+            const roomRef = _doc("pokedoku_rooms", roomName);
+            const snap = await _getDoc(roomRef);
 
-            if (!snap.exists()) {
+            if (!snap.exists) {
                 myPlayerId = 'p1';
                 generateHeaders();
-                await setDoc(roomRef, {
+                await _setDoc(roomRef, {
                     headers: gridHeaders,
                     p1_grid: myGrid, p2_grid: Array(9).fill(null),
                     p1_done: false, p2_done: false,
@@ -596,9 +601,9 @@
                 gridHeaders = d.headers;
                 maxPhases = d.maxPhases;
                 currentPhase = d.currentPhase;
-                await updateDoc(roomRef, { players_count: 2 });
+                await __updateDoc(roomRef, { players_count: 2 });
             if (unsubscribeRoom) unsubscribeRoom();
-            unsubscribeRoom = onSnapshot(roomRef, (doc) => {
+            unsubscribeRoom = _onSnapshot(roomRef, (doc) => {
                 const d = doc.data();
                 if (!d) return;
                 oppGrid = myPlayerId === 'p1' ? d.p2_grid : d.p1_grid;
@@ -620,11 +625,11 @@
                     forcedCorrectCells[myDispute.idx] = true;
                     // On nettoie pour pas boucler
                     const cleanUpdate = {}; cleanUpdate[`${myPlayerId}_dispute`] = null;
-                    updateDoc(roomRef, cleanUpdate);
+                    _updateDoc(roomRef, cleanUpdate);
                 } else if (myDispute && myDispute.status === 'rejected') {
                     alert("Contestation refusée par l'adversaire.");
                     const cleanUpdate = {}; cleanUpdate[`${myPlayerId}_dispute`] = null;
-                    updateDoc(roomRef, cleanUpdate);
+                    _updateDoc(roomRef, cleanUpdate);
                 }
 
                 if (oppDone && myDone) {
@@ -663,7 +668,7 @@
                     currentPhase = d.currentPhase;
                     // Reset flags in Firebase for the new phase (only one player does it)
                     if (myPlayerId === 'p1') {
-                        updateDoc(roomRef, { p1_next: false, p2_next: false, p1_done: false, p2_done: false });
+                        _updateDoc(roomRef, { p1_next: false, p2_next: false, p1_done: false, p2_done: false });
                     }
                     resetForNextPhase();
                     return; // Avoid further processing in this tick
@@ -849,9 +854,9 @@
                     document.getElementById('btn-next').style.display = 'block';
                 }
             } else {
-                const roomRef = doc(db, "pokedoku_rooms", roomName);
+                const roomRef = _doc("pokedoku_rooms", roomName);
                 const update = {}; update[`${myPlayerId}_done`] = true;
-                await updateDoc(roomRef, update);
+                await __updateDoc(roomRef, update);
                 document.getElementById('waiting-status').style.visibility = 'visible';
                 document.getElementById('btn-validate').style.display = 'none';
             }
@@ -875,11 +880,11 @@
                 }
             } else {
                 if (currentPhase >= maxPhases) return;
-                const roomRef = doc(db, "pokedoku_rooms", roomName);
+                const roomRef = _doc("pokedoku_rooms", roomName);
                 const update = { currentPhase: currentPhase + 1 };
                 update[`${myPlayerId}_next`] = true;
                 update[`${myPlayerId}_done`] = false; 
-                await updateDoc(roomRef, update);
+                await __updateDoc(roomRef, update);
                 document.getElementById('btn-next').disabled = true;
                 document.getElementById('waiting-status').style.visibility = 'visible';
             }
@@ -908,11 +913,11 @@
             if (!userStr) return;
             const user = JSON.parse(userStr);
             try {
-                const userRef = doc(db, "users", user.pseudo);
-                const snap = await getDoc(userRef);
-                if (snap.exists()) {
+                const userRef = _doc("users", user.pseudo);
+                const snap = await _getDoc(userRef);
+                if (snap.exists) {
                     const newScore = (snap.data().score || 0) + 1;
-                    await updateDoc(userRef, { score: newScore });
+                    await _updateDoc(userRef, { score: newScore });
                     // Update local storage too
                     user.score = newScore;
                     localStorage.setItem('poke_user', JSON.stringify(user));
@@ -972,9 +977,9 @@
             closeModal();
             
             if (gameMode === 'multi') {
-                const roomRef = doc(db, "pokedoku_rooms", roomName);
+                const roomRef = _doc("pokedoku_rooms", roomName);
                 const update = {}; update[`${myPlayerId}_grid`] = myGrid;
-                await updateDoc(roomRef, update);
+                await __updateDoc(roomRef, update);
             }
             checkGridWinner();
         }
@@ -994,7 +999,7 @@
             const c = gridHeaders.cols[idx%3];
             
             if (confirm(`Voulez-vous contester l'erreur sur ${p.name} ? Cela enverra une notification à l'adversaire.`)) {
-                const roomRef = doc(db, "pokedoku_rooms", roomName);
+                const roomRef = _doc("pokedoku_rooms", roomName);
                 const dispute = {
                     idx: idx,
                     pId: pId,
@@ -1003,14 +1008,14 @@
                     status: 'pending'
                 };
                 const update = {}; update[`${myPlayerId}_dispute`] = dispute;
-                await updateDoc(roomRef, update);
+                await __updateDoc(roomRef, update);
                 alert("Contestation envoyée. En attente de la réponse de l'adversaire...");
             }
         };
 
         window.resolveDispute = async (accepted) => {
             if (!activeDispute) return;
-            const roomRef = doc(db, "pokedoku_rooms", roomName);
+            const roomRef = _doc("pokedoku_rooms", roomName);
             const oppId = myPlayerId === 'p1' ? 'p2' : 'p1';
             
             if (accepted) {
@@ -1021,12 +1026,12 @@
                 const finalUpdate = {}; 
                 finalUpdate[`${field}.status`] = 'accepted';
                 finalUpdate[`${oppId}_grid_forced`] = activeDispute.idx; // Signal pour forcer
-                await updateDoc(roomRef, finalUpdate);
+                await __updateDoc(roomRef, finalUpdate);
             } else {
                 const field = `${oppId}_dispute`;
                 const finalUpdate = {}; 
                 finalUpdate[`${field}.status`] = 'refused';
-                await updateDoc(roomRef, finalUpdate);
+                await __updateDoc(roomRef, finalUpdate);
             }
             document.getElementById('dispute-notif').style.display = 'none';
             activeDispute = null;
