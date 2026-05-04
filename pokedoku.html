@@ -516,9 +516,14 @@
         async function init() {
             let data = null;
             try {
-                const res = await fetch('https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json');
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                const res = await fetch('https://cdn.jsdelivr.net/gh/fanzeyi/pokemon.json@master/pokedex.json', { signal: controller.signal });
+                clearTimeout(timeoutId);
                 if (res.ok) data = await res.json();
-            } catch (e) {}
+            } catch (e) {
+                console.warn("CDN non atteint, utilisation du backup local.");
+            }
 
             try {
                 const rawData = data || offlineBackup.map(p => ({id:p[0], name:{french:p[1]}, type:p[2]}));
@@ -593,7 +598,8 @@
                 document.getElementById('loading-screen').style.display = 'none';
             } catch (e) { 
                 console.error("Pokedex Init Error:", e);
-                alert("Erreur lors du chargement des données.");
+                document.getElementById('loading-screen').style.display = 'none';
+                isPokedexReady = true; // On tente quand même avec ce qu'on a
             }
         }
 
